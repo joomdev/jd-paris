@@ -1,0 +1,35 @@
+.jd-profiler-wrapper.jd-carousel-layout-view.jd-carousel-simple-layout {
+	.slick-dotted.slick-slider {
+		margin-bottom: 0;
+	}
+	.jd-team-columns {
+		.card-team {
+			border: 0;
+			.card-img-overlayteam-member-name {
+				margin-bottom: 0;
+			}
+			.card-team-footer {
+				border-color: $light;
+			}
+			.social-profile  {
+				li:first-child {
+					margin-left: 5px;
+				}
+				li:last-child {
+					margin-right: 5px;
+				}
+				li a {
+					font-size: 22px;
+				}
+			}
+		}
+	}
+	button.slick-arrow:before {
+		color: $primary;
+	}
+	.slick-dots {
+		li button:before {
+			background: $primary;
+		}
+	}
+}

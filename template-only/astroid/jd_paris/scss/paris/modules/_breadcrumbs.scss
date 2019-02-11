@@ -1,0 +1,19 @@
+.breadcrumbs-section {
+	margin-top: 80px;
+	.breadcrumb {
+		margin-bottom: 0;
+		color: $white;
+		background-color: $primary;
+		border-radius: 0;
+		justify-content: center;
+		a {
+			color: $white;
+		}
+		.divider  {
+			margin: 0 3px;
+		}
+	}
+}
+.astroid-banner-section + .breadcrumbs-section {
+	margin-top: 0;
+}

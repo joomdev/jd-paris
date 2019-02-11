@@ -1,0 +1,23 @@
+.comingsoon-wrap {
+	position: relative;
+	&:before {
+		content: "";
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		display: block;
+		background-color: rgba(0, 0, 0, 0.55);
+	}
+	.container {
+		position: relative;
+	}
+	.comingsoon-date {
+		color: $white;
+	}
+	.astroid-social-icons {
+		float: none;
+		color: $white;
+	}
+}

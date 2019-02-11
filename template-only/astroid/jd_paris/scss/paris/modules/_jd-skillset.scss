@@ -1,0 +1,16 @@
+div.counter-sub-container {
+	> div {
+		margin: 15px 0;
+	}
+	.counter-wrapper {
+		.counter-number {
+			.count, .symbol {
+				font-weight: 600;
+			}
+		}
+		.counter-title {
+			font-weight: 600;
+			margin-top: 10px;
+		}
+	}
+}

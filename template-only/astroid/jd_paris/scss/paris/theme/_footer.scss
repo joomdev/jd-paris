@@ -1,0 +1,71 @@
+// Bottom Section //
+.bottom-section {
+	@include media-breakpoint-down(md) {
+		padding: 50px 0 20px 0;
+	}
+	.address-info {
+		display: flex;
+		&:not(:last-child) {
+			margin-bottom: 15px;
+		}
+		.icon {
+			margin-right: 15px;
+			i {
+				color: $primary;
+				font-size: 20px;
+			}
+		}
+		.content {
+			margin-top: -4px;
+		}
+		p {
+			margin-bottom: 0;
+		}
+	}
+	.module-title {
+		margin-bottom: 16px;
+	}
+	ul {
+		margin-bottom: 0;
+	}
+	.menu {
+		li {
+			padding: 5px 0;
+		}
+	}
+}
+.bottom-section {
+	[class*="bottom-"] {
+		@include media-breakpoint-down(md) {
+			margin-bottom: 30px;
+		}
+	}
+}
+// Footer Section //
+.astroid-footer-section {
+	.container {
+		> .row {
+			align-items: center;
+			@include media-breakpoint-down(md) {
+				text-align: center;
+			}
+			.astroid-social-icons {
+				@include media-breakpoint-down(md) {
+					display: inline-block;
+					margin-top: 10px;
+					li:last-child {
+						margin-right: 10px;
+					}
+				}
+			}
+		}
+	}
+}
+.astroid-social-icons {
+	@include media-breakpoint-up(lg) {
+		float: right;
+	}
+	li a {
+		font-size: 20px;
+	}
+}

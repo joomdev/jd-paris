@@ -1,0 +1,76 @@
+div.tz_portfolio_plus_portfolio {
+	.option-combo {
+		margin-top: 0;
+		.btn.btn-default {
+			color: $primary;
+			font-size: 16px;
+			border-color: $primary;
+			margin-bottom: 15px;
+			&:hover, &:focus, &.selected {
+				background-color: $primary;
+				color: $white;	
+			}
+			&:not(:last-child) {
+				margin-right: 15px;
+			}
+		}
+	}
+	.TzPortfolioTitle {
+		font-size: 22px;
+	}
+	.element .TzInner {
+		margin: 15px;
+		.TzPortfolioDescription {
+			display: none;
+		}
+	}
+}
+
+div.tplBesley {
+margin: 0;
+	#tz_options {
+		.option-combo {
+			margin-top: 0;
+			.btn.btn-default {
+				color: $primary;
+				font-size: 16px;
+				border-color: $primary;
+				margin-bottom: 15px;
+				&:hover, &:focus, &.selected {
+					background-color: $primary;
+					color: $white;	
+				}
+				&:not(:last-child) {
+					margin-right: 15px;
+				}
+			}
+		}
+	}
+	.TzPortfolioTitle {
+		font-size: 22px;
+	}
+	.element .TzInner {
+		margin: 0;
+		padding: 20px;
+		.TzPortfolioDescription {
+			display: none;
+		}
+	}
+}
+
+.com-tz-portfolio-plus {
+	.ns-box.ns-show {
+		width: auto;
+		z-index: 9999;
+		margin: 0 auto !important;
+		left: 0;
+		right: 0;
+		top: 10px;
+	}
+}
+.tpItemPage {
+	.tp {
+		font-family: 'Font Awesome\ 5 Free';
+		font-weight: 900;
+	}
+}

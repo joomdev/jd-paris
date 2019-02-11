@@ -1,0 +1,66 @@
+div.jd-register-login-wrapper {
+	.jd-register-login-tab {
+		li {
+			span {
+				color: $secondary;
+				background-color: $light;
+				border: 1px solid $light;
+				&:hover, &.active {
+					background-color: $primary;
+					border-color: $primary;
+					color: $white;
+				}
+			}
+		}
+	}
+	.jd-register-login-box {
+		border: 1px solid $light;
+		form {
+			.jd-inputbox-control {
+				.jd-form-input {
+					border: 1px solid $light;
+					&:focus {
+						color: $secondary;
+						background-color: $white;
+						border-color: #f991ab;
+						outline: 0;
+						box-shadow: 0 0 0 0.2rem rgba(242, 24, 79, .25);
+					}
+				}
+			}
+		}
+		.jd-button-control {
+			.jd-form-button {
+				color: $white;
+				background-color: $primary;
+				border-color: $primary;
+				&:hover, &:focus {
+					color: $white;
+					background-color: $primary;
+					border-color: $primary;
+				}
+			}
+		}
+		.jd-list-wrapper {
+			margin: 30px 0 10px 0;
+			.jd-list-group {
+				.jd-list-block {
+					color: $secondary;
+					background-color: $light;
+					&:hover, &:focus {
+						color: $secondary; 
+						background-color: darken($light, 20%);
+					}
+				}
+			}
+		}
+	}
+}
+#user-registration {
+	.control-group {
+		margin-top: 20px;
+		.btn {
+			@extend .btn-lg;
+		}
+	}
+}

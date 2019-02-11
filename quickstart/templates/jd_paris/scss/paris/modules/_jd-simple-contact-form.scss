@@ -1,0 +1,21 @@
+.jd-simple-contact-form {
+	.card-title {
+		font-size: 16px;
+		margin-bottom: 0;
+	}
+	.card-subtitle {
+		font-size: 24px;
+		font-weight: 700;
+		margin-top: 10px;
+	}
+	form {
+		.form-group {
+			margin-bottom: 20px;
+		}
+	}
+}
+.form-control {
+	height: 45px;
+	border-radius: 0;
+	border: 1px solid $gray-200;
+}

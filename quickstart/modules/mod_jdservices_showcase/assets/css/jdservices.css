@@ -1,0 +1,91 @@
+/**
+ * @package         JD Services Showcase
+ * @version         1.0
+ * @author          JoomDev <support@joomdev.com>
+ * @link            https://www.joomdev.com
+ * @copyright       Copyright © 2018 Regular Labs All Rights Reserved
+ * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
+ */
+
+/* Services Showcase Features box icon
+=========================== */
+
+.jd-services-showcase img {
+	max-width: 100%;
+}
+
+.jd-services-showcase a {
+	text-decoration: none;
+}
+
+.jd-services-showcase .service-box {
+	background-color: #fff;
+	box-shadow: 0px 0px 39px 16px rgba(245,245,245,1);
+	-webkit-box-shadow: 0px 0px 39px 16px rgba(245,245,245,1);
+	-moz-box-shadow: 0px 0px 39px 16px rgba(245,245,245,1);
+}
+.jd-services-showcase .service-box .content {
+	background-color: #fff;
+}
+.jd-services-showcase .service-box .image-overlay a {
+	display: block;
+}
+
+.jd-services-showcase .service-box .image-overlay {
+	position: relative;
+}
+.jd-services-showcase .service-box .overlay {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	opacity: 0;
+	transition: .5s ease;
+	background-color: #ffe500;
+	padding: 15px;
+}
+.jd-services-showcase .service-box .image-overlay:hover .overlay {
+	opacity: 1;
+}
+.jd-services-showcase .service-box .overlay .image {
+	height: 100%;
+	width: 100%;
+	border: dashed 1px #000;
+}
+.jd-services-showcase .service-box .overlay .image img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.jd-services-showcase .service-box .content {
+	padding: 30px 15px;
+	text-align: center;
+}
+.jd-services-showcase .service-box .content .title a {
+	color: #000;
+	font-size: 24px;
+	font-weight: 600;
+}
+.jd-services-showcase .service-box .content .sub-title {
+	color: #000;
+	font-size: 18px;
+	margin-top: 10px;
+}
+.jd-services-showcase .service-box .content .description {
+	color: #7c7c7c;
+	font-size: 16px;
+	margin-top: 15px;
+}
+.jd-services-showcase .service-box .content .read-more a {
+	color: #000;
+	font-size: 14px;
+	margin-top: 35px;
+	display: block;
+}
+.jd-services-showcase .service-box .content .read-more a:hover {
+	color: #ffe500;
+}

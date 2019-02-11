@@ -1,0 +1,34 @@
+body.services-view {
+	.items-row {
+		.card {
+			border: none;
+			background-color: $white;
+			box-shadow: $box-shadow-sm;
+			.item-image a {
+				position: relative;
+				display: block;
+				&:before {
+					content: "";
+					background-color: rgba($primary, 0.5);
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					opacity: 0;
+					transition: .5s ease;
+				}
+			}
+			.item-image a:hover {
+				&:before {
+					opacity: 1;
+				}
+			}
+			.card-body {
+				padding: 20px 15px;
+				text-align: center;
+			}
+			p.readmore {
+				display: none;
+			}
+		}
+	}
+}

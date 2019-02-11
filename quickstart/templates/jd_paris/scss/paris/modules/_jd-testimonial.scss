@@ -1,0 +1,53 @@
+div.jd-testimonial {
+	.slick-dotted.slick-slider {
+		margin-bottom: 50px; 
+	}
+	.style-two {
+		.slick-track {
+			display: flex;
+		}
+		.slick-slide {
+			background-color: $light;
+			border: 0;
+		}
+	}
+	.testimonials-wrap {
+		.client-img {
+			margin-top: 0;
+			.author-img img {
+				width: 80px;
+			}
+			.author-info {
+				margin-top: 25px;
+				.name {
+					margin-bottom: 0;
+				}
+				.author-text {
+					line-height: 1;
+					margin-top: 5px;
+				}
+			}
+		}
+		.text {
+			margin-top: 30px;
+		}
+		.rating {
+			margin-top: 25px;
+			.fa {
+				font-size: 14px;
+				margin: 0 2px;
+			}
+		}
+	}
+	.slick-arrow:before {
+		font-size: 32px;
+	}
+	.slick-dots {
+		bottom: -50px;
+		li button {
+			&:before {
+				font-size: 14px;
+			}
+		}
+	}
+}

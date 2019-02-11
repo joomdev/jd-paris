@@ -1,0 +1,5 @@
+(~'div#@{sliderid}') {
+    .nextend-bar-horizontal div * {
+        display: inline;
+    }
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install PUBLIC "-//Joomla! 2.5//DTD template 1.0//EN" "http://www.joomla.org/xml/dtd/2.5/template-install.dtd">
+<extension version="3.1" type="tz_portfolio_plus-template" method="upgrade">
+    <name>besley</name>
+    <version>1.0</version>
+    <creationDate>January 31st 2018</creationDate>
+    <author>Sonny</author>
+    <authorEmail>sonlv@templaza.com</authorEmail>
+    <authorUrl>www.templaza.com</authorUrl>
+    <copyright>Copyright (C) 2018 TemPlaza. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <description>TZ_PORTFOLIO_PLUS_TPL_XML_DESCRIPTION</description>
+    <files>
+        <folder>css</folder>
+        <folder>html</folder>
+        <folder>images</folder>
+        <folder>language</folder>
+        <folder>js</folder>
+        <folder>fields</folder>
+        <filename>index.html</filename>
+        <filename>template.php</filename>
+        <filename>template.xml</filename>
+        <filename>template_preview.png</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="components/com_tz_portfolio_plus/templates/besley/fields">
+                <field type="radio" name="use_single_layout_builder"
+                       default="0" class="btn-group"
+                       label="TPL_SYSTEM_LAYOUT_BUILDER_LABEL">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="radio" name="load_style"
+                       default="1" class="btn-group"
+                       label="TPL_SYSTEM_LOAD_STYLE_LABEL">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="ratio" type="text" label="TPL_FOLIO_RATIO_LABEL"
+                       description="TPL_FOLIO_RATIO_LABEL_DESC" default="5:3"/>
+                <field name="bgcolor" type="TZColor" label="TPL_BESLEY_BG_COLOR_LABEL" control="hex"
+                       description="TPL_BESLEY_BG_COLOR_LABEL" default="rgba(0, 0, 0, 0.5)"/>
+                <field name="textcolor" type="TZColor" label="TPL_BESLEY_TEXT_COLOR_LABEL" control="hex"
+                       description="TPL_BESLEY_TEXT_COLOR_LABEL" default="rgba(255, 255, 255, 1)"/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install PUBLIC "-//Joomla! 2.5//DTD template 1.0//EN" "https://www.joomla.org/xml/dtd/1.6/template-install.dtd">
+<extension type="module" version="3.1.0" client="site" method="upgrade">
+   <name>JD Paris - Our Courses Module</name>
+   <creationDate>July 2018</creationDate>
+   <author>JoomDev</author>
+   <authorEmail>info@joomdev.com</authorEmail>
+   <authorUrl>http://www.joomdev.com</authorUrl>
+   <copyright>Copyright (C) 2018 Joomdev, Inc. All rights reserved.</copyright>
+   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+   <version>1.0.0</version>
+   <description></description>
+   <files>
+      <filename module="mod_jd_paris_ourCourses">mod_jd_paris_ourCourses.php</filename>
+      <filename>mod_jd_paris_ourCourses.xml</filename>
+      <filename>helper.php</filename>
+      <folder>tmpl</folder>
+   </files>
+   <config>
+      <fields name="params">
+      </fields>
+   </config>
+</extension>

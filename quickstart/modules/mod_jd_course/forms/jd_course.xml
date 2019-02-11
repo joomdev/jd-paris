@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+   <fieldset name="jd_number_counter" label="MOD_JD_NUMBER_CREATE_LABE">
+      <field name="number_counter"
+             label="MOD_JD_NUMBER_COUNTER_NUMBER_LABEL"
+             type="textarea"  />
+      <field name="number_sign"
+             label="MOD_JD_NUMBER_COUNTER_SIGN_LABEL"
+             type="textarea"  />
+      <field name="number_title"
+             label="MOD_JD_NUMBER_COUNTER_TITLE_LABEL"
+             type="textarea"  />
+   </fieldset>
+</form>

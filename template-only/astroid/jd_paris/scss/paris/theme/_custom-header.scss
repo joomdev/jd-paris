@@ -1,0 +1,35 @@
+// Astroid log //
+.astroid-header-section {
+	border-color: $light;
+	.astroid-logo img {
+		max-width: 200px;
+	}
+}
+
+// astroid-stacked-center-header //
+.astroid-header-section {
+	header.astroid-stacked-center-header,
+	header.astroid-stacked-divided-header {
+		padding: 15px 0 0 0;
+	} 
+}
+
+// Sub Menu //
+.nav-submenu-container {
+	border-color: $light;
+	.nav-submenu li {
+		a {
+			padding: 12px 15px;
+		}
+	}
+}
+
+// Top Bar //
+.top-bar-menu {
+	li {
+		margin: 0 10px;
+	}
+	li a {
+		font-size: 13px;
+	}
+}

@@ -1,0 +1,23 @@
+// Horizontal Style
+.acymailing_module_form {
+   div.acymailing_form {
+	margin-top: 16px !important;
+      .inputbox {
+         display: block;
+         width: 100%;
+		 height: 45px;
+         font-size: 1.2rem;
+         line-height: 1.5;
+         color: $input-color;
+         background-color: $input-bg;
+		 border-radius: 0;
+      }
+      .acysubbuttons {
+		margin: 0;
+		.btn {
+			width: 100%;
+			border-radius: 0;
+		}
+	  }
+   }
+}

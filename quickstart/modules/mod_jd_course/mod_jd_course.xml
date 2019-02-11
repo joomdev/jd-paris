@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.1" client="site" method="upgrade">
+   <name>mod_jd_course</name>
+   <author>JoomDev Team</author>
+   <creationDate>July 2018</creationDate>
+   <copyright>Copyright (C) 2005 - 2017 Open Source Matters. All rights reserved.</copyright>
+   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+   <authorEmail>info@joomdev.com</authorEmail>
+   <authorUrl>www.joomdev.com</authorUrl>
+   <version>3.0.0</version>
+   <description>MOD_NUMBER_COUNTER_XML_DESCRIPTION</description>
+   <files>
+      <filename module="mod_jd_course">mod_jd_course.php</filename>
+      <folder>tmpl</folder>
+      <folder>forms</folder>
+      <folder>assets</folder>
+      <filename>helper.php</filename>
+   </files>
+   <languages folder="language">
+      <language tag="en-GB">en-GB/en-GB.mod_jd_course.ini</language>
+      <language tag="en-GB">en-GB/en-GB.mod_jd_course.sys.ini</language>
+   </languages>
+   <config>
+      <fields name="params">
+         <fieldset name="basic" addfieldpath="/modules/mod_jd_course/fields">
+            <fieldset name="basic" addfieldpath="/modules/mod_jd_course/fields">
+               <field name="numbers"
+                      type="subform"
+                      formsource="/modules/mod_jd_course/forms/jd_course.xml"
+                      multiple="true"
+                      label="MOD_JD_NUMBER_CREATE_LABEL"
+               />
+            </fieldset>
+         </fieldset>
+         <fieldset name="style">
+            <field
+               name="counterSignfontColor" 
+               type="color"
+               label="MOD_JD_NUMBER_COUNTER_FONT_COLOR_LABEL"
+               description="MOD_JD_NUMBER_COUNTER_FONT_COLOR_DESC"
+               default="default"
+            />
+            <field
+               name="titlefontColor" 
+               type="color"
+               label="MOD_JD_NUMBER_COUNTER_TITLE_COLOR_LABEL"
+               description="MOD_JD_NUMBER_COUNTER_TITLE_COLOR_LABEL"
+               default="default"
+            />
+            <field
+               name="enable_animation" 
+               type="radio"
+               label="MOD_JD_NUMBER_COUNTER_ENABLE_ANIMATION_COLOR_LABEL"
+               description="MOD_JD_NUMBER_COUNTER_ENABLE_ANIMATION_COLOR_DESC"
+               default="1"
+               class="btn-group btn-group-yesno"
+            >
+                <option value="1">JYES</option>
+                <option value="0">JNO</option>
+            </field>
+         </fieldset>
+         <fieldset name="advanced">
+            <field
+               name="layout"
+               type="modulelayout"
+               label="JFIELD_ALT_LAYOUT_LABEL"
+               description="JFIELD_ALT_MODULE_LAYOUT_DESC"
+               default="default"
+            />
+            <field
+               name="load_bootstrap"
+               type="radio"
+               label="MOD_JD_NUMBER_COUNTER_LOAD_BOOTSTRAP_LBL"
+               description="MOD_JD_NUMBER_COUNTER_LOAD_BOOTSTRAP_DESC"
+               default="1"
+               class="btn-group btn-group-yesno"
+            >
+               <option value="1">JYES</option>
+               <option value="0">JNO</option>
+            </field>
+         </fieldset>
+      </fields>
+   </config>
+</extension>

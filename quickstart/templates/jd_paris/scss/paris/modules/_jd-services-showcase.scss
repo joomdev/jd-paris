@@ -1,0 +1,36 @@
+section.jd-services-showcase {
+	.jd-row > div {
+		margin-bottom: 30px;
+	}
+	.service-box {
+		box-shadow: $box-shadow-sm;
+		.overlay {
+			background-color: rgba($primary, 0.5);
+		}
+		.content {
+			padding: 20px 15px;
+			.title {
+				a {
+					font-size: 24px;
+					line-height: normal;
+					font-weight: 600;
+					font-family: Open Sans,Arial, Helvetica, sans-serif;
+					color: $secondary;
+					&:hover, &:focus {
+						color: $primary;
+					}
+				}
+			}
+			.read-more {
+				a {
+					margin-top: 10px;
+					color: $primary;
+					font-size: 16px;
+					&:hover, &:focus {
+						color: $primary;
+					}
+				}
+			}
+		} 
+	}
+}
