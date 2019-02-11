@@ -1,5 +1,3 @@
-# JD Paris Templates Info
-
 ## Framework version info
 | Name         | Initial Version           | Current version  |
 | :------------ |:-----------| :-----|
