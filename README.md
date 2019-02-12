@@ -21,9 +21,9 @@
 | Name            | Initial Version        | Current version  |
 | :-------------- |:-----------| :-----|
 | JD Simple Contactform | 1.1    | 1.1   |
-| JD Services Showcase  | Not Release    | Not Release   |
+| JD Services Showcase  | Beta    | Beta   |
 | JD Skilset            | 1.0    | 1.0   |
-| JD Testimonial        | Not Release    | Not Release   |
+| JD Testimonial        | Beta    | Beta   |
 | JD Profiler (Free)    | 1.1    | 1.1   |
 | JD Register Login     | 1.11   | 1.11  |
 
@@ -35,17 +35,15 @@
 | Smart Slider 3          | 3.3.1      | 3.3.1 |
 | ACY Mailing             | 5.10.4     | 5.10.4|
 | TZ Portfolio Plus (C/M) | 2.1.2      | 2.1.2 |
-| TZ Portfolio + Template | 1.0        | 1.0   |
 
 
 ## Overrides
 | Name            |
 | :-------------- |
 | mod_menu (For top bar menu)      |
-| (frontend) footer.php            |
-| mod_jdservices_showcase          |
-| mod_jd testimonial (slider-view) |
-| mod_jd Register/Login            |
+| footer.php (Path: html/frontend)            |
+| default.php (Path: html/mod_jdservices_showcase)          |
+| view2.php (Path: html/mod_jd testimonial) (slider-view) |
 
 
 
