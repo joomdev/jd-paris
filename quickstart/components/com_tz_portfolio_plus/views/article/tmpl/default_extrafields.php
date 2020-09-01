@@ -24,17 +24,17 @@ if($item = $this -> item):
     if(isset($item -> extrafields) && !empty($item -> extrafields)):
 ?>
 <div class="tpp-extrafield">
-    <ul class="list-striped tpp-extrafield__list">
-    <?php foreach($item -> extrafields as $field):?>
-        <li class="tpp-extrafield__item">
+    <ul class="tpp-extrafield__list list-group list-group-flush border-top border-bottom">
+    <?php foreach($item -> extrafields as $i => $field){?>
+        <li class="tpp-extrafield__item d-flex list-group-item<?php echo $i%2==0?' list-group-item-light':''; ?>">
             <?php if($field -> hasTitle()):?>
-            <div class="tpp-extrafield__label"><?php echo $field -> getTitle();?></div>
+            <div class="tpp-extrafield__label flex-fill"><?php echo $field -> getTitle();?></div>
             <?php endif;?>
             <div class="tpp-extrafield__value pull-left">
                 <?php echo $field -> getOutput();?>
             </div>
         </li>
-    <?php endforeach;?>
+    <?php }?>
     </ul>
 </div>
 <?php

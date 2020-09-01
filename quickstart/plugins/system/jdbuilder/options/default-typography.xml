@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fieldsgroup> 
+   <field type="color" name="headingColor" label="JDB_HEADING_COLOR_LABEL" default="">
+   </field>
+   <field type="color" name="textColor" label="JDB_TEXT_COLOR" default="">
+   </field>
+   <field type="color" name="linkColor" label="JDB_LINK_COLOR" default="">
+   </field>
+   <field type="color" name="linkHoverColor" label="JDB_LINK_HOVER_COLOR" default="">
+   </field>
+   <field
+      name="textAlignment"
+      type="radio"
+      label="JDB_TEXT_ALIGN"
+      default=""
+      radiotype="buttons"
+      icononly="true"
+      responsive="true"
+   >
+      <option value="">JDB_DEFAULT</option>
+      <option value="left" icon="fa fa-align-left">JDB_LEFT</option>
+      <option value="center" icon="fa fa-align-center">JDB_CENTER</option>
+      <option value="right" icon="fa fa-align-right">JDB_RIGHT</option>
+      <option value="justify" icon="fa fa-align-justify">JDB_JUSTIFY</option>
+   </field>
+</fieldsgroup>

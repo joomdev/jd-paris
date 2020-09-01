@@ -26,7 +26,7 @@ if ($options)
 ?>
 <fieldset id="<?php echo $this -> getSearchId();?>" class="checkboxes <?php echo $this -> getInputClass();?>">
     <label class="group-label"><?php echo $this -> getTitle();?></label>
-    <ul class="list-unstyled list-extrafield">
+    <ul class="list-unstyled list-extrafield mb-0">
         <?php foreach ($options AS $key => $option){
             if ($option->text == strtoupper($option->text))
             {

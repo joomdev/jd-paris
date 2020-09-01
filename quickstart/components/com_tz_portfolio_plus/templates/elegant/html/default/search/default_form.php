@@ -32,19 +32,19 @@ $mnuActive  = $menu -> getActive()
 
 <form id="searchForm" action="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&Itemid='.$mnuActive -> id);?>" method="post">
 
-    <div class="form-inline form-group">
+    <div class="form-inline form-group input-group">
         <input type="text" name="searchword" placeholder="<?php echo JText::_('COM_TZ_PORTFOLIO_SEARCH_KEYWORD'); ?>"
                id="search-searchword"
                value="<?php echo $this->escape($this->state -> get('filter.searchword')); ?>" class="form-control" />
-        <div class="button-group">
-            <button name="search" onclick="this.form.submit()" class="btn hasTooltip"
-                    title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_SUBMIT');?>"><span class="icon-search"></span><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
+        <div class="button-group input-group-append">
+            <button name="search" onclick="this.form.submit()" class="btn btn-outline-secondary hasTooltip"
+                    title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_SUBMIT');?>"><i class="tps tp-search"></i> <?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
         </div>
     </div>
 
-    <?php if($params -> get('show_search_category_filter',0)) { ?>
+    <?php if($params -> get('show_search_category',0)) { ?>
         <div class="form-group">
-            <label class="group-label"
+            <label class="group-label mr-2"
                    for="catid"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_FILTER_CATEGORY'); ?></label>
             <select name="id" class="inputbox" id="catid">
                 <?php echo JHtml::_('select.options', $this->catOptions, 'value', 'text',
@@ -67,7 +67,7 @@ $mnuActive  = $menu -> getActive()
                 foreach($group -> fields as $field){
                     if($searchinput = $field -> getSearchInput()){
                         ?>
-                        <div class="form-group">
+                        <div class="form-group mt-2">
                             <?php echo $searchinput;?>
                         </div>
                         <?php

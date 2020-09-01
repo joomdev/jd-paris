@@ -60,8 +60,8 @@ class TZ_Portfolio_PlusModelTemplate extends TZ_Portfolio_PlusModelAddon
         return JTable::getInstance($type, $prefix, $config);
     }
 
-    function getForm($data = array(), $loadData = true){
-        $form = $this->loadForm('com_tz_portfolio_plus.template', 'template', array('control' => ''));
+    public function getForm($data = array(), $loadData = true){
+        $form = $this->loadForm('com_tz_portfolio_plus.'.$this -> getName(), $this -> getName(), array('control' => ''));
         if (empty($form)) {
             return false;
         }
@@ -72,11 +72,10 @@ class TZ_Portfolio_PlusModelTemplate extends TZ_Portfolio_PlusModelAddon
         // Add template's information to table tz_portfolio_plus_templates
         $tpl_data   = null;
         if(!$this -> getTemplateStyle($data['element'])){
-            $tpl_path       = COM_TZ_PORTFOLIO_PLUS_PATH_SITE.DIRECTORY_SEPARATOR.'templates';
 
             $lang   = JFactory::getLanguage();
             $tpl_data['title']      = $data['element'].' - '.JText::_('JDEFAULT');
-            if($lang -> load('tpl_'.$data['element'],$tpl_path.DIRECTORY_SEPARATOR.$data['element'])){
+            if(TZ_Portfolio_PlusTemplate::loadLanguage($data['element'])){
                 if($lang ->hasKey('TZ_PORTFOLIO_PLUS_TPL_'.$data['element'])){
                     $tpl_data['title']      = JText::_('TZ_PORTFOLIO_PLUS_TPL_'.$data['element']).' - '.JText::_('JDEFAULT');
                 }
@@ -93,8 +92,48 @@ class TZ_Portfolio_PlusModelTemplate extends TZ_Portfolio_PlusModelAddon
         }
         return true;
     }
+    public function afterInstall($manifest)
+    {
+//        $result = parent::install();
 
-    function getTemplateStyle($template){
+        $style_name = (string) $manifest -> name;
+        $style_path = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH.'/'.(string) $manifest -> name.'/config/default.json';
+        if(file_exists($style_path)){
+            $style  = $this -> getTemplateStyle($style_name);
+            if(!isset($style -> layout) || (isset($style -> layout) && !$style -> layout)){
+                $config = file_get_contents($style_path);
+                $config = json_decode($config);
+                if($config){
+                    if(isset($config -> params) && $config -> params){
+                        $defParams  = json_decode($config -> params);
+                        $defParams  = array_intersect_key((array) $defParams, (array) $style -> params);
+                        $itemParams = array_merge((array) $style -> params, $defParams);
+                        $style -> params = (object) $itemParams;
+                    }
+                    if(isset($config -> layout) && $config -> layout) {
+                        // Store layout
+                        $db     = $this -> getDbo();
+                        $query  = $db -> getQuery(true);
+                        $query -> update('#__tz_portfolio_plus_templates');
+                        $query -> set('layout='.$db -> quote($config->layout));
+                        $query -> set('params='.$db -> quote(json_encode($style -> params)));
+                        if(isset($style -> presets) && $style -> presets){
+                            if(is_object($style -> presets)){
+                                $query -> set('preset='.$db -> quote(json_encode($style -> presets)));
+                            }else{
+                                $query -> set('preset='.$db -> quote($style -> presets));
+                            }
+                        }
+                        $query -> where('id='.$style -> id);
+                        $db -> setQuery($query);
+                        $db -> execute();
+                    }
+                }
+            }
+        }
+    }
+
+    public function getTemplateStyle($template){
         $db     = $this -> getDbo();
         $query  = $db -> getQuery(true);
         $query -> select('*');
@@ -174,7 +213,7 @@ class TZ_Portfolio_PlusModelTemplate extends TZ_Portfolio_PlusModelAddon
                             $app -> enqueueMessage($template_style -> getError(),'warning');
                             return false;
                         }
-                        if(Folder::delete($tpl_path)){
+                        if(\JFolder::delete($tpl_path)){
                             $result = $this->delete($id);
                         }
                     }
@@ -242,11 +281,11 @@ class TZ_Portfolio_PlusModelTemplate extends TZ_Portfolio_PlusModelAddon
         return parent::canEditState($record);
     }
 
-    protected function getUrlFromServer($xmlTag = 'templateurl'){
+    public function getUrlFromServer($xmlTag = 'templateurl'){
         return parent::getUrlFromServer($xmlTag);
     }
 
-    protected function getManifest_Cache($element, $folder = null, $type = 'tz_portfolio_plus-template'){
-        return parent::getManifest_Cache($element, $folder, $type);
+    protected function getManifest_Cache($element, $folder = null, $type = 'tz_portfolio_plus-template', $key = null){
+        return parent::getManifest_Cache($element, $folder, $type, $key);
     }
 }

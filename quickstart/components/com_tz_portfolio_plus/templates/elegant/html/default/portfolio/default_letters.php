@@ -22,7 +22,7 @@ defined('_JEXEC') or die();
 
 $params = &$this -> params;
 ?>
-<ul class="nav nav-pills">
+<ul class="nav nav-pills justify-content-center">
 <?php if($letters = $params -> get('tz_letters','a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z')):
     $letters        = explode(',',$letters);
     $availLetter    = $this -> availLetter;
@@ -39,9 +39,9 @@ $params = &$this -> params;
             $activeClass    = ' active';
         endif;
     ?>
-        <li>
+        <li class="nav-item">
         <a<?php if($availLetter[$i] != false && $this -> char != $letter ) echo ' href="'.JRoute::_(TZ_Portfolio_PlusHelperRoute::getLetterRoute('portfolio',$letter)).'"';?>
-           class="btn-sm<?php echo $disabledClass.$activeClass;?>"><?php echo mb_strtoupper(trim($letter));?></a>
+           class="nav-link<?php echo $disabledClass.$activeClass;?>"><?php echo mb_strtoupper(trim($letter));?></a>
         </li>
   <?php endforeach;?>
 <?php endif;?>

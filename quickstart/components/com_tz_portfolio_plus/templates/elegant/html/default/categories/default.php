@@ -22,9 +22,15 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers');
 
+$bootstrapClass = '';
+if($this->params -> get('enable_bootstrap',1) && $this->params -> get('bootstrapversion', 4) == 4){
+    $bootstrapClass = 'tpp-bootstrap ';
+}elseif($this->params -> get('enable_bootstrap',1) && $this->params -> get('bootstrapversion', 4) == 3){
+    $bootstrapClass = 'tzpp_bootstrap3 ';
+}
 ?>
     
-<div class="tpCategories categories-list<?php echo $this->pageclass_sfx;?>">
+<div class="<?php echo $bootstrapClass;?>tpCategories categories-list<?php echo $this->pageclass_sfx;?>">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
     <h1>
         <?php echo $this->escape($this->params->get('page_heading')); ?>

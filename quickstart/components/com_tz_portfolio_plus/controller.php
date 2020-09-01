@@ -74,7 +74,15 @@ class TZ_Portfolio_PlusController extends TZ_Portfolio_PlusControllerLegacy
 
         $this->input->set('view', $vName);
 
-		if ($user->get('id') || strtoupper($_SERVER['REQUEST_METHOD']) == 'POST' || $vName == 'search')
+        $condition   = false;
+        if($this -> input -> getString('char',null) || $this -> input -> getInt('tid') ||
+            $this -> input -> getString('tagAlias') || $this -> input -> getInt('uid') ||
+            $this -> input -> getInt('id') || $this -> input -> get('fields', null, 'array')){
+            $condition   = true;
+        }
+
+		if ($user->get('id') || strtoupper($_SERVER['REQUEST_METHOD']) == 'POST' || $vName == 'search' ||
+            ($vName == 'portfolio' && $condition))
 		{
 			$cachable = false;
 		}
@@ -104,12 +112,18 @@ class TZ_Portfolio_PlusController extends TZ_Portfolio_PlusControllerLegacy
         JHtml::_('behavior.core');
 
         if($params -> get('enable_jquery',0)){
-            $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/js/jquery-1.11.3.min.js');
-            $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/js/jquery-noconflict.min.js');
-            $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/js/jquery-migrate-1.2.1.js');
+            $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/js/jquery-1.11.3.min.js', array('version' => 'auto'));
+            $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/js/jquery-noconflict.min.js', array('version' => 'auto'));
+            $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/js/jquery-migrate-1.2.1.js', array('version' => 'auto'));
         }
-        if($params -> get('enable_bootstrap',1)) {
-            $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/bootstrap/js/bootstrap.min.js');
+        if($params -> get('enable_bootstrap',1) && $params -> get('enable_bootstrap_js', 1)) {
+            if($params -> get('bootstrapversion', 4) == 4){
+                $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/vendor/bootstrap/js/bootstrap.min.js', array('version' => 'auto'));
+                $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/vendor/bootstrap/js/bootstrap.bundle.min.js', array('version' => 'auto'));
+            }
+            else{
+                $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/bootstrap/js/bootstrap.min.js', array('version' => 'auto'));
+            }
             $doc -> addScriptDeclaration('
             (function($){
                 $(document).off("click.modal.data-api")
@@ -144,8 +158,7 @@ class TZ_Portfolio_PlusController extends TZ_Portfolio_PlusControllerLegacy
                 });                
                 
                 $(document).off("click.bs.collapse.data-api")
-                        .on("click.bs.collapse.data-api", "[data-toggle=collapse]", function (e) {
-                        
+                        .on("click.bs.collapse.data-api", "[data-toggle=collapse]", function (e) {                        
                     var $this   = $(this), href = $this.attr("href");
                     var $target = $($this.attr("data-target")
                       || (href = $this.attr("href")) && href.replace(/.*(?=#[^\s]+$)/, "")); // strip for ie7
@@ -159,7 +172,60 @@ class TZ_Portfolio_PlusController extends TZ_Portfolio_PlusControllerLegacy
 			');
         }
 
-        $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/js/core.min.js');
+        if($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 3) {
+            $doc->addStyleSheet(TZ_Portfolio_PlusUri::base(true)
+                . '/bootstrap/css/bootstrap.min.css', array('version' => 'auto'));
+        }
+
+        if($params -> get('enable_lazyload', 0)) {
+            $doc->addScript(TZ_Portfolio_PlusUri::base(true) . '/js/jquery.lazyload.min.js', array('version' => 'auto'));
+            $doc -> addScriptDeclaration('(function($){
+            $(document).ready(function(){
+                if(typeof $.fn.lazyload !== "undefined"){
+                    var $main = $(".tpItemPage, .blog, .search-results, .categories-list"),
+                        $imgs   = $main.find("img.lazyload");
+                        
+                    if(!$imgs.length){
+                        $imgs = $main.find("img:not(.lazyloaded)").addClass("lazyload");
+                    }
+
+                    $imgs.attr("data-src", function () {
+                        var _imgEl = $(this),
+                            src = _imgEl.attr("src");
+                        _imgEl.css({
+                            "padding-top": function () {
+                                return this.height;
+                            },
+                            "padding-left": function () {
+                                return this.width;
+                            }
+                        });
+                        return src;
+                    });
+                    $imgs.lazyload({
+                        failure_limit: Math.max($imgs.length - 1, 0),
+                        placeholder: "",
+                        data_attribute: "src",
+                        appear: function (elements_left, settings) {
+                            if (!this.loaded) {
+                                $(this).removeClass("lazyload").addClass("lazyloading");
+                            }
+                        },
+                        load: function (elements_left, settings) {
+                            if (this.loaded) {
+                                $(this).removeClass("lazyloading").addClass("lazyloaded").css({
+                                    "padding-top": "",
+                                    "padding-left": ""
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        })(jQuery);');
+        }
+
+        $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/js/core.min.js', array('version' => 'auto'));
 
 		$result = parent::display($cachable, $safeurlparams);
 

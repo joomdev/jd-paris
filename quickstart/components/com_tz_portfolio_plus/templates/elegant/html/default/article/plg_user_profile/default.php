@@ -25,7 +25,7 @@
 defined('_JEXEC') or die;
 
 $params     = $this -> params;
-if($params -> get('show_cat_about_author', 1) && ($author = $this -> authorAbout)){
+if($params -> get('show_about_author', 1) && ($author = $this -> authorAbout)){
     $this -> document -> addStyleSheet(TZ_Portfolio_PlusUri::base(true).'/addons/user/profile/css/style.css',
         array('version' => 'auto', 'relative' => true));
 
@@ -38,9 +38,9 @@ if($params -> get('show_cat_about_author', 1) && ($author = $this -> authorAbout
         }
     }
     ?>
-    <div class="tpp-author-about">
-        <div class="media">
-            <div class="avatar pull-left<?php echo (!$author -> avatar)? ' tpp-avatar__bg-'.rand(1,5):'';?>">
+    <div class="tpp-author-about card">
+        <div class="card-body d-flex align-items-center">
+            <div class="avatar mr-4<?php echo (!$author -> avatar)? ' tpp-avatar__bg-'.rand(1,5):'';?>">
                 <?php if($author -> avatar){?>
                     <img src="<?php echo JUri::root().$author -> avatar;?>" alt="<?php echo $author -> name;?>"/>
                 <?php }else{?>
@@ -119,7 +119,7 @@ if($params -> get('show_cat_about_author', 1) && ($author = $this -> authorAbout
             </div>
         </div>
         <?php if($params -> get('show_cat_description_user', 1)  AND !empty($author -> description)){?>
-            <div class="description">
+            <div class="description card-footer text-muted">
                 <?php echo $author -> description; ?>
             </div>
         <?php } ?>

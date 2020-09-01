@@ -86,7 +86,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
                                 <?php echo JHtml::_('grid.id', $i, $item->id); ?>
                             </td>
                             <td class="nowrap has-context">
-                                <div class="pull-left">
+                                <div class="pull-left float-left">
                                     <?php if($canEdit){ ?>
                                     <a href="index.php?option=com_tz_portfolio_plus&task=template_style.edit&id=<?php echo $item -> id;?>">
                                         <?php echo $this -> escape($item -> title);?>

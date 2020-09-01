@@ -178,7 +178,7 @@ abstract class TZ_Portfolio_PlusHelperRoute
             }
         }
         $link   = 'index.php?option=com_tz_portfolio_plus&amp;view='.$view.$id_link.'&amp;char='
-            .mb_strtolower(trim($character)).'&amp;Itemid='.$active -> id;
+            .mb_strtolower(trim($character)).($active?'&amp;Itemid='.$active -> id:'');
         return $link;
     }
 

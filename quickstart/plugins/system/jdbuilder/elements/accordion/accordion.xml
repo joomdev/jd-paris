@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<element type="accordion">
+   <title>Accordion</title>
+   <icon>media/jdbuilder/images/icons/elements/accordion.svg</icon>
+   <creationDate>Apr 2019</creationDate>
+   <author>JoomDev</author>
+   <authorEmail>info@joomdev.com</authorEmail>
+   <authorUrl>https://www.joomdev.com</authorUrl>
+   <copyright>Copyright (C) 2020 Joomdev, Inc. All rights reserved.</copyright>
+   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+   <version>1.0</version>
+   <description>Element Description Here</description>
+   <documentation>https://docs.joomdev.com/article/accordion-element/</documentation>
+   <form>
+      <fields>
+         <fieldset name="general" label="JDB_GENERAL_TITLE">
+            <field type="group" name="basic" label="JDB_BASIC_TITLE"></field>
+            <!-- Element Options -->
+            <field
+               name="items"
+               label="JDB_ACCORDION_ITEMS"
+			      description="JDB_ACCORDION_ITEMS_DESC"
+               type="repeatable"
+               group="basic"
+               item-title="JDB_ACCORDION_TAB_TITLE"
+               item-title-field="title"
+               default='[{"title":"Accordion #1", "icon":"", "content":"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."},{"title":"Accordion #2", "icon":"", "content":"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."}]'
+            >
+               <form>
+                  <field
+                     type="text"
+                     label="JDB_ACCORDION_TAB_TITLE_LABEL"
+                     name="title"
+                     default="Item Title"
+                     slug="#"
+                  >
+                  </field>
+                  <field
+                     type="icon"
+                     label="JDB_ACCORDION_TAB_ICON_LABEL"
+                     name="icon"
+                     default=""
+                  >
+                  </field>
+                  <field
+                     type="editor"
+                     label="JDB_ACCORDION_TAB_CONTENT_LABEL"
+                     name="content"
+                     value="Item Content"
+                  >
+                  </field>
+               </form>
+            </field>
+            <field
+               type="switch"
+               name="accordionCollapsible"
+               default="true"
+               label="JDB_ACCORDION_COLLAPSIBLE"
+               group="basic"
+               description="JDB_ACCORDION_COLLAPSIBLE_DESC"
+            >
+            </field>
+            <field
+               type="switch"
+               name="accordionFirstActive"
+               default="true"
+               label="JDB_ACCORDION_FIRST_ACTIVE"
+               group="basic"
+               showon="params.accordionCollapsible"
+               description="JDB_ACCORDION_FIRST_ACTIVE_DESC"
+            >
+            </field>
+            <field
+               type="switch"
+               name="accordionMultiple"
+               default="false"
+               label="JDB_ACCORDION_MULTIPLE"
+               group="basic"
+               description="JDB_ACCORDION_MULTIPLE_DESC"
+            >
+            </field>
+            <!-- Repeatbale type ended here -->
+         </fieldset>
+            
+         <fieldset name="design" ordering="9" label="JDB_DESIGN_TITLE">
+            <field type="group" name="accordion-item" label="JDB_ACCORDION_ITEM"></field>
+            <field type="group" name="accordion-title" label="JDB_ACCORDION_ITEM_TITLE"></field>
+            <field type="group" name="accordion-content" label="JDB_ACCORDION_ITEM_CONTENT"></field>
+            <field type="group" name="accordion-icon" label="JDB_ACCORDION_ITEM_ICON"></field>
+            <field
+               name="itemSpaceBetween"
+               type="slider"
+               label="JDB_ACCORDION_SPACE_LABEL"
+               default=""
+               description="JDB_ACCORDION_SPACE_DESC"
+               group="accordion-item"
+               responsive="true"
+            >
+            </field>
+            
+            <field
+               type="list"
+               name="itemBorderStyle" 
+               label="JDB_BORDER_TYPE"
+               default="solid"
+               group="accordion-item">
+               <option value="none">JDB_BORDER_NONE</option>
+               <option value="solid">JDB_BORDER_SOLID</option>
+               <option value="dashed">JDB_BORDER_DASHED</option>
+               <option value="dotted">JDB_BORDER_DOTTED</option>
+               <option value="double">JDB_BORDER_DOUBLE</option>
+            </field>
+            
+            <field
+               type="spacing"
+               name="itemBorderWidth"
+               label="JDB_BORDER_WIDTH"
+               showon="params.itemBorderStyle!='none'"
+               default='{"unit":"px","lock":1,"top":"","left":"","right":"","bottom":""}'
+               group="accordion-item"
+               responsive="true"
+            >
+            </field>
+            
+            <field
+               name="itemBorderColor"
+               type="color"
+               label="JDB_BORDER_COLOR"
+               default=""
+               showon="params.itemBorderStyle!='none'"
+               group="accordion-item"
+            >
+            </field>
+            
+            <field
+               name="itemBorderColorHover"
+               type="color"
+               label="JDB_BORDER_HOVER_COLOR_LABEL"
+               default=""
+               showon="params.itemBorderStyle!='none'"
+               group="accordion-item"
+			      width="6"
+            >
+            </field>
+            
+            <field
+               name="itemBorderColorActive"
+               type="color"
+               label="JDB_BORDER_ACTIVE_COLOR_LABEL"
+               default=""
+               showon="params.itemBorderStyle!='none'"
+               group="accordion-item"
+			      width="6"
+            >
+            </field>
+            
+            <field
+               type="spacing"
+               name="itemBorderRadius"
+               label="JDB_BORDER_RADIUS"
+               default='{"unit":"px","lock":1,"top":"","left":"","right":"","bottom":""}'
+               group="accordion-item"
+               corners="true"
+               responsive="true"
+            >
+            </field>
+            
+            <field
+               type="boxshadow"
+               name="itemBoxShadow"
+               label="JDB_BOX_SHADOW"
+               default=""
+               group="accordion-item"
+            >
+            </field>
+
+            <!-- Accordion Title -->
+            <field
+               name="titleTag"
+               type="typetag"
+               label="JDB_ACCORDION_TITLE_HTML_TAG_LABEL"
+               default="h4"
+               group="accordion-title"
+            >
+            </field>
+            <field type="header_tag" label="JDB_ACCORDION_TITLE_COLORS_LABEL" default="h4" group="accordion-title">
+            </field>
+            <field type="color" name="titleColor" label="JDB_ACCORDION_COLOR_LABEL" default="" group="accordion-title" width="6">
+            </field>
+            <field type="color" name="titleBackground" label="JDB_ACCORDION_BACKGROUND_COLOR_LABEL" default="" group="accordion-title" width="6">
+            </field>
+            <field type="spacer" label="JDB_ACCORDION_ACTICE_STATE" group="accordion-title">
+            </field>
+            <field type="color" name="titleColorActive" label="JDB_ACCORDION_COLOR_LABEL" default="" group="accordion-title" width="6">
+            </field>
+            <field type="color" name="titleBackgroundActive" label="JDB_ACCORDION_BACKGROUND_COLOR_LABEL" default="" group="accordion-title" width="6">
+            </field>
+            
+            <field
+               type="typography"
+               name="accordionTitleTypography"
+               group="accordion-title"
+               label="JDB_ACCORDION_TITLE_TYPOGRAPHY_LABEL"
+               default='{"family":"", "size":"", "sizeUnit":"px", "alignment":"", "weight":"", "transform":"", "style":"", "decoration":"", "lineHeight":"", "lineHeightUnit": "px", "letterSpacing":"", "letterSpacingUnit": "px"}'
+               responsive="true"
+            >
+            </field>
+
+            <field
+               type="list"
+               name="titleBorderStyle" 
+               label="JDB_BORDER_TYPE"
+               default="none"
+               group="accordion-title">
+               <option value="none">JDB_BORDER_NONE</option>
+               <option value="solid">JDB_BORDER_SOLID</option>
+               <option value="dashed">JDB_BORDER_DASHED</option>
+               <option value="dotted">JDB_BORDER_DOTTED</option>
+               <option value="double">JDB_BORDER_DOUBLE</option>
+            </field>
+            
+            
+            <field
+               type="spacing"
+               name="titleBorderWidth"
+               label="JDB_BORDER_WIDTH"
+               showon="params.titleBorderStyle!='none'"
+               default='{"unit":"px","lock":1,"top":"","left":"","right":"","bottom":""}'
+               group="accordion-title"
+               responsive="true"
+            >
+            </field>
+            
+            <field
+               name="titleBorderColor"
+               type="color"
+               label="JDB_BORDER_COLOR"
+               default=""
+               showon="params.titleBorderStyle!='none'"
+               group="accordion-title"
+            >
+            </field>
+            
+            <field
+               name="titleBorderColorHover"
+               type="color"
+               label="JDB_BORDER_HOVER_COLOR_LABEL"
+               default=""
+               showon="params.titleBorderStyle!='none'"
+               group="accordion-title"
+			   width="6"
+            >
+            </field>
+            
+            <field
+               name="titleBorderColorActive"
+               type="color"
+               label="JDB_BORDER_ACTIVE_COLOR_LABEL"
+               default=""
+               showon="params.titleBorderStyle!='none'"
+               group="accordion-title"
+			   width="6"
+            >
+            </field>
+
+            <field
+               type="spacing"
+               name="accordionTitlePadding"
+               label="JDB_ACCORDION_TITLE_PADDING_LABEL"
+               group="accordion-title"
+               default='{"unit":"px","lock":1,"top":"","left":"","right":"","bottom":""}'
+               responsive="true"
+            >
+            </field>
+            
+            <!-- Accordion Content -->
+            <field type="color" name="contentColor" label="JDB_ACCORDION_COLOR_LABEL" default="" group="accordion-content" width="6">
+            </field>
+            <field type="color" name="contentBackground" label="JDB_ACCORDION_BACKGROUND_COLOR_LABEL" default="" group="accordion-content" width="6">
+            </field>
+            
+            <field
+               type="typography"
+               name="accordionContentTypography"
+               group="accordion-content"
+               label="JDB_ACCORDION_CONTENT_TYPOGRAPHY_LABEL"
+               default='{"family":"", "size":"", "sizeUnit":"px", "alignment":"", "weight":"", "transform":"", "style":"", "decoration":"", "lineHeight":"", "lineHeightUnit": "px", "letterSpacing":"", "letterSpacingUnit": "px"}'
+               responsive="true"
+            >
+            </field>
+            
+            <field
+               type="list"
+               name="contentBorderStyle" 
+               label="JDB_BORDER_TYPE"
+               default="none"
+               group="accordion-content">
+               <option value="none">JDB_BORDER_NONE</option>
+               <option value="solid">JDB_BORDER_SOLID</option>
+               <option value="dashed">JDB_BORDER_DASHED</option>
+               <option value="dotted">JDB_BORDER_DOTTED</option>
+               <option value="double">JDB_BORDER_DOUBLE</option>
+            </field>
+            
+            <field
+               type="spacing"
+               name="contentBorderWidth"
+               label="JDB_BORDER_WIDTH"
+               showon="params.contentBorderStyle!='none'"
+               default='{"unit":"px","lock":1,"top":"","left":"","right":"","bottom":""}'
+               group="accordion-content"
+               responsive="true"
+            >
+            </field>
+            
+            <field
+               name="contentBorderColor"
+               type="color"
+               label="JDB_BORDER_COLOR"
+               default=""
+               showon="params.contentBorderStyle!='none'"
+               group="accordion-content"
+            >
+            </field>
+
+            <field
+               type="spacing"
+               name="accordionContentPadding"
+               label="JDB_CONTENT_PADDING_LBL"
+               group="accordion-content"
+               default='{"unit":"px","lock":1,"top":"","left":"","right":"","bottom":""}'
+               responsive="true"
+            >
+            </field>
+            
+            <!-- Header Icon Tab -->
+            <field
+               name="accordionIcon"
+               type="radio"
+               radiotype="buttons"
+               label="JDB_ACCORDION_SELECT_ICON_LABEL"
+               default="plus"
+               description=""
+               group="accordion-icon"
+               icononly="true"
+            >
+               <option value="none" icon="fa fa-ban uk-text-danger">JDB_ACCORDION_ICON_NONE</option>
+               <option value="plus" icon="fas fa-plus">JDB_ACCORDION_ICON_PLUS_MINUS</option>
+               <option value="triangle" icon="fas fa-caret-down">JDB_ACCORDION_ICON_TRIANGLE</option>
+               <option value="chevron" icon="fas fa-chevron-down">JDB_ACCORDION_ICON_CHEVRON</option>
+               <option value="arrow" icon="fas fa-arrow-down">JDB_ACCORDION_ICON_ARROW</option>
+            </field> 
+            
+            <field
+               type="list"
+               name="accordionIconAlignment"
+               label="JDB_ALIGNMENT"
+               default="right"
+               showon="params.accordionIcon!='none'"
+               group="accordion-icon"
+               search="false"
+            >
+               <option value="left">JDB_LEFT</option>
+               <option value="right">JDB_RIGHT</option>
+            </field>
+            
+            <field
+               name="caretColor"
+               type="color"
+               label="JDB_ACCORDION_COLOR_LABEL"
+               default=""
+               group="accordion-icon"
+               width="6"
+               showon="params.accordionIcon!='none'"
+            >
+            </field>
+            
+            <field
+               name="caretBackgroundColor"
+               type="color"
+               label="JDB_ACCORDION_BACKGROUND_COLOR_LABEL"
+               default=""
+               group="accordion-icon"
+               width="6"
+               showon="params.accordionIcon!='none'"
+            >
+            </field>
+            
+            <field
+               type="spacer"
+               label="JDB_ACCORDION_ACTICE_STATE"
+               group="accordion-icon"
+               showon="params.accordionIcon!='none'"
+            >
+            </field>
+            <field
+               name="caretColorActive"
+               type="color"
+               label="JDB_ACCORDION_COLOR_LABEL"
+               default=""
+               group="accordion-icon"
+               width="6"
+               showon="params.accordionIcon!='none'"
+            >
+            </field>
+            
+            <field
+               name="caretBackgroundColorActive"
+               type="color"
+               label="JDB_ACCORDION_BACKGROUND_COLOR_LABEL"
+               default=""
+               group="accordion-icon"
+               width="6"
+               showon="params.accordionIcon!='none'"
+            >
+            </field>
+         </fieldset>
+      </fields>
+   </form>
+</element>

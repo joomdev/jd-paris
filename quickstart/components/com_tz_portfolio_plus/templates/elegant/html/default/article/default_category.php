@@ -23,7 +23,6 @@ defined('_JEXEC') or die('Restricted access');
 $params = $this -> item -> params;
 if($params -> get('show_category',1)){
 ?>
-
 <div class="tpArticleCategory">
     <i class="tp tp-folder-open"></i>
     <?php

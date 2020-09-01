@@ -9,26 +9,23 @@ section.jd-services-showcase {
 		}
 		.content {
 			padding: 20px 15px;
-			.title {
-				a {
-					font-size: 24px;
-					line-height: normal;
-					font-weight: 600;
-					font-family: Open Sans,Arial, Helvetica, sans-serif;
-					color: $secondary;
-					&:hover, &:focus {
-						color: $primary;
-					}
+			.title a {
+				font-size: 24px;
+				line-height: normal;
+				font-weight: 600;
+				font-family: Open Sans,Arial, Helvetica, sans-serif;
+				color: $secondary;
+				&:hover,
+				&:focus {
+					color: $primary;
 				}
 			}
-			.read-more {
-				a {
-					margin-top: 10px;
+			.read-more a {
+				margin-top: 10px;
+				color: $primary;
+				font-size: 16px;
+				&:hover, &:focus {
 					color: $primary;
-					font-size: 16px;
-					&:hover, &:focus {
-						color: $primary;
-					}
 				}
 			}
 		} 

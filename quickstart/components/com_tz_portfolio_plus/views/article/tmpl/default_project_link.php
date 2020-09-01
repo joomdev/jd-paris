@@ -28,6 +28,6 @@ if (trim($this->item->params ->get('project_link'))) :
     ?>
     <div class="tpPortfolioLink"><a href="<?php echo $this->item->params ->get('project_link'); ?>" title="<?php
         echo $this->item->params ->get('project_link_title');
-        ?>" target="_blank" itemprop="url" class="btn btn-default btn-block btn-large"><?php
+        ?>" target="_blank" itemprop="url" class="btn btn-default btn-secondary btn-block btn-large btn-lg"><?php
             echo $this->item->params ->get('project_link_title'); ?></a></div>
 <?php endif; ?>

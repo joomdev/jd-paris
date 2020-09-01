@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="3.0" group="system" method="upgrade">
+   <name>System - JD Builder</name>
+   <creationDate>Aug 2020</creationDate>
+   <author>Team Joomdev</author>
+   <authorEmail>info@joomdev.com</authorEmail>
+   <authorUrl>https://www.joomdev.com</authorUrl>
+   <copyright>Copyright (C) 2020 Joomdev, Inc. All rights reserved.</copyright>
+   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+   <version>1.8.0</version>
+   <description>{jdbplgdesc}</description>
+   <files>
+      <filename plugin="jdbuilder">jdbuilder.php</filename>
+      <folder>libraries</folder>
+      <folder>layouts</folder>
+      <folder>elements</folder>
+      <folder>options</folder>
+      <folder>language</folder>
+      <folder>fields</folder>
+      <folder>forms</folder>
+      <folder>sql</folder>
+   </files>
+   <media folder="media" destination="jdbuilder">
+      <folder>js</folder>
+      <folder>css</folder>
+      <folder>scss</folder>
+      <folder>data</folder>
+      <folder>fonts</folder>
+      <folder>images</folder>
+      <folder>vendor</folder>
+      <folder>flags</folder>
+   </media>
+   <install>
+      <sql>
+         <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+      </sql>
+   </install>
+   <update>
+      <schemas>
+         <schemapath type="mysql">sql/updates</schemapath>
+      </schemas>
+   </update>
+   <uninstall>
+      <sql>
+         <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+      </sql>
+   </uninstall>
+   <config>
+      <fields name="params">
+      </fields>
+   </config>
+</extension>

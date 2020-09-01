@@ -22,7 +22,7 @@ defined('_JEXEC') or die;
 
 // Load the tooltip behavior.
 JHtml::_('bootstrap.tooltip');
-JHtml::_('behavior.formvalidation');
+JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tabstate');
 JHtml::_('formbehavior.chosen', 'select');
@@ -31,9 +31,9 @@ JHtml::_('formbehavior.chosen', 'select');
 $params = $this->state->get('params');
 
 $doc    = JFactory::getDocument();
-$doc -> addScript(TZ_Portfolio_PlusUri::root(true, null, true).'/js/jquery-ui.min.js');
-$doc -> addStyleSheet(TZ_Portfolio_PlusUri::root(true, null, true).'/css/jquery-ui.min.css');
-$doc -> addStyleSheet(TZ_Portfolio_PlusUri::root(true, null, true).'/css/tz_portfolio_plus.min.css');
+$doc -> addScript(TZ_Portfolio_PlusUri::root(true, null, true).'/js/jquery-ui.min.js', array('version' => 'v=1.11.4'));
+$doc -> addStyleSheet(TZ_Portfolio_PlusUri::root(true, null, true).'/css/jquery-ui.min.css', array('version' => 'v=1.11.4'));
+$doc -> addStyleSheet(TZ_Portfolio_PlusUri::root(true, null, true).'/css/tz_portfolio_plus.min.css', array('version' => 'auto'));
 
 if(!$this -> tagsSuggest){
     $this -> tagsSuggest    = 'null';
@@ -42,14 +42,7 @@ if(!$this -> tagsSuggest){
 $doc -> addScriptDeclaration('
 (function($){
     "use strict";
-    $(document).ready(function(){
-        Joomla.submitbutton = function(task) {
-            if (task == "article.cancel" || document.formvalidator.isValid(document.id("item-form"))) {
-                '. $this->form->getField('articletext')->save().'
-                Joomla.submitform(task, document.getElementById("item-form"));
-            }
-        }
-        
+    $(document).ready(function(){        
         $(\'#jform_second_catid option[value="\'+$(\'#jform_catid\').val()+\'"]\').attr(\'disabled\',\'disabled\');
             $(\'#jform_second_catid\').trigger(\'liszt:updated\');
             $(\'#jform_catid\').on(\'change\',function(){
@@ -66,14 +59,25 @@ $doc -> addScriptDeclaration('
                 
         $(document).ready(function(){
             $("[data-toggle=dropdown]").parent().on("hidden.bs.dropdown", function(){ $(this).show();});
+            $("[data-toggle=popover],.hasPopover").on("mouseleave", function () {
+                if(!$(this).is(":visible")){
+                    $(this).show();
+                }
+            });
         });
     });
 })(jQuery);
 ');
 
+$bootstrapClass = '';
+if($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4){
+    $bootstrapClass = 'tpp-bootstrap ';
+}elseif($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 3){
+    $bootstrapClass = 'tzpp_bootstrap3 ';
+}
 ?>
 
-<div class="tp-edit-page tp-item-page<?php echo $this->pageclass_sfx; ?> tzpp_bootstrap3">
+<div class="<?php echo $bootstrapClass;?>tp-edit-page<?php echo $this->pageclass_sfx; ?>">
     <?php if ($params->get('show_page_heading')){ ?>
         <div class="page-header">
             <h1>
@@ -198,26 +202,26 @@ $doc -> addScriptDeclaration('
         <div class="btn-toolbar">
             <div class="btn-group">
                 <button type="button" class="btn btn-primary" onclick="Joomla.submitbutton('article.save')">
-                    <span class="icon-ok"></span><?php echo $saveText; ?>
+                    <i class="tps tp-check"></i> <?php echo $saveText; ?>
                 </button>
             </div>
             <?php if(!$canApprove){ ?>
             <div class="btn-group">
                 <button type="button" class="btn btn-primary" onclick="Joomla.submitbutton('article.draft')">
-                    <span class="icon-ok"></span><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_SAVE_DRAFT') ?>
+                    <i class="tps tp-check"></i> <?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_SAVE_DRAFT') ?>
                 </button>
             </div>
             <?php } ?>
             <?php if($canApprove && ($this -> item -> state == 3 || $this -> item -> state == 4)){ ?>
             <div class="btn-group">
                 <button type="button" class="btn btn-primary" onclick="Joomla.submitbutton('article.reject')">
-                    <span class="icon-ok"></span><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_REJECT') ?>
+                    <i class="tps tp-check"></i> <?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_REJECT') ?>
                 </button>
             </div>
             <?php } ?>
             <div class="btn-group">
                 <button type="button" class="btn" onclick="Joomla.submitbutton('article.cancel')">
-                    <span class="icon-cancel"></span><?php echo JText::_('JCANCEL') ?>
+                    <i class="tps tp-times-circle"></i> <?php echo JText::_('JCANCEL') ?>
                 </button>
             </div>
             <?php if ($params->get('save_history', 0) && $this->item->id) : ?>

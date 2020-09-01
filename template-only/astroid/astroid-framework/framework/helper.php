@@ -3,8 +3,8 @@
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 defined('_JEXEC') or die;
 jimport('astroid.framework.constants');
@@ -13,11 +13,15 @@ jimport('joomla.filesystem.file');
 jimport('joomla.filesystem.folder');
 jimport('joomla.filesystem.element');
 
-use Leafo\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\Compiler;
 
-class AstroidFrameworkHelper {
+\JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_cache/models', 'CacheModel');
 
-   public static function getAstroidElements() {
+class AstroidFrameworkHelper
+{
+
+   public static function getAstroidElements()
+   {
 
       $elements_dir = JPATH_LIBRARIES . '/' . 'astroid' . '/' . 'framework' . '/' . 'elements' . '/';
       $template_elements_dir = JPATH_SITE . '/' . 'templates' . '/' . ASTROID_TEMPLATE_NAME . '/' . 'astroid' . '/' . 'elements' . '/';
@@ -44,7 +48,16 @@ class AstroidFrameworkHelper {
       return $return;
    }
 
-   public static function getAllAstroidElements() {
+   public static function getJoomlaVersion()
+   {
+      $version = new \JVersion;
+      $version = $version->getShortVersion();
+      $version = substr($version, 0, 1);
+      return $version;
+   }
+
+   public static function getAllAstroidElements()
+   {
 
       // Template Directories
       $elements_dir = JPATH_LIBRARIES . '/' . 'astroid' . '/' . 'framework' . '/' . 'elements' . '/';
@@ -76,22 +89,24 @@ class AstroidFrameworkHelper {
       return $return;
    }
 
-   public static function getElementClassName($type) {
+   public static function getElementClassName($type)
+   {
       $type = str_replace('-', ' ', $type);
       $type = str_replace('_', ' ', $type);
       $type = ucwords(strtolower($type));
       return 'AstroidElement' . str_replace(' ', '', $type);
    }
 
-   public static function getTemplatePostions() {
+   public static function getTemplatePostions()
+   {
       $db = JFactory::getDbo();
       $query = "SELECT * FROM `#__modules` GROUP BY `position`";
 
       $query = $db->getQuery(true)
-              ->select('DISTINCT(position)')
-              ->from('#__modules')
-              ->where($db->quoteName('client_id') . ' = ' . 0)
-              ->order('position');
+         ->select('DISTINCT(position)')
+         ->from('#__modules')
+         ->where($db->quoteName('client_id') . ' = ' . 0)
+         ->order('position');
 
       $db->setQuery($query);
       $results = $db->loadObjectList();
@@ -115,7 +130,8 @@ class AstroidFrameworkHelper {
       return $return;
    }
 
-   public static function getAnimationStyles() {
+   public static function getAnimationStyles()
+   {
       $groups = AstroidFrameworkConstants::$animations;
       $return = array();
       foreach ($groups as $group => $animations) {
@@ -126,7 +142,8 @@ class AstroidFrameworkHelper {
       return $return;
    }
 
-   public static function getTemplateById($id = null) {
+   public static function getTemplateById($id = null)
+   {
       $db = JFactory::getDbo();
       $query = "SELECT * FROM `#__template_styles` WHERE `id`='$id'";
       $db->setQuery($query);
@@ -139,12 +156,13 @@ class AstroidFrameworkHelper {
       }
    }
 
-   public static function compileSass($sass_path, $css_path, $sass, $css, $variables = array()) {
+   public static function compileSass($sass_path, $css_path, $sass, $css, $variables = array())
+   {
       try {
          require_once JPATH_LIBRARIES . '/' . 'astroid' . '/' . 'framework' . '/' . 'library' . '/' . 'scssphp' . '/' . 'scss.inc.php';
          $scss = new Compiler();
          $scss->setImportPaths($sass_path);
-         $scss->setFormatter('Leafo\ScssPhp\Formatter\Compressed');
+         $scss->setFormatter('ScssPhp\ScssPhp\Formatter\Compressed');
          if (!empty($variables)) {
             $scss->setVariables($variables);
          }
@@ -159,14 +177,16 @@ class AstroidFrameworkHelper {
       }
    }
 
-   public static function AstroidMedia($action) {
+   public static function AstroidMedia($action)
+   {
       $data = null;
       switch ($action) {
          case "library":
+            $params = JComponentHelper::getParams('com_media');
             $input = JFactory::getApplication()->input;
             $folder = $input->get('folder', '', 'RAW');
             $data = self::getMediaLibrary();
-            $data['current_folder'] = 'images' . (empty($folder) ? '' : '/' . $folder);
+            $data['current_folder'] = $params->get('image_path', 'images') . (empty($folder) ? '' : '/' . $folder);
             break;
          case "upload":
             $data = self::uploadMedia();
@@ -181,7 +201,23 @@ class AstroidFrameworkHelper {
       return $data;
    }
 
-   public static function getMediaLibrary() {
+   public static function getMediaLibrary()
+   {
+      $input = JFactory::getApplication()->input;
+      $user = JFactory::getUser();
+      $asset = $input->get('asset');
+      $author = $input->get('author');
+
+      if (!$user->authorise('core.manage', 'com_media') && (!$asset || (!$user->authorise('core.edit', $asset) && !$user->authorise('core.create', $asset) && count($user->getAuthorisedCategories($asset, 'core.create')) == 0) && !($user->id == $author && $user->authorise('core.edit.own', $asset)))) {
+         throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+      }
+
+      $folder = $input->get('folder', '', 'RAW');
+      return self::getMediaList($folder);
+   }
+
+   public static function getMediaLibraryOld()
+   {
       $input = JFactory::getApplication()->input;
       $user = JFactory::getUser();
       $asset = $input->get('asset');
@@ -214,7 +250,8 @@ class AstroidFrameworkHelper {
       return $model->getList();
    }
 
-   public static function uploadMedia() {
+   public static function uploadMedia()
+   {
       $input = JFactory::getApplication()->input;
       $dir = $input->get('dir', '', 'RAW');
       $media = $input->get('media', '', 'images');
@@ -249,19 +286,19 @@ class AstroidFrameworkHelper {
       if ($fileError > 0) {
          switch ($fileError) {
             case 1:
-               throw new \Exception(JText::_('FILE TO LARGE THAN PHP INI ALLOWS'));
+               throw new \Exception(JText::_('ASTROID_ERROR_LARGE_FILE'));
                return;
 
             case 2:
-               throw new \Exception(JText::_('FILE TO LARGE THAN HTML FORM ALLOWS'));
+               throw new \Exception(JText::_('ASTROID_ERROR_FILE_HTML_ALLOW'));
                return;
 
             case 3:
-               throw new \Exception(JText::_('ERROR PARTIAL UPLOAD'));
+               throw new \Exception(JText::_('ASTROID_ERROR_FILE_PARTIAL_ALLOW'));
                return;
 
             case 4:
-               throw new \Exception(JText::_('ERROR NO FILE'));
+               throw new \Exception(JText::_('ASTROID_ERROR_NO_FILE'));
                return;
          }
       }
@@ -308,7 +345,8 @@ class AstroidFrameworkHelper {
       }
    }
 
-   public static function createFolder() {
+   public static function createFolder()
+   {
       $input = JFactory::getApplication()->input;
       $directory = $input->get('dir', '', 'RAW');
       $name = $input->get('name', '', 'RAW');
@@ -328,17 +366,20 @@ class AstroidFrameworkHelper {
       return ['message' => "Folder `$name` successfully created.", 'folder' => $folder];
    }
 
-   public static function getJSONData($name) {
+   public static function getJSONData($name)
+   {
       $fontsJSON = file_get_contents(JPATH_SITE . '/' . 'media' . '/' . 'astroid' . '/' . 'assets' . '/' . 'json' . '/' . $name . '.json');
       return \json_decode($fontsJSON, true);
    }
 
-   public static function getGoogleFonts() {
+   public static function getGoogleFonts()
+   {
       $fonts = self::getJSONData('webfonts');
       return $fonts['items'];
    }
 
-   public static function getFAIcons($html = false) {
+   public static function getFAIcons($html = false)
+   {
       if ($html) {
          $icons = self::getJSONData('fa-icons');
          $array = [];
@@ -353,25 +394,48 @@ class AstroidFrameworkHelper {
       return $icons;
    }
 
-   public static function clearCache($template = '') {
+   public static function clearCache($template = '', $prefix = 'style')
+   {
       $template_dir = JPATH_SITE . '/' . 'templates' . '/' . $template . '/' . 'css';
       $version = new \JVersion;
       $version->refreshMediaVersion();
       if (!file_exists($template_dir)) {
          throw new \Exception("Template not found.", 404);
       }
-      $styles = preg_grep('~^style-.*\.(css)$~', scandir($template_dir));
-      foreach ($styles as $style) {
-         unlink($template_dir . '/' . $style);
+
+      if (is_array($prefix)) {
+         foreach ($prefix as $pre) {
+            $styles = preg_grep('~^' . $pre . '-.*\.(css)$~', scandir($template_dir));
+            foreach ($styles as $style) {
+               unlink($template_dir . '/' . $style);
+            }
+         }
+      } else {
+         $styles = preg_grep('~^' . $prefix . '-.*\.(css)$~', scandir($template_dir));
+         foreach ($styles as $style) {
+            unlink($template_dir . '/' . $style);
+         }
       }
-      $custom_styles = preg_grep('~^custom-.*\.(css)$~', scandir($template_dir));
-      foreach ($custom_styles as $style) {
-         unlink($template_dir . '/' . $style);
-      }
-      return $styles;
+      self::clearJoomlaCache();
+      return true;
    }
 
-   public static function getAstroidFieldsets($form) {
+   public static function clearJoomlaCache()
+   {
+      $app = \JFactory::getApplication();
+      $model = \JModelLegacy::getInstance('Cache', 'CacheModel', array('ignore_request' => true));
+      $clients    = array(1, 0);
+      foreach ($clients as $client) {
+         $mCache = $model->getCache($client);
+         foreach ($mCache->getAll() as $cache) {
+            $mCache->clean($cache->group);
+         }
+      }
+      $app->triggerEvent('onAfterPurge', array());
+   }
+
+   public static function getAstroidFieldsets($form)
+   {
       $astroidfieldsets = $form->getFieldsets();
       usort($astroidfieldsets, "self::fieldsetOrding");
 
@@ -384,13 +448,15 @@ class AstroidFrameworkHelper {
       return $fieldsets;
    }
 
-   public static function replaceRelationshipOperators($str) {
+   public static function replaceRelationshipOperators($str)
+   {
       $str = str_replace(" AND ", " && ", $str);
       $str = str_replace(" OR ", " || ", $str);
       return $str;
    }
 
-   public static function fieldsetOrding($a, $b) {
+   public static function fieldsetOrding($a, $b)
+   {
       if ($a->order == $b->order) {
          return 0;
       }
@@ -402,9 +468,11 @@ class AstroidFrameworkHelper {
       return ($a->order < $b->order) ? -1 : 1;
    }
 
-   public static function getModules() {
+   public static function getModules()
+   {
       $db = JFactory::getDbo();
-      $query = "SELECT `#__modules`.*,`#__usergroups`.`title` as `access_title` FROM `#__modules` JOIN `#__usergroups` ON `#__usergroups`.`id`=`#__modules`.`access` WHERE `#__modules`.`client_id`=0";
+      $query = "SELECT #__modules.*, #__usergroups.title as access_title FROM #__modules JOIN #__usergroups ON #__usergroups.id=#__modules.access WHERE #__modules.client_id=0";
+
       $db->setQuery($query);
       $results = $db->loadObjectList();
 
@@ -416,7 +484,8 @@ class AstroidFrameworkHelper {
       return $return;
    }
 
-   public static function getPositions() {
+   public static function getPositions()
+   {
       $db = \JFactory::getDbo();
 
       $query = $db->getQuery(true);
@@ -438,7 +507,8 @@ class AstroidFrameworkHelper {
       return $positions;
    }
 
-   public static function getTemplatePartials($template) {
+   public static function getTemplatePartials($template)
+   {
       $template_dir = JPATH_SITE . '/' . 'templates' . '/' . $template . '/' . 'frontend' . '/partials/';
       if (file_exists($template_dir)) {
          $partials = self::getPartials($template_dir, $template_dir);
@@ -448,7 +518,8 @@ class AstroidFrameworkHelper {
       }
    }
 
-   public static function getPartials($dir, $templatedir) {
+   public static function getPartials($dir, $templatedir)
+   {
       $files = glob($dir . '*');
       $partials = [];
       foreach ($files as $file) {
@@ -466,11 +537,13 @@ class AstroidFrameworkHelper {
       return $partials;
    }
 
-   public static function isSystemFont($font) {
+   public static function isSystemFont($font)
+   {
       return isset(AstroidFrameworkConstants::$system_fonts[$font]);
    }
 
-   public static function setTemplateDefaults($template, $id, $parent_id = 0) {
+   public static function setTemplateDefaults($template, $id, $parent_id = 0)
+   {
       $params_path = JPATH_SITE . "/templates/{$template}/params/{$id}.json";
       if (!file_exists($params_path)) {
          if (!empty($parent_id) && file_exists(JPATH_SITE . "/templates/{$template}/params/" . $parent_id . '.json')) {
@@ -498,11 +571,459 @@ class AstroidFrameworkHelper {
       }
    }
 
-   public static function uploadTemplateDefaults($template, $id) {
+   public static function setTemplateTypography($template, $id)
+   {
+      $params_path = JPATH_SITE . "/templates/{$template}/params/{$id}.json";
+      if (file_exists($params_path)) {
+         $params = json_decode(file_get_contents($params_path));
+         $typographys = array('body_typography', 'menus_typography', 'submenus_typography', 'h1_typography', 'h2_typography', 'h3_typography', 'h4_typography', 'h5_typography', 'h6_typography');
+         foreach ($typographys as $typography) {
+            if (isset($params->$typography) && $params->$typography == 'custom') {
+               $key = $typography . '_options';
+               $units = array('font_size_unit', 'font_size', 'letter_spacing_unit', 'letter_spacing', 'line_height_unit', 'line_height');
+               foreach ($units as $unit) {
+                  if (isset($params->$key->$unit) && !is_object($params->$key->$unit)) {
+                     $val = $params->$key->$unit;
+                     $params->$key->$unit =  new stdClass;
+                     $params->$key->$unit->desktop = $val;
+                     $params->$key->$unit->tablet = $val;
+                     $params->$key->$unit->mobile = $val;
+                  }
+               }
+            }
+         }
+         file_put_contents(JPATH_SITE . "/templates/{$template}/params" . '/' . $id . '.json', json_encode($params));
+      }
+   }
+
+   public static function uploadTemplateDefaults($template, $id)
+   {
       $source = JPATH_SITE . '/templates/' . $template . '/images/default';
       $destination = JPATH_SITE . '/images/' . $template;
       $files = JFolder::files($source);
       JFolder::copy($source, $destination, '', true);
    }
 
+   public static function getUploadedFonts($template)
+   {
+      require_once JPATH_LIBRARIES . '/' . 'astroid' . '/' . 'framework' . '/' . 'library' . '/' . 'FontLib' . '/' . 'Autoloader.php';
+      $template_fonts_path = JPATH_SITE . "/templates/{$template}/fonts";
+      if (!file_exists($template_fonts_path)) {
+         return [];
+      }
+      $fonts = [];
+      $font_extensions = ['otf', 'ttf', 'woff'];
+      foreach (scandir($template_fonts_path) as $font_path) {
+         if (is_file($template_fonts_path . '/' . $font_path)) {
+            $pathinfo = pathinfo($template_fonts_path . '/' . $font_path);
+            if (in_array($pathinfo['extension'], $font_extensions)) {
+               $font = \FontLib\Font::load($template_fonts_path . '/' . $font_path);
+               $font->parse();
+               $fontname = $font->getFontFullName();
+               $fontid = 'library-font-' . JFilterOutput::stringURLSafe($fontname);
+               if (!isset($fonts[$fontid])) {
+                  $fonts[$fontid] = [];
+                  $fonts[$fontid]['id'] = $fontid;
+                  $fonts[$fontid]['name'] = $fontname;
+                  $fonts[$fontid]['files'] = [];
+               }
+               $fonts[$fontid]['files'][] = './../fonts/' . $font_path;
+            }
+         }
+      }
+      return $fonts;
+   }
+
+   public static function loadLibraryFont($font, $template)
+   {
+      if (empty($font)) {
+         return;
+      }
+      $style = '';
+      foreach ($font['files'] as $file) {
+         $style .= '@font-face { font-family: "' . $font['name'] . '"; src: url("' . JURI::root() . "templates/{$template->template}/css/" . $file . '");}';
+      }
+      $template->addStyleDeclaration($style);
+   }
+
+   public static function getMediaList($folder)
+   {
+      $params = JComponentHelper::getParams('com_media');
+
+      define('COM_MEDIA_BASE', JPATH_ROOT . '/' . $params->get('image_path', 'images'));
+      define('COM_MEDIA_BASEURL', JUri::root() . $params->get('image_path', 'images'));
+
+      $current = $folder;
+      $basePath = COM_MEDIA_BASE . ((strlen($current) > 0) ? '/' . $current : '');
+      $mediaBase = str_replace(DIRECTORY_SEPARATOR, '/', COM_MEDIA_BASE . '/');
+
+      $images = array();
+      $folders = array();
+      $docs = array();
+      $videos = array();
+
+      $fileList = false;
+      $folderList = false;
+
+      if (file_exists($basePath)) {
+         // Get the list of files and folders from the given folder
+         $fileList = JFolder::files($basePath);
+         $folderList = JFolder::folders($basePath);
+      }
+
+      // Iterate over the files if they exist
+      if ($fileList !== false) {
+         $tmpBaseObject = new JObject;
+
+         foreach ($fileList as $file) {
+            if (is_file($basePath . '/' . $file) && substr($file, 0, 1) != '.' && strtolower($file) !== 'index.html') {
+               $tmp = clone $tmpBaseObject;
+               $tmp->name = $file;
+               $tmp->title = $file;
+               $tmp->path = str_replace(DIRECTORY_SEPARATOR, '/', JPath::clean($basePath . '/' . $file));
+               $tmp->path_relative = str_replace($mediaBase, '', $tmp->path);
+               $tmp->size = filesize($tmp->path);
+
+               $ext = strtolower(JFile::getExt($file));
+
+               switch ($ext) {
+                     // Image
+                  case 'jpg':
+                  case 'png':
+                  case 'gif':
+                  case 'xcf':
+                  case 'odg':
+                  case 'bmp':
+                  case 'jpeg':
+                  case 'svg':
+                  case 'webp':
+                  case 'ico':
+                  case 'tiff':
+                     $info = @getimagesize($tmp->path);
+                     $tmp->width = @$info[0];
+                     $tmp->height = @$info[1];
+                     $tmp->type = @$info[2];
+                     $tmp->mime = @$info['mime'];
+
+                     if (($info[0] > 60) || ($info[1] > 60)) {
+                        $dimensions = self::imageResize($info[0], $info[1], 60);
+                        $tmp->width_60 = $dimensions[0];
+                        $tmp->height_60 = $dimensions[1];
+                     } else {
+                        $tmp->width_60 = $tmp->width;
+                        $tmp->height_60 = $tmp->height;
+                     }
+
+                     if (($info[0] > 16) || ($info[1] > 16)) {
+                        $dimensions = self::imageResize($info[0], $info[1], 16);
+                        $tmp->width_16 = $dimensions[0];
+                        $tmp->height_16 = $dimensions[1];
+                     } else {
+                        $tmp->width_16 = $tmp->width;
+                        $tmp->height_16 = $tmp->height;
+                     }
+
+                     $images[] = $tmp;
+                     break;
+
+                     // Video
+                  case 'mp4':
+                  case 'webm':
+                  case 'ogg':
+                     $tmp->icon_32 = 'media/mime-icon-32/' . $ext . '.png';
+                     $tmp->icon_16 = 'media/mime-icon-16/' . $ext . '.png';
+                     $videos[] = $tmp;
+                     break;
+
+                     // Non-image document
+                  default:
+                     $tmp->icon_32 = 'media/mime-icon-32/' . $ext . '.png';
+                     $tmp->icon_16 = 'media/mime-icon-16/' . $ext . '.png';
+                     $docs[] = $tmp;
+                     break;
+               }
+            }
+         }
+      }
+
+      // Iterate over the folders if they exist
+      if ($folderList !== false) {
+         $tmpBaseObject = new JObject;
+
+         foreach ($folderList as $folder) {
+            $tmp = clone $tmpBaseObject;
+            $tmp->name = basename($folder);
+            $tmp->path = str_replace(DIRECTORY_SEPARATOR, '/', JPath::clean($basePath . '/' . $folder));
+            $tmp->path_relative = str_replace($mediaBase, '', $tmp->path);
+            $count = self::countFiles($tmp->path);
+            $tmp->files = $count[0];
+            $tmp->folders = $count[1];
+
+            $folders[] = $tmp;
+         }
+      }
+
+      $list = array('folders' => $folders, 'docs' => $docs, 'images' => $images, 'videos' => $videos);
+
+      return $list;
+   }
+
+   public static function imageResize($width, $height, $target)
+   {
+      /*
+       * Takes the larger size of the width and height and applies the
+       * formula accordingly. This is so this script will work
+       * dynamically with any size image
+       */
+      if ($width > $height) {
+         $percentage = ($target / $width);
+      } else {
+         $percentage = ($target / $height);
+      }
+
+      // Gets the new value and applies the percentage, then rounds the value
+      $width = round($width * $percentage);
+      $height = round($height * $percentage);
+
+      return array($width, $height);
+   }
+
+   public static function countFiles($dir)
+   {
+      $total_file = 0;
+      $total_dir = 0;
+
+      if (is_dir($dir)) {
+         $d = dir($dir);
+
+         while (($entry = $d->read()) !== false) {
+            if ($entry[0] !== '.' && strpos($entry, '.html') === false && strpos($entry, '.php') === false && is_file($dir . DIRECTORY_SEPARATOR . $entry)) {
+               $total_file++;
+            }
+
+            if ($entry[0] !== '.' && is_dir($dir . DIRECTORY_SEPARATOR . $entry)) {
+               $total_dir++;
+            }
+         }
+
+         $d->close();
+      }
+
+      return array($total_file, $total_dir);
+   }
+
+   public static function spacingValue($value = null, $property = "padding", $default = [])
+   {
+      $return = [];
+      $values = [];
+      if (!empty($value) && isset($value->unit)) {
+         $unit = $value->unit;
+         if ($value->lock && is_numeric($value->top)) {
+            foreach (['top', 'right', 'bottom', 'left'] as $position) {
+               $return[$position] = self::getPropertySubset($property, $position) . ":{$value->top}{$unit}";
+               $values[$position] = "{$value->top}{$unit}";
+            }
+         } else {
+            foreach (['top', 'right', 'bottom', 'left'] as $position) {
+               $pvalue = $value->{$position};
+               if (is_numeric($pvalue)) {
+                  $return[$position] = self::getPropertySubset($property, $position) . ":{$pvalue}{$unit}";
+                  $values[$position] = "{$pvalue}{$unit}";
+               }
+            }
+         }
+      }
+
+      if (!isset($default['unit'])) {
+         $default['unit'] = 'px';
+      }
+
+      foreach (array_keys($default) as $position) {
+         if ($position == "unit") {
+            continue;
+         }
+         if (!isset($return[$position])) {
+            $return[$position] = self::getPropertySubset($property, $position) . ":{$default[$position]}{$default['unit']}";
+            $values[$position] = "{$default[$position]}{$default['unit']}";
+         }
+      }
+
+
+      if (count(array_keys($values)) === 4) {
+         $return = [];
+         $return[] = self::getPropertySet($property) . ':' . implode(' ', $values);
+      }
+
+      return implode(";", $return);
+   }
+
+   public static function getPropertySubset($property, $position)
+   {
+      switch ($property) {
+         case "radius":
+            switch ($position) {
+               case "top":
+                  return 'border-top-left-radius';
+                  break;
+               case "left":
+                  return 'border-bottom-left-radius';
+                  break;
+               case "right":
+                  return 'border-top-right-radius';
+                  break;
+               case "bottom":
+                  return 'border-bottom-right-radius';
+                  break;
+            }
+            break;
+         case "border":
+            return $property . '-' . $position . '-width';
+            break;
+         default:
+            return $property . '-' . $position;
+            break;
+      }
+   }
+
+   public static function getPropertySet($property)
+   {
+      switch ($property) {
+         case "radius":
+            return "border-radius";
+            break;
+         case "border":
+            return "border-width";
+            break;
+         default:
+            return $property;
+            break;
+      }
+   }
+
+   public static function frameworkVersion()
+   {
+      $xml = JFactory::getXML(JPATH_ADMINISTRATOR . '/manifests/libraries/astroid.xml');
+      $version = (string) $xml->version;
+      return $version;
+   }
+
+
+   public static function selectedImages(&$matches, $images = '', $toggle = '')
+   {
+      $images = array_map('trim', explode("\n", $images));
+      $matchesTemp = array();
+
+      foreach ($images as $image) {
+         $count = 0;
+
+         foreach ($matches[1] as $match) {
+            if (preg_match('@' . preg_quote($image) . '@', $match)) {
+               if ($toggle == 'exclude') {
+                  unset($matches[0][$count]);
+               } else {
+                  $matchesTemp[] = $matches[0][$count];
+               }
+            }
+
+            $count++;
+         }
+      }
+
+      if ($toggle == 'include') {
+         unset($matches[0]);
+         $matches[0] = $matchesTemp;
+      }
+   }
+
+   public static function selectedComponents($components = '', $toggle = '')
+   {
+      $option = JFactory::getApplication()->input->getWord('option');
+      $components = array_map('trim', explode("\n", $components));
+      $hit = false;
+      $return = true;
+      foreach ($components as $component) {
+         if ($option === $component) {
+            $hit = true;
+            break;
+         }
+      }
+
+      if ($toggle == 'include') {
+         if ($hit === false) {
+            $return = false;
+         }
+         return $return;
+      }
+
+      if ($hit === true) {
+         $return = false;
+      }
+
+      return $return;
+   }
+
+   public static function selectedURLs($surls = '', $toggle = '')
+   {
+      $url = JUri::getInstance()->toString();
+      $surls = array_map('trim', explode("\n", $surls));
+      $hit = false;
+      $return = true;
+
+      foreach ($surls as $surl) {
+         if ($url === $surl) {
+            $hit = true;
+            break;
+         }
+      }
+
+      if ($toggle == 'include') {
+         if ($hit === false) {
+            $return = false;
+         }
+
+         return $return;
+      }
+
+      if ($hit === true) {
+         $return = false;
+      }
+
+      return $return;
+   }
+
+   public static function exclidedViews($views = '')
+   {
+      $view = JFactory::getApplication()->input->getWord('tmpl', '');
+      $views = array_map('trim', explode(",", $views));
+      $return = true;
+
+      if (in_array($view, $views)) {
+         $return = false;
+      }
+
+      return $return;
+   }
+
+   public static function selectedClasses(&$matches, $classes = '', $toggle = '')
+   {
+      $classes = array_map('trim', explode("\n", $classes));
+
+      foreach ($matches[0] as $key => $match) {
+         foreach ($classes as $classname) {
+            $classExists = preg_match('@class=[\"\'].*' . $classname . '.*[\"\']@Ui', $match);
+
+            if ($toggle == 'include') {
+               if (empty($classExists)) {
+                  unset($matches[0][$key]);
+               }
+
+               continue;
+            }
+
+            if (!empty($classExists)) {
+               unset($matches[0][$key]);
+            }
+         }
+      }
+   }
 }

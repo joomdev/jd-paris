@@ -34,7 +34,7 @@ defined('_JEXEC') or die('Restricted access');
             <div id="includetypes">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_TYPE');?>: </label>
                 <?php if($this -> includeTypes && count($this -> includeTypes)){?>
-                <select class="includetypes custom-select">
+                <select class="includetypes custom-select custom-select-sm">
                     <?php foreach($this -> includeTypes as $type){
                         if(is_array($type)){
                             foreach($type as $t){
@@ -55,7 +55,7 @@ defined('_JEXEC') or die('Restricted access');
 
             <div id="spanwidth">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_WIDTH_LABEL');?>: </label>
-                <select class="possiblewidths custom-select">
+                <select class="possiblewidths custom-select custom-select-sm">
                     <option value=""><?php echo JText::_('JNONE')?></option>
                     <option value="1">span1</option>
                     <option value="2">span2</option>
@@ -74,7 +74,7 @@ defined('_JEXEC') or die('Restricted access');
 
             <div id="spanoffset">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_OFFSET');?> </label>
-                <select class="possibleoffsets custom-select">
+                <select class="possibleoffsets custom-select custom-select-sm">
                     <option value=""><?php echo JText::_('JNONE');?></option>
                     <option value="1">offset1</option>
                     <option value="2">offset2</option>
@@ -89,9 +89,9 @@ defined('_JEXEC') or die('Restricted access');
                 </select>
             </div>
 
-            <div id="customclass">
+            <div id="customclass" class="d-block">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_CUSTOM_CLASS');?> </label>
-                <input type="text" class="form-control customclass" id="inputcustomclass">
+                <input type="text" class="form-control form-control-sm customclass" id="inputcustomclass">
             </div>
         </div>
 
@@ -123,12 +123,12 @@ defined('_JEXEC') or die('Restricted access');
 
             <div class="span6 col-md-6 rownameOuter">
                 <label><?php echo JText::_('JFIELD_NAME_LABEL');?>: </label>
-                <input type="text" class="form-control small rowname" id="">
+                <input type="text" class="form-control form-control-sm small rowname" id="">
             </div>
 
             <div class="span6 col-md-6 rowclassOuter">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_CUSTOM_CLASS');?> </label>
-                <input type="text" class="form-control small rowcustomclass" id="">
+                <input type="text" class="form-control form-control-sm small rowcustomclass" id="">
             </div>
 
         <?php echo JHtml::_('tzbootstrap.endrow');?>
@@ -136,36 +136,36 @@ defined('_JEXEC') or die('Restricted access');
         <?php echo JHtml::_('tzbootstrap.addrow');?>
             <div class="span6 col-md-6 rowcolorOuter">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_BACKGROUND');?> </label>
-                <input type="text" class="form-control small rowbackgroundcolor" id="">
+                <input type="text" class="form-control form-control-sm small rowbackgroundcolor" id="">
             </div>
 
             <div class="span6 col-md-6 rowcolorOuter">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_TEXT');?>: </label>
-                <input type="text" class="form-control small rowtextcolor" id="">
+                <input type="text" class="form-control form-control-sm small rowtextcolor" id="">
             </div>
         <?php echo JHtml::_('tzbootstrap.endrow');?>
 
         <?php echo JHtml::_('tzbootstrap.addrow');?>
             <div class="span6 col-md-6 rowcolorOuter">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_LINK');?>: </label>
-                <input type="text" class="form-control small rowlinkcolor" id="">
+                <input type="text" class="form-control form-control-sm small rowlinkcolor" id="">
             </div>
 
             <div class="span6 col-md-6 rowcolorOuter">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_LINK_HOVER');?>: </label>
-                <input type="text" class="form-control small rowlinkhovercolor" id="">
+                <input type="text" class="form-control form-control-sm small rowlinkhovercolor" id="">
             </div>
         <?php echo JHtml::_('tzbootstrap.endrow');?>
 
         <?php echo JHtml::_('tzbootstrap.addrow');?>
             <div class="span6 col-md-6 rownameOuter">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_MARGIN');?>: </label>
-                <input type="text" class="form-control small rowmargin" id="">
+                <input type="text" class="form-control form-control-sm small rowmargin" id="">
             </div>
 
             <div class="span6 col-md-6 rowclassOuter">
                 <label><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_PADDING');?>: </label>
-                <input type="text" class="form-control small rowpadding" id="">
+                <input type="text" class="form-control form-control-sm small rowpadding" id="">
             </div>
         <?php echo JHtml::_('tzbootstrap.endrow');?>
 

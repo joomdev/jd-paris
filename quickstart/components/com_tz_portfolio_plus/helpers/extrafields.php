@@ -134,10 +134,19 @@ class TZ_Portfolio_PlusFrontHelperExtraFields{
 
         if($fields){
             if(count($fields)){
+                $app    = JFactory::getApplication();
                 $fieldsObject   = array();
                 foreach($fields as $field){
                     if($field -> published == 1) {
-                        $fieldsObject[] = self::getExtraField($field, $article, false, $options);
+
+                        $fieldObj   = self::getExtraField($field, $article, false, $options);
+
+                        // Since v2.3.5
+                        $app -> triggerEvent('onTPExtraFieldPreapare', array(&$fieldObj, $article, $params));
+
+                        if($fieldObj) {
+                            $fieldsObject[] = $fieldObj;
+                        }
                     }
                 }
                 return $fieldsObject;
@@ -272,7 +281,7 @@ class TZ_Portfolio_PlusFrontHelperExtraFields{
         $storeId = md5(__METHOD__ . "::$name");
         if(!isset(self::$cache[$storeId])){
             $core_path  = COM_TZ_PORTFOLIO_PLUS_ADDON_PATH.DIRECTORY_SEPARATOR.'extrafields';
-            if($core_folders = Folder::folders($core_path)){
+            if($core_folders = \JFolder::folders($core_path)){
                 $core_f_xml_path    = $core_path.DIRECTORY_SEPARATOR.$name
                     .DIRECTORY_SEPARATOR.$name.'.xml';
                 if(\JFile::exists($core_f_xml_path)){
@@ -652,7 +661,7 @@ class TZ_Portfolio_PlusFrontHelperExtraFields{
             }
 
             $query -> group('f.id');
-            if ($app->isSite())
+            if ($app-> isClient('site'))
             {
                 $query->where('f.advanced_search = 1');
             }
@@ -714,7 +723,7 @@ class TZ_Portfolio_PlusFrontHelperExtraFields{
             if($fields = $db -> loadObjectList()){
                 $fieldGroups = array();
                 foreach($fields as $field){
-                    $fieldClass = self::getExtraField($field);
+                    $fieldClass = self::getExtraField($field, null, true);
                     if(count($options)) {
                         if(!isset($options['group']) || (isset($options['group']) && $options['group'])) {
                             if (!isset($fieldGroups[$field->groupid])) {

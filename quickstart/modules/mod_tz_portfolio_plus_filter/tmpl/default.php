@@ -22,13 +22,10 @@
 // no direct access
 defined('_JEXEC') or die;
 
-$cparams    = JComponentHelper::getParams('com_tz_portfolio_plus');
+$bootstrap4 = ($params -> get('enable_bootstrap',0) && $params -> get('bootstrapversion', 3) == 4);
 
 $doc    = JFactory::getDocument();
-if($cparams -> get('enable_bootstrap', 1)){
-    
-    $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/bootstrap/js/bootstrap.min.js');
-    $doc -> addStyleSheet(TZ_Portfolio_PlusUri::base(true).'/bootstrap/css/bootstrap.min.css');
+if($params -> get('enable_bootstrap',0)){
     $doc -> addScriptDeclaration('
         (function($){
             $(document).off(\'click.modal.data-api\')
@@ -65,7 +62,7 @@ else
 
 $input  = JFactory::getApplication() -> input;
 ?>
-<div class="tzpp_bootstrap3 tz-filter<?php echo $moduleclass_sfx ?>">
+<div class="tz-filter<?php echo $moduleclass_sfx ?> tpp-bootstrap">
     <form action="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&view=search&Itemid='.$mitemid);?>"
           method="post">
         <?php if($params -> get('show_search_word', 1)) { ?>
@@ -75,7 +72,7 @@ $input  = JFactory::getApplication() -> input;
                 <?php }?>
                 <input type="search" name="searchword" id="mod_tz_portfolio_plus_filter-searchword"
                        maxlength="<?php echo $maxlength; ?>"
-                       class="form-control" placeholder="<?php echo $text;?>"
+                       class="form-control form-control-sm h-auto w-auto input-medium" placeholder="<?php echo $text;?>"
                        value="<?php echo ($input->get('option') == 'com_tz_portfolio_plus') ? $input->getString('searchword') : ''; ?>"/>
             </div>
             <?php
@@ -97,7 +94,8 @@ $input  = JFactory::getApplication() -> input;
             require JModuleHelper::getLayoutPath('mod_tz_portfolio_plus_filter', 'default_filter');
         }
         ?>
-        <button class="button btn btn-primary">
+        <?php if($params -> get('button', 1)){?>
+        <button class="button btn btn-primary btn-sm">
             <?php
             $btn_output = null;
             if($imagebutton){
@@ -110,6 +108,7 @@ $input  = JFactory::getApplication() -> input;
             echo $btn_output.$button_text;
             ?>
         </button>
+        <?php } ?>
         <input type="hidden" name="option" value="com_tz_portfolio_plus"/>
         <input type="hidden" name="task" value="search.search"/>
         <input type="hidden" name="Itemid" value="<?php echo $mitemid;?>"/>

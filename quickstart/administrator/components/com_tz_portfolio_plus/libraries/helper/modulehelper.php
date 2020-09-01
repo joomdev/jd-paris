@@ -95,8 +95,9 @@ class TZ_Portfolio_PlusModuleHelper extends JModuleHelper{
             }
 
             // Add template.css file if it has have in template
-            if (\JFile::exists(COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH . '/' . $tpTemplate -> template
-                . '/css/template.css')) {
+            if(\JFolder::exists(COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH.DIRECTORY_SEPARATOR.$tpTemplate -> template)) {
+//            if (\JFile::exists(COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH . '/' . $tpTemplate -> template
+//                . '/css/template.css')) {
 
                 $docOptions = array();
                 $docOptions['template']     = $tpTemplate->template;
@@ -107,9 +108,27 @@ class TZ_Portfolio_PlusModuleHelper extends JModuleHelper{
                 $doc    = JFactory::getDocument();
 
                 $docClone   = clone($doc);
-                $docClone -> addStyleSheet(TZ_Portfolio_PlusUri::base(true) . '/templates/'
-                    . $tpTemplate -> template . '/css/template.css');
+                // Add template.css file if it has have in template
+                $legacyPath = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH . DIRECTORY_SEPARATOR . $tpTemplate -> template
+                    . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'template.css';
+                if((TZ_Portfolio_PlusTemplate::getSassDirByStyle($tpTemplate -> template)
+                        || (!TZ_Portfolio_PlusTemplate::getSassDirByStyle($tpTemplate -> template) && TZ_Portfolio_PlusTemplate::getSassDirCore()))
+                    && !JFile::exists($legacyPath) &&
+                    $cssRelativePath = TZ_Portfolio_PlusTemplate::getCssStyleName($tpTemplate -> template,
+                        $modParams, $docOptions['params'] -> get('colors', array()), $docClone)){
+                    $docClone->addStyleSheet(TZ_Portfolio_PlusUri::base(true)
+                        . '/css/'.$cssRelativePath, array('version' => 'auto'));
+                }else
+                    if (\JFile::exists($legacyPath)) {
+                        $docClone->addStyleSheet(TZ_Portfolio_PlusUri::base(true) . '/templates/'
+                            . $tpTemplate -> template . '/css/template.css', array('version' => 'auto'));
+                    }
+//                $docClone -> addStyleSheet(TZ_Portfolio_PlusUri::base(true) . '/templates/'
+//                    . $tpTemplate -> template . '/css/template.css', array('version' => 'auto'));
 
+//                var_dump($cssRelativePath);
+//                unset($docClone -> _styleSheets[TZ_Portfolio_PlusUri::base(true)
+//                    . '/css/style/elegant/style-fc36-f8ec2f40b743846bc9e1dd5edaf9e0ca.css']);
                 $docClone -> parse($docOptions);
                 $doc -> setHeadData($docClone -> getHeadData());
 
@@ -231,7 +250,7 @@ class TZ_Portfolio_PlusModuleHelper extends JModuleHelper{
             .'/'. $cfglayout . '.php';
 
 
-        if($files = Folder::files(COM_TZ_PORTFOLIO_PLUS_SITE_HELPERS_PATH,'.php')){
+        if($files = \JFolder::files(COM_TZ_PORTFOLIO_PLUS_SITE_HELPERS_PATH,'.php')){
             foreach ($files as $file){
                 JLoader::import('com_tz_portfolio_plus.helpers.'.File::stripExt($file), JPATH_SITE.'/components');
             }

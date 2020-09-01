@@ -22,6 +22,7 @@ namespace TZ_Portfolio_Plus\Installer\Adapter;
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Installer\Adapter\TemplateAdapter;
 
 \JLoader::import('com_tz_portfolio_plus.includes.framework',JPATH_ADMINISTRATOR.'/components');
@@ -90,6 +91,47 @@ class TZ_Portfolio_PlusInstallerTemplateAdapter extends TemplateAdapter{
         }
 
         $this->parent->setPath('extension_root', COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH . '/' . $this->element);
+    }
+
+    protected function copyBaseFiles()
+    {
+        $uniqid = md5($this->element);
+        $uniqid = substr($uniqid, 0, 10);
+        $path   = $this -> parent -> getPath('extension_root');
+        $nPath  = $path.'__'.$uniqid;
+        @rename($path, $nPath);
+
+        parent::copyBaseFiles();
+
+        // Remove old folder path
+        if(is_dir($path)){
+            // Copy config files
+            if(\JFolder::exists($nPath.'/config')){
+                $cfFiles    = \JFolder::files($nPath.'/config', '.json');
+                if(count($cfFiles)){
+                    foreach($cfFiles as $cfFile){
+                        if(!\JFile::exists($path.'/config/'.$cfFile)){
+                            \JFile::copy($nPath.'/config/'.$cfFile, $path.'/config/'.$cfFile);
+                        }
+                    }
+                }
+            }
+
+            // Copy language files
+            if(\JFolder::exists($nPath.'/language')){
+                $cFolders   = \JFolder::folders($nPath.'/language');
+                if(count($cFolders)){
+                    foreach($cFolders as $cFolder){
+                        if(!\JFolder::exists($path.'/language/'.$cFolder)){
+                            \JFolder::copy($nPath.'/language/'.$cFolder, $path.'/language/'.$cFolder);
+                        }
+                    }
+                }
+            }
+            \JFolder::delete($nPath);
+        }else{
+            @rename($nPath, $path);
+        }
     }
 
     protected function storeExtension()

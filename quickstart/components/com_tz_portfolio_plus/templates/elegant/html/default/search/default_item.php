@@ -33,6 +33,7 @@ if($item = $this -> item):
 ?>
     <?php
     if(!isset($item -> mediatypes) || (isset($item -> mediatypes) && !in_array($item -> type,$item -> mediatypes))){
+        $bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
     // Start Description and some info
     ?>
 <div class="tpHead">
@@ -41,10 +42,10 @@ if($item = $this -> item):
     if ($params->get('show_search_print_icon', 0) || $params->get('show_search_email_icon', 0)
         || $params -> get('access-edit')) { ?>
         <div class="TzIcon">
-            <div class="btn-group dropdown pull-right" role="presentation">
-                <a class="btn btn-default btn-secondary btn-sm dropdown-toggle"
+            <div class="dropdown pull-right" role="presentation">
+                <a class="btn btn-default btn-outline-secondary btn-sm"
                    data-target="#" data-toggle="dropdown"<?php echo $params->get('enable_bootstrap',1) ? ' href="#"' :''; ?>>
-                    <i class="icon-cog"></i> <span class="caret"></span>
+                    <i class="tps tp-cog"></i> <span class="tps tp-angle-down"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <?php if ($params->get('show_search_print_icon', 0)) : ?>
@@ -212,7 +213,7 @@ if($item = $this -> item):
     echo $item -> event -> contentDisplayVote;
     ?>
     <?php if($params -> get('show_search_readmore',1)){?>
-        <a class="btn btn-default btn-secondary TzPortfolioReadmore<?php if($params -> get('tz_use_lightbox', 1)){
+        <a class="btn btn-default btn-outline-secondary TzPortfolioReadmore<?php if($params -> get('tz_use_lightbox', 1)){
             echo ' fancybox fancybox.iframe';}?>" href="<?php echo $item ->link; ?>">
             <?php echo JText::sprintf('COM_TZ_PORTFOLIO_PLUS_READ_MORE'); ?>
         </a>

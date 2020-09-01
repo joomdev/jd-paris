@@ -64,8 +64,6 @@ class TZ_Portfolio_PlusViewSearch extends JViewLegacy
         $app    = JFactory::getApplication();
         $doc    = JFactory::getDocument();
 
-        $doc -> addStyleSheet('components/com_tz_portfolio_plus/css/tzportfolioplus.min.css');
-
         $state          = $this -> get('State');
         $params         = $state -> get('params');
         $this -> state  = $state;
@@ -79,23 +77,6 @@ class TZ_Portfolio_PlusViewSearch extends JViewLegacy
         $lang        = JFactory::getLanguage();
         $upper_limit = $lang->getUpperLimitSearchWord();
         $lower_limit = $lang->getLowerLimitSearchWord();
-
-
-        if (SearchHelper::limitSearchWord($searchword))
-        {
-            $error = JText::sprintf('COM_TZ_PORTFOLIO_PLUS_SEARCH_ERROR_SEARCH_MESSAGE', $lower_limit, $upper_limit);
-        }
-
-        // Sanitise searchword
-        if (SearchHelper::santiseSearchWord($searchword, $state->get('match')))
-        {
-            $error = JText::_('COM_TZ_PORTFOLIO_PLUS_SEARCH_ERROR_IGNOREKEYWORD');
-        }
-
-        if (!$searchword && !empty($this->input) && count($this->input->post))
-        {
-            // $error = JText::_('COM_SEARCH_ERROR_ENTERKEYWORD');
-        }
 
         if($items){
 
@@ -139,6 +120,9 @@ class TZ_Portfolio_PlusViewSearch extends JViewLegacy
                     $_params        = clone($params);
 
                     $item->params   = clone($_params);
+
+                    $app -> triggerEvent('onTPContentBeforePrepare', array('com_tz_portfolio_plus.portfolio',
+                        &$item, &$item -> params));
 
                     $articleParams = new JRegistry;
                     $articleParams->loadString($item->attribs);
@@ -305,6 +289,9 @@ class TZ_Portfolio_PlusViewSearch extends JViewLegacy
                         }else{
                             unset($items[$i]);
                         }
+
+                        $app -> triggerEvent('onContentAfterPrepare', array('com_tz_portfolio_plus.portfolio',
+                            &$item, &$item -> params, $state -> get('list.start')));
                     }
 
                     if($item && strlen(trim($item -> introtext)) && $introLimit = $params -> get('tz_article_intro_limit')){
@@ -315,6 +302,9 @@ class TZ_Portfolio_PlusViewSearch extends JViewLegacy
                     $extraFields    = TZ_Portfolio_PlusFrontHelperExtraFields::getExtraFields($item, $item -> params,
                         false, array('filter.list_view' => true, 'filter.group' => $params -> get('order_fieldgroup', 'rdate')));
                     $item -> extrafields    = $extraFields;
+
+                    $app -> triggerEvent('onTPContentAfterPrepare', array('com_tz_portfolio_plus.portfolio',
+                        &$item, &$item -> params, $state -> get('list.start')));
 
                 }
             }

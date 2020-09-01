@@ -21,9 +21,25 @@
 defined('_JEXEC') or die('Restricted access');
 
 if ($list):
+    $bootstrap4 = ($params -> get('enable_bootstrap',0) && $params -> get('bootstrapversion', 3) == 4);
+    $doc    = JFactory::getDocument();
+    $doc -> addScriptDeclaration('
+    (function($){
+        "use strict";
+        $(document).ready(function () {
+            $(".category-menu").find("[id^=category-btn-]").each(function (index, btn) {
+                var btn = $(btn);
+                btn.on("click", function () {
+                    btn.find("span").toggleClass("plus");
+                    btn.find("span").toggleClass("minus");
+                });
+            });
+        });
+    })(jQuery);
+    ');
     ?>
 
-    <div class="category-menu<?php echo $moduleclass_sfx;?>">
+    <div class="category-menu<?php echo $moduleclass_sfx;?> tpp-bootstrap">
         <?php $i = 0; ?>
         <?php $str = null; ?>
         <?php ob_start(); ?>

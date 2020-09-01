@@ -8,7 +8,6 @@ $NormalColor = $params->get('NormalColor');
 $activeColor = $params->get('activeColor');
 $hoverColor = $params->get('hoverColor');
 
-
 $items = (array) $items;
 $active = TRUE;
 ?>
@@ -25,8 +24,11 @@ $active = TRUE;
 .testimonial-<?php echo $module->id; ?> .slick-next:before{
 	color:<?php echo $NormalColor; ?>
 }
+.testimonial-<?php echo $module->id; ?> .slick-dots li button:before{
+	border: 1px solid transparent;
+}
 .testimonial-<?php echo $module->id; ?> .slick-dots li.slick-active button:before{
-	border: 1px solid <?php echo $activeColor; ?>;
+	border-color: <?php echo $activeColor; ?>;
 }
 .testimonial-<?php echo $module->id; ?> .slick-prev{
 	left: -41px;
@@ -38,32 +40,32 @@ $active = TRUE;
 .testimonial-<?php echo $module->id; ?> .slick-next:hover:before{
 	color:<?php echo $hoverColor; ?>
 }
-	<?php if($params->get('customstyle')=="1"){
-		$params->get('customstyle');
-		$nameColor = $params->get('nameColor');
-		$designationColor = $params->get('designationColor');
-		$reviewColor = $params->get('reviewColor');
-		$nameSize = $params->get('nameSize');
-		$designationSize = $params->get('designationSize');
-		$reviewSize = $params->get('reviewSize');
-	?>
-	.testimonial-<?php echo $module->id; ?> .slide-content .author .author-info h5{
-		color: <?php  echo $nameColor?>;
-		font-size: <?php  echo $nameSize?>px;
-	}	
-	.testimonial-<?php echo $module->id; ?> .author-info a{	
-		color: <?php  echo $designationColor?>;
-		font-size: <?php  echo $designationSize?>px;
-	}
-	.testimonial-<?php echo $module->id; ?> .author-info{	
-		color: <?php  echo $designationColor?>;
-		font-size: <?php  echo $designationSize?>px;
-	}
-	.testimonial-<?php echo $module->id; ?> .text{
-		color: <?php  echo $reviewColor?>;
-		font-size: <?php  echo $reviewSize?>px;
-	}
-	<?php } ?>
+<?php if($params->get('customstyle')=="1"){
+	$params->get('customstyle');
+	$nameColor = $params->get('nameColor');
+	$designationColor = $params->get('designationColor');
+	$reviewColor = $params->get('reviewColor');
+	$nameSize = $params->get('nameSize');
+	$designationSize = $params->get('designationSize');
+	$reviewSize = $params->get('reviewSize');
+?>
+.testimonial-<?php echo $module->id; ?> .slide-content .author .author-info h5{
+	color: <?php  echo $nameColor?>;
+	font-size: <?php  echo $nameSize?>px;
+}	
+.testimonial-<?php echo $module->id; ?> .author-info a{	
+	color: <?php  echo $designationColor?>;
+	font-size: <?php  echo $designationSize?>px;
+}
+.testimonial-<?php echo $module->id; ?> .author-info{	
+	color: <?php  echo $designationColor?>;
+	font-size: <?php  echo $designationSize?>px;
+}
+.testimonial-<?php echo $module->id; ?> .text{
+	color: <?php  echo $reviewColor?>;
+	font-size: <?php  echo $reviewSize?>px;
+}
+<?php } ?>
 </style>
 
 <div class="jd-testimonial">
@@ -111,7 +113,7 @@ $active = TRUE;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
 <script>
 	(function ($) {
-		// Custom Testimonal
+		// Custom Testimonial
 		$('.testimonial-<?php echo $module->id; ?>').slick({
 			infinite: false,
 			speed: 300,

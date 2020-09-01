@@ -20,8 +20,10 @@
 // no direct access
 defined('_JEXEC') or die;
 
+$j4Compare  = COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE;
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-JHtml::_('behavior.tooltip');
+
+JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
 
 JHtml::_('formbehavior.chosen', '.multipleMediaType', null,
@@ -32,8 +34,9 @@ JHtml::_('formbehavior.chosen', '.multipleAccessLevels', null,
     array('placeholder_text_multiple' => JText::_('JOPTION_SELECT_ACCESS')));
 JHtml::_('formbehavior.chosen', '.multipleCategories', null,
     array('placeholder_text_multiple' => JText::_('JOPTION_SELECT_CATEGORY')));
+JHtml::_('formbehavior.chosen', '#filter_category_id_sec', null,
+    array('placeholder_text_multiple' => JText::_('COM_TZ_PORTFOLIO_PLUS_OPTION_SELECT_SECONDARY_CATEGORY')));
 
-$j4Compare  = COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE;
 if(!$j4Compare) {
     JHtml::_('dropdown.init');
     JHtml::_('formbehavior.chosen', 'select');
@@ -63,7 +66,7 @@ if ($saveOrder)
 
 $assoc		= JLanguageAssociations::isEnabled();
 
-$this -> document -> addScript(TZ_Portfolio_PlusUri::root(true).'/js/core.min.js');
+$this -> document -> addScript(TZ_Portfolio_PlusUri::root(true).'/js/core.min.js', array('version' => 'auto'));
 $this -> document -> addScriptDeclaration('(function($, TZ_Portfolio_Plus){
         "use strict";
         TZ_Portfolio_Plus.dialogAjax(["'.$this -> getName().'.approve", "'.$this -> getName().'.reject"]);
@@ -242,7 +245,7 @@ $this -> document -> addScriptDeclaration('(function($, TZ_Portfolio_Plus){
                                     <?php
                                     $editIcon   = '';
                                     if($j4Compare){
-                                        $editIcon = $item->checked_out ? '' : '<span class="fa fa-pencil-square mr-2" aria-hidden="true"></span>';
+                                        $editIcon = $item->checked_out ? '' : '<span class="tps tp-pen-square mr-2" aria-hidden="true"></span>';
                                     }
                                     ?>
                                     <a href="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&task=article.edit&id='.$item->id);?>">

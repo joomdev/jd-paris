@@ -104,7 +104,7 @@ class TZ_Portfolio_PlusControllerTemplate extends JControllerForm
     protected function allowAdd($data = array())
     {
         $user = TZ_Portfolio_PlusUser::getUser();
-        return ($user->authorise('core.create','com_tz_portfolio_plus.template'));
+        return ($user->authorise('core.create','com_tz_portfolio_plus.'.$this -> getName()));
     }
 
     protected function allowEdit($data = array(), $key = 'id')
@@ -150,6 +150,9 @@ class TZ_Portfolio_PlusControllerTemplate extends JControllerForm
             if($result = $model -> install()){
                 $app -> enqueueMessage(JText::sprintf('COM_TZ_PORTFOLIO_PLUS_INSTALL_SUCCESS'
                     , JText::_('COM_TZ_PORTFOLIO_PLUS_TEMPLATE')));
+            }else{
+                $this -> setMessage($model -> getError());
+                $app -> enqueueMessage($model -> getError(), 'error');
             }
         }
 

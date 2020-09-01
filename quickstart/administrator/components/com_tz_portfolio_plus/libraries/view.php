@@ -49,6 +49,11 @@ class TZ_Portfolio_PlusViewLegacy extends JViewLegacy{
             $theme  = $template;
             $html   = null;
 
+            $offsetPrefixlg   = ($params -> get('bootstrapversion', 4) == 4)?' offset-lg-':' col-lg-offset-';
+            $offsetPrefixmd   = ($params -> get('bootstrapversion', 4) == 4)?' offset-md-':' col-md-offset-';
+            $offsetPrefixsm   = ($params -> get('bootstrapversion', 4) == 4)?' offset-sm-':' col-sm-offset-';
+            $offsetPrefixxs   = ($params -> get('bootstrapversion', 4) == 4)?' offset-xs-':' col-xs-offset-';
+
             if($theme){
                 if($tplParams  = $theme -> layout){
                     foreach($tplParams as $tplItems){
@@ -115,10 +120,10 @@ class TZ_Portfolio_PlusViewLegacy extends JViewLegacy{
                                             .(!empty($children -> {"col-md"})?' col-md-'.$children -> {"col-md"}:'')
                                             .(!empty($children -> {"col-sm"})?' col-sm-'.$children -> {"col-sm"}:'')
                                             .(!empty($children -> {"col-xs"})?' col-xs-'.$children -> {"col-xs"}:'')
-                                            .(!empty($children -> {"col-lg-offset"})?' col-lg-offset-'.$children -> {"col-lg-offset"}:'')
-                                            .(!empty($children -> {"col-md-offset"})?' col-md-offset-'.$children -> {"col-md-offset"}:'')
-                                            .(!empty($children -> {"col-sm-offset"})?' col-sm-offset-'.$children -> {"col-sm-offset"}:'')
-                                            .(!empty($children -> {"col-xs-offset"})?' col-xs-offset-'.$children -> {"col-xs-offset"}:'')
+                                            .(!empty($children -> {"col-lg-offset"})?$offsetPrefixlg.$children -> {"col-lg-offset"}:'')
+                                            .(!empty($children -> {"col-md-offset"})?$offsetPrefixmd.$children -> {"col-md-offset"}:'')
+                                            .(!empty($children -> {"col-sm-offset"})?$offsetPrefixsm.$children -> {"col-sm-offset"}:'')
+                                            .(!empty($children -> {"col-xs-offset"})?$offsetPrefixxs.$children -> {"col-xs-offset"}:'')
                                             .(!empty($children -> {"customclass"})?' '.$children -> {"customclass"}:'')
                                             .($children -> responsiveclass?' '.$children -> responsiveclass:'').'">';
                                     }
@@ -212,6 +217,12 @@ class TZ_Portfolio_PlusViewLegacy extends JViewLegacy{
     }
 
     protected function _childrenLayout(&$rows,$children,&$article,&$params,$dispatcher){
+
+        $offsetPrefixlg   = ($params -> get('bootstrapversion', 4) == 4)?' offset-lg-':' col-lg-offset-';
+        $offsetPrefixmd   = ($params -> get('bootstrapversion', 4) == 4)?' offset-md-':' col-md-offset-';
+        $offsetPrefixsm   = ($params -> get('bootstrapversion', 4) == 4)?' offset-sm-':' col-sm-offset-';
+        $offsetPrefixxs   = ($params -> get('bootstrapversion', 4) == 4)?' offset-xs-':' col-xs-offset-';
+
         foreach($children -> children as $children){
             $background = null;
             $color      = null;
@@ -247,7 +258,7 @@ class TZ_Portfolio_PlusViewLegacy extends JViewLegacy{
             if (isset($children->padding) && !empty($children->padding)) {
                 $padding = 'padding: ' . $children->padding . ';';
             }
-            if ($background || $color) {
+            if ($background || $color || $margin || $padding) {
                 $this->document->addStyleDeclaration('
                         #tz-portfolio-template-' . ($rowName?$rowName:'') . '-inner{
                             ' . $background . $color . $margin . $padding . '
@@ -271,77 +282,79 @@ class TZ_Portfolio_PlusViewLegacy extends JViewLegacy{
                         ');
             }
 
-            foreach($children -> children as $children){
-                $html   = null;
+            if(isset($children -> children) && $children -> children){
+                foreach($children -> children as $children){
+                    $html   = null;
 
-                if($children -> type && $children -> type !='none'){
-                    if(in_array($children -> type, $this -> core_types)) {
-                        $html = $this -> loadTemplate($children -> type);
-                    }else{
-                        $plugin = $children -> type;
-                        $layout = null;
-                        if(strpos($children -> type, ':') != false){
-                            list($plugin, $layout)  = explode(':', $children -> type);
-                        }
-
-                        if($plugin_obj = TZ_Portfolio_PlusPluginHelper::getPlugin('content', $plugin)) {
-                            $className      = 'PlgTZ_Portfolio_PlusContent'.ucfirst($plugin);
-
-                            if(!class_exists($className)){
-                                TZ_Portfolio_PlusPluginHelper::importPlugin('content', $plugin);
+                    if($children -> type && $children -> type !='none'){
+                        if(in_array($children -> type, $this -> core_types)) {
+                            $html = $this -> loadTemplate($children -> type);
+                        }else{
+                            $plugin = $children -> type;
+                            $layout = null;
+                            if(strpos($children -> type, ':') != false){
+                                list($plugin, $layout)  = explode(':', $children -> type);
                             }
-                            if(class_exists($className)) {
-                                $registry   = new JRegistry($plugin_obj -> params);
 
-                                $plgClass   = new $className($dispatcher,array('type' => ($plugin_obj -> type)
-                                , 'name' => ($plugin_obj -> name), 'params' => $registry));
+                            if($plugin_obj = TZ_Portfolio_PlusPluginHelper::getPlugin('content', $plugin)) {
+                                $className      = 'PlgTZ_Portfolio_PlusContent'.ucfirst($plugin);
 
-                                if(method_exists($plgClass, 'onContentDisplayArticleView')) {
-                                    $html = $plgClass->onContentDisplayArticleView('com_tz_portfolio_plus.'.$this -> getName(),
-                                        $this->item, $this->item->params, $this->state->get('list.offset'), $layout);
+                                if(!class_exists($className)){
+                                    TZ_Portfolio_PlusPluginHelper::importPlugin('content', $plugin);
+                                }
+                                if(class_exists($className)) {
+                                    $registry   = new JRegistry($plugin_obj -> params);
+
+                                    $plgClass   = new $className($dispatcher,array('type' => ($plugin_obj -> type)
+                                    , 'name' => ($plugin_obj -> name), 'params' => $registry));
+
+                                    if(method_exists($plgClass, 'onContentDisplayArticleView')) {
+                                        $html = $plgClass->onContentDisplayArticleView('com_tz_portfolio_plus.'.$this -> getName(),
+                                            $this->item, $this->item->params, $this->state->get('list.offset'), $layout);
+                                    }
+                                }
+                                if(is_array($html)) {
+                                    $html = implode("\n", $html);
                                 }
                             }
-                            if(is_array($html)) {
-                                $html = implode("\n", $html);
-                            }
+                        }
+                        $html   = trim($html);
+                    }
+
+                    if( !empty($html) || (!empty($children -> children) and is_array($children -> children))){
+                        if(!empty($children -> {"col-lg"}) || !empty($children -> {"col-md"})
+                            || !empty($children -> {"col-sm"}) || !empty($children -> {"col-xs"})
+                            || !empty($children -> {"col-lg-offset"}) || !empty($children -> {"col-md-offset"})
+                            || !empty($children -> {"col-sm-offset"}) || !empty($children -> {"col-xs-offset"})
+                            || !empty($children -> {"customclass"}) || $children -> responsiveclass){
+                            $childRows[] = '<div class="'
+                                .(!empty($children -> {"col-lg"})?'col-lg-'.$children -> {"col-lg"}:'')
+                                .(!empty($children -> {"col-md"})?' col-md-'.$children -> {"col-md"}:'')
+                                .(!empty($children -> {"col-sm"})?' col-sm-'.$children -> {"col-sm"}:'')
+                                .(!empty($children -> {"col-xs"})?' col-xs-'.$children -> {"col-xs"}:'')
+                                .(!empty($children -> {"col-lg-offset"})?$offsetPrefixlg.$children -> {"col-lg-offset"}:'')
+                                .(!empty($children -> {"col-md-offset"})?$offsetPrefixmd.$children -> {"col-md-offset"}:'')
+                                .(!empty($children -> {"col-sm-offset"})?$offsetPrefixsm.$children -> {"col-sm-offset"}:'')
+                                .(!empty($children -> {"col-xs-offset"})?$offsetPrefixxs.$children -> {"col-xs-offset"}:'')
+                                .(!empty($children -> {"customclass"})?' '.$children -> {"customclass"}:'')
+                                .($children -> responsiveclass?' '.$children -> responsiveclass:'').'">';
+                        }
+                        $childRows[] = $html;
+
+                        if( !empty($children -> children) and is_array($children -> children) ){
+                            $this -> _childrenLayout($childRows,$children,$article,$params,$dispatcher);
+                        }
+
+                        if(!empty($children -> {"col-lg"}) || !empty($children -> {"col-md"})
+                            || !empty($children -> {"col-sm"}) || !empty($children -> {"col-xs"})
+                            || !empty($children -> {"col-lg-offset"}) || !empty($children -> {"col-md-offset"})
+                            || !empty($children -> {"col-sm-offset"}) || !empty($children -> {"col-xs-offset"})
+                            || !empty($children -> {"customclass"}) || $children -> responsiveclass){
+                            $childRows[] = '</div>'; // Close col tag
                         }
                     }
-                    $html   = trim($html);
+
                 }
-
-                if( !empty($html) || (!empty($children -> children) and is_array($children -> children))){
-                    if(!empty($children -> {"col-lg"}) || !empty($children -> {"col-md"})
-                        || !empty($children -> {"col-sm"}) || !empty($children -> {"col-xs"})
-                        || !empty($children -> {"col-lg-offset"}) || !empty($children -> {"col-md-offset"})
-                        || !empty($children -> {"col-sm-offset"}) || !empty($children -> {"col-xs-offset"})
-                        || !empty($children -> {"customclass"}) || $children -> responsiveclass){
-                        $childRows[] = '<div class="'
-                            .(!empty($children -> {"col-lg"})?'col-lg-'.$children -> {"col-lg"}:'')
-                            .(!empty($children -> {"col-md"})?' col-md-'.$children -> {"col-md"}:'')
-                            .(!empty($children -> {"col-sm"})?' col-sm-'.$children -> {"col-sm"}:'')
-                            .(!empty($children -> {"col-xs"})?' col-xs-'.$children -> {"col-xs"}:'')
-                            .(!empty($children -> {"col-lg-offset"})?' col-lg-offset-'.$children -> {"col-lg-offset"}:'')
-                            .(!empty($children -> {"col-md-offset"})?' col-md-offset-'.$children -> {"col-md-offset"}:'')
-                            .(!empty($children -> {"col-sm-offset"})?' col-sm-offset-'.$children -> {"col-sm-offset"}:'')
-                            .(!empty($children -> {"col-xs-offset"})?' col-xs-offset-'.$children -> {"col-xs-offset"}:'')
-                            .(!empty($children -> {"customclass"})?' '.$children -> {"customclass"}:'')
-                            .($children -> responsiveclass?' '.$children -> responsiveclass:'').'">';
-                    }
-                    $childRows[] = $html;
-
-                    if( !empty($children -> children) and is_array($children -> children) ){
-                        $this -> _childrenLayout($childRows,$children,$article,$params,$dispatcher);
-                    }
-
-                    if(!empty($children -> {"col-lg"}) || !empty($children -> {"col-md"})
-                        || !empty($children -> {"col-sm"}) || !empty($children -> {"col-xs"})
-                        || !empty($children -> {"col-lg-offset"}) || !empty($children -> {"col-md-offset"})
-                        || !empty($children -> {"col-sm-offset"}) || !empty($children -> {"col-xs-offset"})
-                        || !empty($children -> {"customclass"}) || $children -> responsiveclass){
-                        $childRows[] = '</div>'; // Close col tag
-                    }
-                }
-
             }
 
             if(count($childRows)) {

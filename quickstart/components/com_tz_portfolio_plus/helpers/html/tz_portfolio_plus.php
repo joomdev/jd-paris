@@ -103,4 +103,38 @@ class JHtmlTZ_Portfolio_Plus
         return JHtml::link('javascript:void(0);', JText::_($states[$value][1]), array('onclick' => 'return listItemTask(\''
             .$checkbox.$i.'\',\''.$prefix.'.'.$states[$value][0].'\')'));
 	}
+
+
+    /**
+     * Returns a checked-out icon
+     *
+     * @param   integer       $i           The row index.
+     * @param   string        $editorName  The name of the editor.
+     * @param   string        $time        The time that the object was checked out.
+     * @param   string|array  $prefix      An optional task prefix or an array of options
+     * @param   boolean       $enabled     True to enable the action.
+     * @param   string        $checkbox    An optional prefix for checkboxes.
+     *
+     * @return  string  The HTML markup
+     *
+     * @since   1.6
+     */
+    public static function checkedout($i, $editorName, $time, $prefix = '', $enabled = false, $checkbox = 'cb')
+    {
+        $html   = JHtml::_('jgrid.checkedout', $i, $editorName, $time, $prefix, $enabled, $checkbox);
+
+        // Replace icon
+        if(!preg_match('/<[span|i].*?class=["|\'].*?(tps tp-lock).*?["|\']/', $html) && preg_match('/icon-checkedout/', $html)) {
+            $html   = preg_replace('/(<[span|i].*?class=["|\'].*?)(icon-checkedout)(.*?["|\'])/','$1tps tp-lock$3', $html);
+        }
+        // Add btn-outline-secondary class
+        if(!preg_match('/<[a|button].*?class=["|\'].*?(btn-outline-secondary).*?["|\']/', $html)){
+            $html   = preg_replace('/(<[a|button].*?class=["|\'])(.*?["|\'])/','$1btn-outline-secondary $2', $html);
+        }
+        // Replace btn-sm class
+        if(!preg_match('/<[a|button].*?class=["|\'].*?(btn-sm).*?["|\']/', $html)){
+            $html   = preg_replace('/(<[a|button].*?class=["|\'])(.*?["|\'])/','$1btn-sm $2', $html);
+        }
+        return $html;
+    }
 }

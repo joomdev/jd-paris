@@ -38,8 +38,8 @@ class TZ_Portfolio_PlusViewTemplate extends JViewLegacy
         $this -> state      = $this->get('State');
         $this -> form       = $this -> get('Form');
 
-        $this -> itemsServer       = $this -> get('ItemsFromServer');
-        $this -> paginationServer   = $this -> get('PaginationFromServer');
+        $this -> document -> addScript(TZ_Portfolio_PlusUri::base(true, true).'/js/libs.min.js',
+            array('version' => 'auto'));
         $this -> filterForm   = $this -> get('FilterForm');
 
         TZ_Portfolio_PlusHelper::addSubmenu('templates');
@@ -62,5 +62,9 @@ class TZ_Portfolio_PlusViewTemplate extends JViewLegacy
 
         TZ_Portfolio_PlusToolbarHelper::customHelp('https://www.youtube.com/channel/UCrLN8LMXTyTahwDKzQ-YOqg/videos'
             ,'COM_TZ_PORTFOLIO_PLUS_VIDEO_TUTORIALS', 'youtube', 'youtube');
+
+        if($this -> getLayout() == 'upload') {
+            JToolbarHelper::link('javascript:', JText::_('COM_TZ_PORTFOLIO_PLUS_INTRO_GUIDE'), 'support');
+        }
     }
 }

@@ -60,7 +60,7 @@ class TZ_Portfolio_PlusViewTemplate_Styles extends JViewLegacy
 
         if ($canDo->get('core.edit.state'))
         {
-            JToolbarHelper::makeDefault('template_styles.setDefault', 'COM_TEMPLATES_TOOLBAR_SET_HOME');
+            JToolbarHelper::makeDefault($this -> getName().'.setDefault', 'COM_TEMPLATES_TOOLBAR_SET_HOME');
         }
 
         if($canDo -> get('core.edit')) {
@@ -69,7 +69,7 @@ class TZ_Portfolio_PlusViewTemplate_Styles extends JViewLegacy
 
         if ($canDo->get('core.create'))
         {
-            JToolbarHelper::custom('template_styles.duplicate', 'copy.png', 'copy_f2.png', 'JTOOLBAR_DUPLICATE', true);
+            JToolbarHelper::custom($this -> getName().'.duplicate', 'copy.png', 'copy_f2.png', 'JTOOLBAR_DUPLICATE', true);
         }
 
         if ($canDo->get('core.delete')){

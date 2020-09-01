@@ -24,17 +24,5 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if(COM_TZ_PORTFOLIO_PLUS_EDITION == 'free'){
-?>
-<div class="alert tpp-upgrade-pro">
-    <button data-dismiss="alert" class="close" type="button">×</button>
-    <div class="content">
-        <span class="fa fa-flag-checkered tpp-upgrade-pro__icon"></span>
-        <div class="content__inner">
-            <h4>Get TZ Portfolio Plus Pro to unlock the best experience ever</h4>
-            <p>That you can use the full features included (Addons, Templates, Extension, etc), premium support, and more. <a href="https://www.tzportfolio.com" target="_blank"><strong>Get TZ Portfolio Plus Pro now!</strong></a>
-                <br/>If you have a purchase license, to update, please download the Pro version <a href="https://www.tzportfolio.com/download/core-package/tz_membership/downloadinfo/11-tz-portfolio-plus.html"><strong>here</strong></a></p>
-        </div>
-    </div>
-</div>
-<?php }
+// Display message update to pro (it only use for free version)
+echo JLayoutHelper::render('message_license');

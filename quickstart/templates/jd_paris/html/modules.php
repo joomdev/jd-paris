@@ -2,8 +2,8 @@
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 defined('_JEXEC') or die;
 /*
@@ -51,7 +51,7 @@ function modChrome_border_layout($module, &$params, &$attribs) {
 
    // Temporarily store header class in variable
    $headerClass = $params->get('header_class');
-   $headerClass = $headerClass ? ' class="module-title' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') . '"' : ' class="module-title"';
+   $headerClass = $headerClass ? ' class="module-title ' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') . '"' : ' class="module-title"';
 
    $content = trim($module->content);
 
@@ -59,7 +59,7 @@ function modChrome_border_layout($module, &$params, &$attribs) {
       ?>
       <<?php echo $moduleTag; ?> class="moduletable <?php echo htmlspecialchars($params->get('moduleclass_sfx'), ENT_COMPAT, 'UTF-8') . $moduleClass; ?>">
       <?php
-      echo '<div class="border rounded p-3 mb-4">';
+      echo '<div class="border-layout">';
       ?>
       <?php if ($module->showtitle != 0) : ?>
          <<?php echo $headerTag . $headerClass . '>' . $module->title; ?></<?php echo $headerTag; ?>>
@@ -82,7 +82,7 @@ function modChrome_astroidxhtml($module, &$params, &$attribs) {
 
    // Temporarily store header class in variable
    $headerClass = $params->get('header_class');
-   $headerClass = $headerClass ? ' class="module-title' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') . '"' : ' class="module-title"';
+   $headerClass = $headerClass ? ' class="module-title ' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') . '"' : ' class="module-title"';
 
    $content = trim($module->content);
 
@@ -106,12 +106,12 @@ function modChrome_split_title($module, &$params, &$attribs) {
    $headerClass = htmlspecialchars($params->get('header_class', 'page-header'), ENT_COMPAT, 'UTF-8');
 
    if ($module->content) {
-      echo '<' . $moduleTag . ' class="split-title-module' . htmlspecialchars($params->get('moduleclass_sfx'), ENT_COMPAT, 'UTF-8') . $moduleClass . '">';
+      echo '<' . $moduleTag . ' class="moduletable split-title-module' . htmlspecialchars($params->get('moduleclass_sfx'), ENT_COMPAT, 'UTF-8') . $moduleClass . '">';
 
       if ($module->showtitle) {
          $title = explode('|', $module->title);
          $html = '';
-         $html .= '<' . $headerTag . ' class="split-title ' . $headerClass . '">';
+         $html .= '<' . $headerTag . ' class="module-title split-title ' . $headerClass . '">';
          $index = 1;
          foreach ($title as $title_text) {
             $html .= '<span class="split-' . $index . '">' . $title_text . '</span>';

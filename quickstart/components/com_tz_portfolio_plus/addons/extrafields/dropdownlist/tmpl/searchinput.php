@@ -35,7 +35,7 @@ if ($options):
         <?php if($params -> get('show_label', 1)){?>
         <label class="group-label"><?php echo $this -> getTitle();?></label>
         <?php }?>
-        <ul class="list-unstyled list-extrafield">
+        <ul class="list-unstyled list-extrafield mb-0">
             <?php foreach ($options AS $key => $option){
                 if ($option->text == strtoupper($option->text))
                 {

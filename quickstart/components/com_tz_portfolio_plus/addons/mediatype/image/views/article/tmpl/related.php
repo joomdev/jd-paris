@@ -27,7 +27,7 @@ $params = $this -> params;
 if($item && $image && isset($image -> url) && !empty($image -> url)):
     if($params -> get('mt_image_related_show_image', 1)):
 ?>
-<div class="TzImage">
+<div class="TzImage mb-1">
 
     <a href="<?php echo $item -> link;?>">
         <img src="<?php echo $image -> related_url;?>"

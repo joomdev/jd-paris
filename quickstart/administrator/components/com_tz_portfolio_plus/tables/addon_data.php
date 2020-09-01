@@ -92,6 +92,7 @@ class TZ_Portfolio_PlusTableAddon_Data extends JTable
     public function store($updateNulls = false)
     {
         $user = JFactory::getUser();
+        $date = JFactory::getDate();
 
         if (empty($this->modified_by))
         {
@@ -101,6 +102,21 @@ class TZ_Portfolio_PlusTableAddon_Data extends JTable
         {
             $this->created_by = $user->get('id');
         }
+
+        if ($this->id)
+        {
+            $this->modified = $date->toSql();
+        }
+        else
+        {
+            // New article. An article created and created_by field can be set by the user,
+            // so we don't touch either of these if they are set.
+            if (!(int) $this->created)
+            {
+                $this->created = $date->toSql();
+            }
+        }
+
         return parent::store($updateNulls);
     }
 }

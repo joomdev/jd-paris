@@ -20,6 +20,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Path;
 use TZ_Portfolio_Plus\Database\TZ_Portfolio_PlusDatabase;
 
 class TZ_Portfolio_PlusHelper
@@ -93,6 +95,11 @@ class TZ_Portfolio_PlusHelper
             call_user_func_array($class.'::addEntry',array(JText::_('COM_TZ_PORTFOLIO_PLUS_TEMPLATES'),
                 'index.php?option=com_tz_portfolio_plus&view=templates',
                 $vName == 'templates'));
+        }
+        if($user -> authorise( 'core.manage.extension', 'com_tz_portfolio_plus')) {
+            call_user_func_array($class.'::addEntry',array(JText::_('COM_TZ_PORTFOLIO_PLUS_EXTENSIONS'),
+                'index.php?option=com_tz_portfolio_plus&view=extension&layout=upload',
+                $vName == 'extension'));
         }
         if($user -> authorise( 'core.manage.acl', 'com_tz_portfolio_plus')) {
             call_user_func_array($class.'::addEntry',array(JText::_('COM_TZ_PORTFOLIO_PLUS_ACL'),
@@ -187,32 +194,6 @@ class TZ_Portfolio_PlusHelper
 
 		return $result;
 	}
-
-//	public static function getActions($categoryId = 0, $articleId = 0)
-//	{
-//		$user	= JFactory::getUser();
-//		$result	= new JObject;
-//
-//		if (empty($articleId) && empty($categoryId)) {
-//			$assetName = 'com_tz_portfolio_plus';
-//		}
-//		elseif (empty($articleId)) {
-//			$assetName = 'com_tz_portfolio_plus.category.'.(int) $categoryId;
-//		}
-//		else {
-//			$assetName = 'com_tz_portfolio_plus.article.'.(int) $articleId;
-//		}
-//
-//		$actions = array(
-//			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
-//		);
-//
-//		foreach ($actions as $action) {
-//			$result->set($action,	$user->authorise($action, $assetName));
-//		}
-//
-//		return $result;
-//	}
 
 	/**
 	* Applies the content tag filters to arbitrary text as per settings for current user group
@@ -572,18 +553,94 @@ class TZ_Portfolio_PlusHelper
         return $xml;
     }
 
-    public static function prepareUpdate(&$update, &$table){
-        $params         = JComponentHelper::getParams('com_tz_portfolio_plus');
-        $downloadUrl    = $update -> get('downloadurl');
-        $url            = $downloadUrl -> _data;
-        if(strpos($url, 'level='.COM_TZ_PORTFOLIO_PLUS_EDITION)){
-            if($tokenKey = $params -> get('token_key')){
-                if(strpos($url, 'token_key=')){
-                    $url    = str_replace('token_key=', 'token_key='.$tokenKey, $url);
-                }
-                $downloadUrl -> _data   = $url;
-                $update -> set('downloadurl', $downloadUrl);
+//    public static function prepareUpdate(&$update, &$table){
+//        $params         = JComponentHelper::getParams('com_tz_portfolio_plus');
+//        $downloadUrl    = $update -> get('downloadurl');
+//        $url            = $downloadUrl -> _data;
+//        if(strpos($url, 'level='.COM_TZ_PORTFOLIO_PLUS_EDITION)){
+//            if($tokenKey = $params -> get('token_key')){
+//                if(strpos($url, 'token_key=')){
+//                    $url    = str_replace('token_key=', 'token_key='.$tokenKey, $url);
+//                }
+//                $downloadUrl -> _data   = $url;
+//                $update -> set('downloadurl', $downloadUrl);
+//            }
+//        }
+//    }
+
+    public static function introGuideSkipped($view){
+	    if(!$view){
+	        return false;
+        }
+
+        $filePath   = \JPath::clean(COM_TZ_PORTFOLIO_PLUS_ADMIN_PATH.'/cache'.'/introguide.json');
+
+        if(!\JFile::exists($filePath)){
+            return false;
+        }
+
+        $introGuide = file_get_contents($filePath);
+        $introGuide = json_decode($introGuide);
+        if($introGuide && isset($introGuide -> $view) && $introGuide -> $view) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /*
+     *  Get license info
+     *  @since v2.2.7
+     * */
+    public static function getLicense(){
+
+        $storeId    = __METHOD__;
+
+        $file    = JPATH_ADMINISTRATOR.'/components/com_tz_portfolio_plus/includes/license.php';
+
+        $storeId   .= ':'.$file;
+        $storeId    = md5($storeId);
+
+        if(isset(self::$cache[$storeId])){
+            return self::$cache[$storeId];
+        }
+
+        if(JFile::exists($file)){
+            $license    = JFile::read($file);
+            $license    = str_replace('<?php die("Access Denied"); ?>#x#', '', $license);
+            $license    = unserialize(trim($license));
+
+            self::$cache[$storeId]  = $license;
+
+            return $license;
+        }
+
+        return false;
+    }
+
+    /*
+     *  Check license expired
+     *  @since v2.2.7
+     * */
+    public static function isLicenseExpired($type){
+
+        $license    = static::getLicense();
+
+        $storeId    = __METHOD__;
+        $storeId   .= ':'.$type;
+        $storeId   .= ':'.serialize($license);
+        $storeId    = md5($storeId);
+
+        if(isset(self::$cache[$storeId])){
+            return self::$cache[$storeId];
+        }
+
+        if($license){
+            $nowDate    = JFactory::getDate() -> toSql();
+            if($license -> $type < $nowDate){
+                return true;
             }
         }
+        return false;
     }
 }

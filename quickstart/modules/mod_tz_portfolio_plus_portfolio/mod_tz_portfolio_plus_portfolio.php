@@ -28,6 +28,19 @@ JLoader::import('com_tz_portfolio_plus.libraries.helper.modulehelper', JPATH_ADM
 JHtml::_('jquery.framework');
 
 $doc    = JFactory::getDocument();
+
+if($params -> get('enable_bootstrap', 0)  && $params -> get('enable_bootstrap_js', 1)) {
+    if( $params -> get('bootstrapversion', 3) == 4) {
+        $doc->addScript(TZ_Portfolio_PlusUri::base(true) . '/vendor/bootstrap/js/bootstrap.min.js',
+            array('version' => 'auto'));
+        $doc->addScript(TZ_Portfolio_PlusUri::base(true) . '/vendor/bootstrap/js/bootstrap.bundle.min.js',
+            array('version' => 'auto'));
+    }else{
+        $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/bootstrap/js/bootstrap.min.js',
+            array('version' => 'auto'));
+    }
+}
+
 $doc -> addScript(TZ_Portfolio_PlusUri::root(true).'/js/core.min.js');
 
 $list = modTZ_Portfolio_PlusPortfolioHelper::getList($params, $module);

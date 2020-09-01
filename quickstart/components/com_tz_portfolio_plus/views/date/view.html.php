@@ -21,6 +21,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\MVC\Model\BaseModel;
 
 jimport('joomla.application.component.view');
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
@@ -50,10 +51,6 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy{
 
     public function display($tpl = null){
         $app	= JFactory::getApplication();
-        $user	= JFactory::getUser();
-        $doc    = JFactory::getDocument();
-
-        $doc -> addStyleSheet('components/com_tz_portfolio_plus/css/tzportfolioplus.min.css');
 
         // Get some data from the models
         $state		= $this->get('State');
@@ -121,6 +118,9 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy{
             $item = &$items[$i];
 
             $item->params   = clone($params);
+
+            $app -> triggerEvent('onTPContentBeforePrepare', array('com_tz_portfolio_plus.date',
+                &$item, &$item -> params));
 
             $articleParams = new JRegistry;
             $articleParams->loadString($item->attribs);
@@ -213,33 +213,37 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy{
                 $item->text = $item->introtext;
             }
             //Call trigger in group content
-            $results = $app -> triggerEvent('onContentPrepare', array ('com_tz_portfolio_plus.date', &$item, &$item->params, 0));
+            $results = $app -> triggerEvent('onContentPrepare', array ('com_tz_portfolio_plus.date',
+                &$item, &$item->params, $state -> get('list.start')));
             $item->introtext = $item->text;
 
-            $results = $app -> triggerEvent('onContentAfterTitle', array('com_tz_portfolio_plus.date', &$item, &$item->params, 0));
+            $results = $app -> triggerEvent('onContentAfterTitle', array('com_tz_portfolio_plus.date',
+                &$item, &$item->params, $state -> get('list.start')));
             $item->event->afterDisplayTitle = trim(implode("\n", $results));
 
-            $results = $app -> triggerEvent('onContentBeforeDisplay', array('com_tz_portfolio_plus.date', &$item, &$item->params, 0));
+            $results = $app -> triggerEvent('onContentBeforeDisplay', array('com_tz_portfolio_plus.date',
+                &$item, &$item->params, $state -> get('list.start')));
             $item->event->beforeDisplayContent = trim(implode("\n", $results));
 
-            $results = $app -> triggerEvent('onContentAfterDisplay', array('com_tz_portfolio_plus.date', &$item, &$item->params, 0));
+            $results = $app -> triggerEvent('onContentAfterDisplay', array('com_tz_portfolio_plus.date',
+                &$item, &$item->params, $state -> get('list.start')));
             $item->event->afterDisplayContent = trim(implode("\n", $results));
 
             // Process the tz portfolio's content plugins.
             $results    = $app -> triggerEvent('onContentDisplayVote',array('com_tz_portfolio_plus.date',
-                &$item, &$item->params, 0));
+                &$item, &$item->params, $state -> get('list.start')));
             $item -> event -> contentDisplayVote   = trim(implode("\n", $results));
 
             $results    = $app -> triggerEvent('onBeforeDisplayAdditionInfo',array('com_tz_portfolio_plus.date',
-                &$item, &$item->params, 0));
+                &$item, &$item->params, $state -> get('list.start')));
             $item -> event -> beforeDisplayAdditionInfo   = trim(implode("\n", $results));
 
             $results    = $app -> triggerEvent('onAfterDisplayAdditionInfo',array('com_tz_portfolio_plus.date',
-                &$item, &$item->params, 0));
+                &$item, &$item->params, $state -> get('list.start')));
             $item -> event -> afterDisplayAdditionInfo   = trim(implode("\n", $results));
 
             $results    = $app -> triggerEvent('onContentDisplayListView',array('com_tz_portfolio_plus.date',
-                &$item, &$item->params, 0));
+                &$item, &$item->params, $state -> get('list.start')));
             $item -> event -> contentDisplayListView   = trim(implode("\n", $results));
 
             //Call trigger in group tz_portfolio_plus_mediatype
@@ -282,6 +286,9 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy{
                     $item->params->set('access-view', in_array($item->access, $groups) && in_array($item->category_access, $groups));
                 }
             }
+
+            $app -> triggerEvent('onTPContentAfterPrepare', array('com_tz_portfolio_plus.date',
+                &$item, &$item -> params, $state -> get('list.start')));
         }
 
         //Escape strings for HTML output
@@ -292,8 +299,14 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy{
         $this -> items      = $items;
         $this -> pagination = $pagination;
 
-        JModelLegacy::addIncludePath(COM_TZ_PORTFOLIO_PLUS_PATH_SITE.DIRECTORY_SEPARATOR.'models');
-        $model  = JModelLegacy::getInstance('Portfolio','TZ_Portfolio_PlusModel',array('ignore_request' => true));
+        if(COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE){
+            BaseModel::addIncludePath(COM_TZ_PORTFOLIO_PLUS_PATH_SITE.DIRECTORY_SEPARATOR.'models', 'TZ_Portfolio_PlusModel');
+            $model  = BaseModel::getInstance('Portfolio','TZ_Portfolio_PlusModel',array('ignore_request' => true));
+        }else{
+            JModelLegacy::addIncludePath(COM_TZ_PORTFOLIO_PLUS_PATH_SITE.DIRECTORY_SEPARATOR.'models', 'TZ_Portfolio_PlusModel');
+            $model  = JModelLegacy::getInstance('Portfolio','TZ_Portfolio_PlusModel',array('ignore_request' => true));
+        }
+
         $pParams    = clone($params);
         $pParams -> set('tz_catid',$params -> get('tz_catid',array()));
         $model -> setState('params',$pParams);
@@ -301,8 +314,6 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy{
         $model -> setState('filter.month',$state -> get('filter.month'));
         $this -> char           = $state -> get('filter.char');
         $this -> availLetter    = $model -> getAvailableLetter();
-
-        $doc -> addStyleSheet('components/com_tz_portfolio_plus/css/tzportfolioplus.min.css');
 
         // Add feed links
         if ($this->params->get('show_feed_link', 1)) {

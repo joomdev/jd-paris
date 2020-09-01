@@ -23,15 +23,16 @@ defined('_JEXEC') or die;
 $params = $this -> item -> params;
 $canEdit	= $this->item->params->get('access-edit');
 
+$bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
 ?>
 
 <?php if (!$this->print) : ?>
     <?php if ($canEdit ||  $params->get('show_print_icon', 1) || $params->get('show_email_icon', 1)) : ?>
         <div class="tpp-item-icon">
-            <div class="btn-group pull-right">
+            <div class="btn-group pull-right float-right">
                 <a class="btn btn-default btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" id="dropdownMenuButton-<?php
                 echo $this -> item -> id; ?>" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                    <i class="icon-cog"></i> <span class="caret"></span>
+                    <i class="tps tp-cog"></i><?php if($params -> get('bootstrapversion', 4) != 4){ ?> <span class="caret"></span><?php }?>
                 </a>
                 <?php // Note the actions class is deprecated. Use dropdown-menu instead. ?>
                 <ul class="dropdown-menu actions" aria-labelledby="dropdownMenuButton-<?php
@@ -50,7 +51,7 @@ $canEdit	= $this->item->params->get('access-edit');
         </div>
     <?php endif; ?>
 <?php else : ?>
-    <div class="pull-right">
+    <div class="pull-right float-right">
         <?php echo JHtml::_('icon.print_screen',  $this->item, $params); ?>
     </div>
 <?php endif; ?>

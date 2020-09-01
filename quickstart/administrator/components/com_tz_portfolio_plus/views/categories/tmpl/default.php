@@ -20,6 +20,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
+
 // Include the component HTML helpers.
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 
@@ -190,11 +191,7 @@ if ($saveOrder)
                                 </div>
                             </td>
                             <td>
-                                <?php
-                                if($j4Compare) {
-                                    echo str_repeat('<span class="gi">&mdash;</span>', $item->level - 1);
-                                }
-                                ?>
+                                <?php echo JLayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level)); ?>
                                 <?php if ($item->checked_out) : ?>
                                     <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'categories.', $canCheckin); ?>
                                 <?php endif; ?>
@@ -202,7 +199,7 @@ if ($saveOrder)
                                     <?php
                                     $editIcon   = '';
                                     if($j4Compare) {
-                                        $editIcon = $item->checked_out ? '' : '<span class="fa fa-pencil-square mr-2" aria-hidden="true"></span>';
+                                        $editIcon = $item->checked_out ? '' : '<span class="tps tp-pen-square mr-2" aria-hidden="true"></span>';
                                     }
                                     ?>
                                     <a href="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&task=category.edit&id='.$item->id.'&extension='.$extension);?>">

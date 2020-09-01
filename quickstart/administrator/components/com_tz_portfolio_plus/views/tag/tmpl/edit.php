@@ -20,10 +20,10 @@
 //no direct access
 defined('_JEXEC') or die('Restricted access');
 
-JHtml::_('behavior.formvalidation');
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.tabstate');
+JHtml::_('behavior.formvalidator');
+JHtml::_('bootstrap.tooltip');
 if(!COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE) {
+    JHtml::_('behavior.tabstate');
     JHtml::_('formbehavior.chosen', 'select');
 }
 else{
@@ -31,20 +31,9 @@ else{
 }
 
 $form   = $this -> form;
-
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "tag.cancel" || document.formvalidator.isValid(document.getElementById("tag-form")))
-		{
-			' . $form->getField("description")->save() . '
-			Joomla.submitform(task, document.getElementById("tag-form"));
-		}
-	};
-');
 ?>
 
-<form name="adminForm" method="post" class="form-validate tpArticle" id="tag-form"
+<form name="adminForm" method="post" class="form-validate tpArticle" id="adminForm"
       action="index.php?option=com_tz_portfolio_plus&view=tag&layout=edit&id=<?php echo $this -> item -> id?>">
 
     <div class="form-horizontal">

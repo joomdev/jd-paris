@@ -36,10 +36,17 @@ $user		= JFactory::getUser();
 $doc        = JFactory::getDocument();
 
 $layoutbuidler  =   $this -> generateLayout && !empty($this -> generateLayout) ? true : false;
+$bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
 
+$bootstrapClass = '';
+if($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4){
+    $bootstrapClass = 'tpp-bootstrap ';
+}elseif($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 3){
+    $bootstrapClass = 'tzpp_bootstrap3 ';
+}
 ?>
 
-<div class="<?php echo $layoutbuidler ? 'tzpp_bootstrap3' : ''; ?> tpItemPage item-page<?php echo $this->pageclass_sfx?>"  itemscope itemtype="http://schema.org/Article">
+<div class="<?php echo $bootstrapClass;?>tpItemPage<?php echo $this->pageclass_sfx?>"  itemscope itemtype="http://schema.org/Article">
     <meta itemprop="inLanguage" content="<?php echo ($item->language === '*') ? JFactory::getConfig()->get('language') : $item->language; ?>" />
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h2 class="tpHeadingTitle">
@@ -176,6 +183,11 @@ $layoutbuidler  =   $this -> generateLayout && !empty($this -> generateLayout) ?
         if($about_author = $this -> loadTemplate('author_about')):
             echo $about_author;
         endif;
+
+
+        //Call event onContentAfterDisplayArticleView on plugin
+        echo $item->event->contentDisplayArticleView;
+
         if($related = $this -> loadTemplate('related')):
             echo $related;
         endif;

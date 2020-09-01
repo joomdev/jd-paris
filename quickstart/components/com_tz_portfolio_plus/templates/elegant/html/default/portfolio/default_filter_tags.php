@@ -18,11 +18,14 @@
 -------------------------------------------------------------------------*/
  defined('_JEXEC') or die();
 
-?>
-<?php if($this -> itemTags):?>
+ if($this -> itemTags):
+
+     $tpstyleParams  = TZ_Portfolio_PlusTemplate::getTemplate(true) -> params;
+     $dropdownStyle  = $tpstyleParams -> get('filter_style') == 'dropdown';
+     ?>
     <?php foreach($this -> itemTags as $item):?>
         <a href="#<?php echo $item -> alias; ?>"
-           class="btn btn-default btn-secondary btn-sm"
+           class="<?php echo $dropdownStyle?'dropdown-item':'btn btn-primary'; ?>"
            data-option-value=".<?php echo $item -> alias; ?>">
             <?php echo $item -> title;?>
         </a>

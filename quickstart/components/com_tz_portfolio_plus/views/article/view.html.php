@@ -71,7 +71,7 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
         TZ_Portfolio_PlusPluginHelper::importPlugin('content');
 
         if($this -> item -> id && $params -> get('show_tags',1)) {
-            $this -> listTags = TZ_Portfolio_PlusFrontHelperTags::getTagsByArticleId($this -> item -> id, array(
+            $this -> item -> listTags = TZ_Portfolio_PlusFrontHelperTags::getTagsByArticleId($this -> item -> id, array(
                     'orderby' => 'm.contentid',
                     'menuActive' => $params -> get('menu_active', 'auto')
                 )
@@ -108,6 +108,9 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
 
 		// Create a shortcut for $item.
 		$item = &$this->item;
+
+        $app -> triggerEvent('onTPContentBeforePrepare', array('com_tz_portfolio_plus.article',
+            &$item, &$this->params, $offset));
 
         // Get second categories
         $second_categories  = TZ_Portfolio_PlusFrontHelperCategories::getCategoriesByArticleId($item -> id,
@@ -197,8 +200,8 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
         // Process the content plugins.
         //
 
-        $app -> triggerEvent('onAlwaysLoadDocument', array('com_tz_portfolio_plus.portfolio'));
-        $app -> triggerEvent('onLoadData', array('com_tz_portfolio_plus.portfolio', $this -> item, $params));
+        $app -> triggerEvent('onAlwaysLoadDocument', array('com_tz_portfolio_plus.article'));
+        $app -> triggerEvent('onLoadData', array('com_tz_portfolio_plus.article', $this -> item, $params));
 
 		if ($item->params->get('show_intro', 1)) {
 			$item->text = $item->introtext.' '.$item->fulltext;
@@ -222,25 +225,28 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
 
         if($item -> introtext && !empty($item -> introtext)) {
             $item->text = $item->introtext;
-            $results = $app -> triggerEvent('onContentPrepare', array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
-            $results = $app -> triggerEvent('onContentAfterTitle', array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
-            $results = $app -> triggerEvent('onContentBeforeDisplay', array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
-            $results = $app -> triggerEvent('onContentAfterDisplay', array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
+            $results = $app -> triggerEvent('onContentPrepare', array('com_tz_portfolio_plus.article', &$item, &$item->params, $offset));
+            $results = $app -> triggerEvent('onContentAfterTitle', array('com_tz_portfolio_plus.article', &$item, &$item->params, $offset));
+            $results = $app -> triggerEvent('onContentBeforeDisplay', array('com_tz_portfolio_plus.article', &$item, &$item->params, $offset));
+            $results = $app -> triggerEvent('onContentAfterDisplay', array('com_tz_portfolio_plus.article', &$item, &$item->params, $offset));
 
             $item->introtext = $item->text;
         }
         if($item -> fulltext && !empty($item -> fulltext)) {
             $item->text = $item->fulltext;
-            $results = $app -> triggerEvent('onContentPrepare', array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
-            $results = $app -> triggerEvent('onContentAfterTitle', array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
-            $results = $app -> triggerEvent('onContentBeforeDisplay', array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
-            $results = $app -> triggerEvent('onContentAfterDisplay', array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
+            $results = $app -> triggerEvent('onContentPrepare', array('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
+            $results = $app -> triggerEvent('onContentAfterTitle', array('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
+            $results = $app -> triggerEvent('onContentBeforeDisplay', array('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
+            $results = $app -> triggerEvent('onContentAfterDisplay', array('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
 
             $item->fulltext = $item->text;
         }
 
         $item -> text   = $text;
-        $results = $app -> triggerEvent('onContentPrepare', array ('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
+
+        $app -> triggerEvent('onTPContentPrepare', array ('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
+
+        $results = $app -> triggerEvent('onContentPrepare', array ('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
 
         $item->event = new stdClass();
         $results = $app -> triggerEvent('onContentDisplayAuthorAbout',
@@ -248,15 +254,15 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
         $item->event->authorAbout = trim(implode("\n", $results));
 
         $results = $app -> triggerEvent('onContentAfterTitle',
-            array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
+            array('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
         $item->event->afterDisplayTitle = trim(implode("\n", $results));
 
         $results = $app -> triggerEvent('onContentBeforeDisplay',
-            array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
+            array('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
         $item->event->beforeDisplayContent = trim(implode("\n", $results));
 
         $results = $app -> triggerEvent('onContentAfterDisplay',
-            array('com_tz_portfolio_plus.article', &$item, &$this->params, $offset));
+            array('com_tz_portfolio_plus.article', &$item, &$item -> params, $offset));
         $item->event->afterDisplayContent = trim(implode("\n", $results));
 
         // Trigger portfolio's plugin
@@ -283,6 +289,8 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
             &$item, &$item -> params, $offset));
         $item -> event -> onContentDisplayMediaType    = trim(implode("\n", $results));
 
+        $item->event->contentDisplayArticleView = null;
+
         if($template   = TZ_Portfolio_PlusTemplate::getTemplate(true)){
             $tplparams  = $template -> params;
             if(!$tplparams -> get('use_single_layout_builder',1)){
@@ -300,6 +308,10 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
 		}
 
         foreach($related as $i => &$itemR){
+
+            $app -> triggerEvent('onTPContentBeforePrepare', array('com_tz_portfolio_plus.article',
+                &$itemR, &$item -> params, $offset, 'related'));
+
             $itemR -> link   = JRoute::_(TZ_Portfolio_PlusHelperRoute::getArticleRoute($itemR -> slug, $itemR -> catid).$tmpl);
 
             $media      = $itemR -> media;
@@ -321,6 +333,9 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
 
                 unset($related[$i]);
             }
+
+            $app -> triggerEvent('onTPContentAfterPrepare', array('com_tz_portfolio_plus.article',
+                &$itemR, &$item -> params, $offset, 'related'));
         }
 
         $this -> itemsRelated   = $related;
@@ -331,20 +346,19 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
             false, array('filter.detail_view' => true));
         $this -> item -> extrafields    = $extraFields;
 
+        $app -> triggerEvent('onTPContentAfterPrepare', array('com_tz_portfolio_plus.article',
+            &$item, &$item -> params, $offset));
+
+        if(isset($item -> listTags)){
+            $this -> listTags   = $item -> listTags;
+        }
+
 		//Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($this->item->params->get('pageclass_sfx'));
 
 		$this->_prepareDocument();
 
         $this -> generateLayout($item,$params,$dispatcher);
-
-        if($this -> generateLayout){
-            $this -> document -> addStyleSheet(TZ_Portfolio_PlusUri::base(true)
-                . '/bootstrap/css/bootstrap.min.css', array('version' => 'auto'));
-        }
-
-        $this -> document -> addStyleSheet('components/com_tz_portfolio_plus/css/tzportfolioplus.min.css'
-            , array('version' => 'auto'));
 
 		parent::display($tpl);
 
@@ -387,17 +401,31 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
 				$title = $this->item->title;
 			}
 			$path = array(array('title' => $this->item->title, 'link' => ''));
-			$category = JCategories::getInstance('Content')->get($this->item->catid);
-			while ($category && ($menu->query['option'] != 'com_tz_portfolio_plus' || $menu->query['view'] == 'article' || $id != $category->id) && $category->id > 1)
-			{
-				$path[] = array('title' => $category->title, 'link' => TZ_Portfolio_PlusHelperRoute::getCategoryRoute($category->id));
-				$category = $category->getParent();
+
+            $catIds     = $this -> params -> get('catid');
+            $catAllow   = true;
+
+            if($catIds && is_array($catIds)){
+                $catIds = array_filter($catIds);
+                $catIds = array_values($catIds);
+                if(!count($catIds) || in_array($this -> item -> catid, $catIds)) {
+                    $catAllow = false;
+                }
+            }
+
+            if($catAllow){
+                $category = JCategories::getInstance('TZ_Portfolio_Plus')->get($this->item->catid);
+                while ($category && ($menu->query['option'] != 'com_tz_portfolio_plus' || $menu->query['view'] == 'article' || $id != $category->id) && $category->id > 1)
+                {
+                    $path[] = array('title' => $category->title, 'link' => TZ_Portfolio_PlusHelperRoute::getCategoryRoute($category->id));
+                    $category = $category->getParent();
+                }
 			}
-			$path = array_reverse($path);
-			foreach($path as $item)
-			{
-				$pathway->addItem($item['title'], $item['link']);
-			}
+            $path = array_reverse($path);
+            foreach($path as $item)
+            {
+                $pathway->addItem($item['title'], $item['link']);
+            }
 		}
 
 		// Check for empty title and add site name if param is set
@@ -413,10 +441,12 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
         if (empty($title)) {
             $title = $this->item->title;
         }
-        if(!empty($title)){
-            $title  = htmlspecialchars($title);
-        }
         $this->document->setTitle($title);
+
+        $metadata   = $this -> item -> metadata;
+        if($metadata -> get('page_title')){
+            $this -> document -> setTitle($metadata -> get('page_title'));
+        }
 
         $description    = null;
         if ($this->item->metadesc){
@@ -434,7 +464,6 @@ class TZ_Portfolio_PlusViewArticle extends TZ_Portfolio_PlusViewLegacy
         }
 
         if($description){
-            $description    = htmlspecialchars($description);
             $this -> document -> setDescription($description);
         }
 

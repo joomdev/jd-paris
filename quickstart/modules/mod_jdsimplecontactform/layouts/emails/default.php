@@ -2,7 +2,7 @@
 /**
  * @package   JD Simple Contact Form
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 // no direct access
@@ -137,7 +137,7 @@ extract($displayData);
                      <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;" width="100%">
                         <tr>
                            <td class="content-block powered-by" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; color: #999999; font-size: 12px; text-align: center;" valign="top" align="center">
-                              Powered by <a href="https://www.joomdev.com/products/extensions/jd-simplecontactform" style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;"><?php echo JText::_('MOD_JDSIMPLECONTACTFORM'); ?></a>.
+                              Powered by <a href="https://www.joomdev.com/products/extensions/jd-simple-contact-form" style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;"><?php echo JText::_('MOD_JDSIMPLECONTACTFORM'); ?></a>.
                            </td>
                         </tr>
                      </table>

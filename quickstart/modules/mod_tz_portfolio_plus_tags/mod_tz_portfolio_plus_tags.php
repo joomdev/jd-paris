@@ -25,7 +25,27 @@ require_once dirname(__FILE__) . '/helper.php';
 
 JLoader::import('com_tz_portfolio_plus.libraries.helper.modulehelper', JPATH_ADMINISTRATOR.'/components');
 
-$list = modTzPortfolioTagsHelper::getList($params);
+$doc    = JFactory::getDocument();
+
+if($params -> get('enable_bootstrap', 0)  && $params -> get('enable_bootstrap_js', 1)) {
+    if( $params -> get('bootstrapversion', 3) == 4) {
+        $doc->addScript(TZ_Portfolio_PlusUri::base(true) . '/vendor/bootstrap/js/bootstrap.min.js',
+            array('version' => 'auto'));
+        $doc->addScript(TZ_Portfolio_PlusUri::base(true) . '/vendor/bootstrap/js/bootstrap.bundle.min.js',
+            array('version' => 'auto'));
+    }else{
+        $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/bootstrap/js/bootstrap.min.js',
+            array('version' => 'auto'));
+    }
+}
+
+$list               = modTzPortfolioTagsHelper::getList($params);
+$articleCount       = modTzPortfolioTagsHelper::getArticleTotal();
+$menuActive         = $params -> get('menu_active', 'auto');
+$tagAllLink         = JRoute::_('index.php?option=com_tz_portfolio_plus&view=portfolio'
+    .(($menuActive != 'auto')?'&Itemid='.$menuActive:''));
+$moduleclass_sfx    = htmlspecialchars($params->get('moduleclass_sfx'));
+
 require TZ_Portfolio_PlusModuleHelper::getTZLayoutPath($module, $params->get('layout', 'default'));
 
 ?>

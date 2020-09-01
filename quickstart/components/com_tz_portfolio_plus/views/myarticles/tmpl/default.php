@@ -65,9 +65,18 @@ $menu   = JFactory::getApplication() -> getMenu();
 $active = $menu -> getActive();
 $url    = 'index.php?option=com_tz_portfolio_plus&view='.$this -> getName()
     .((isset($active -> id) && $active -> id)?'&Itemid='.$active -> id:'');
+
+$bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
+
+$bootstrapClass = '';
+if($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4){
+    $bootstrapClass = 'tpp-bootstrap ';
+}elseif($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 3){
+    $bootstrapClass = 'tzpp_bootstrap3 ';
+}
 ?>
 
-<div class="tpp-myarticles-page <?php echo $this->pageclass_sfx;?>">
+<div class="<?php echo $bootstrapClass;?>tpp-myarticles-page <?php echo $this->pageclass_sfx;?>">
     <?php if ($params->get('show_page_heading', 1)) : ?>
         <h1 class="page-heading">
             <?php echo $this->escape($params->get('page_heading')); ?>
@@ -173,7 +182,7 @@ $url    = 'index.php?option=com_tz_portfolio_plus&view='.$this -> getName()
                                 </td>
                                 <td class="has-context">
                                     <?php if ($item->checked_out) : ?>
-                                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'myarticles.', $canCheckin); ?>
+                                        <?php echo JHtml::_('tz_portfolio_plus.checkedout', $i, $item->editor, $item->checked_out_time, 'myarticles.', $canCheckin); ?>
                                     <?php endif; ?>
                                     <?php
                                     if(($canApprove && ($canEdit || $canEditOwn || $item -> state == 3 || $item -> state == 4)) ||

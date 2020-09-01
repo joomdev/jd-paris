@@ -40,17 +40,59 @@ class PlgSystemTZ_Portfolio_Plus extends JPlugin {
     }
 
     public function onAfterRoute(){
-        if(class_exists('TZ_Portfolio_PlusPluginHelper')) {
-            $plgGroups  = JFolder::folders(COM_TZ_PORTFOLIO_PLUS_ADDON_PATH);
-            if(count($plgGroups)){
-                foreach($plgGroups as $group){
-                    if($group != 'extrafields') {
-                        TZ_Portfolio_PlusPluginHelper::importPlugin($group);
+        $app    = JFactory::getApplication();
+        if(class_exists('TZ_Portfolio_PlusPluginHelper') && $this -> _tppAllowImport()) {
+            if(JFolder::exists(COM_TZ_PORTFOLIO_PLUS_ADDON_PATH)){
+                $plgGroups  = JFolder::folders(COM_TZ_PORTFOLIO_PLUS_ADDON_PATH);
+                if(count($plgGroups)){
+                    $app    = JFactory::getApplication();
+                    $option = $app -> input -> get('option');
+
+                    foreach($plgGroups as $group){
+                        if($group != 'extrafields') {
+//                            if($group != 'user' || ($group == 'user' && $option == 'com_users')){
+                                TZ_Portfolio_PlusPluginHelper::importPlugin($group);
+//                            }
+                        }
                     }
                 }
             }
         }
 
+    }
+
+    protected function _tppAllowImport(){
+
+        $app    = JFactory::getApplication();
+        $option = $app -> input -> get('option');
+        $task   = $app -> input -> get('task');
+        $view   = $app -> input -> get('view');
+
+        if($app -> isClient('administrator')){
+            $optionAllows   = array(
+                'com_config',
+                'com_login',
+                'com_checkin',
+                'com_cache',
+                'com_admin',
+                'com_installer',
+                'com_plugins'
+            );
+            if(!$option || ($option && in_array($option, $optionAllows))){
+                return false;
+            }
+            elseif($option == 'com_menus' && ($view == 'menus' || $view == 'items')){
+                return false;
+            }
+//            elseif($option == 'com_modules' && !$view){
+//                return false;
+//            }
+            elseif($option == 'com_users' && (!in_array($view, array('user')) && !$task)){
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 ?>

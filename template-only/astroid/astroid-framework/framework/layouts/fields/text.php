@@ -2,8 +2,8 @@
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 defined('JPATH_BASE') or die;
 
@@ -41,9 +41,6 @@ extract($displayData);
  * @var   array    $inputType       Options available for this field.
  * @var   string   $accept          File types that are accepted.
  */
-// Including fallback code for HTML5 non supported browsers.
-JHtml::_('jquery.framework');
-JHtml::_('script', 'system/html5fallback.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 
 $list = '';
 
@@ -73,7 +70,8 @@ if (isset($isSwitch) && $isSwitch) {
    $attributes[] = 'astroid-switch';
    $inputType = 'hidden';
 }
+$id = (empty($id) ? '' : ' id="' . $id . '"');
 ?>
-<input type="<?php echo $inputType; ?>" name="<?php echo $name; ?>" id="<?php echo $id; ?>" value="<?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>" <?php echo (isset($colorpicker) && $colorpicker === true) ? 'color-picker' : ''; ?> <?php echo implode(' ', $attributes); ?> />
+<input type="<?php echo $inputType; ?>" name="<?php echo $name; ?>"<?php echo $id; ?> value="<?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>" <?php echo (isset($colorpicker) && $colorpicker === true) ? 'color-picker' : ''; ?> <?php echo implode(' ', $attributes); ?> />
 <?php if (isset($colorpicker) && $colorpicker === true && !empty($sassVariable)) { ?>
 <?php } ?>

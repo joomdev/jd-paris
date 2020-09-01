@@ -2,8 +2,8 @@
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 defined('JPATH_PLATFORM') or die;
 
@@ -259,10 +259,10 @@ class JFormFieldAstroidtext extends JFormField {
           'inputmode' => $inputmode,
           'dirname' => $dirname,
           'options' => $options,
-          'ngShow' => AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngShow']),
-          'ngHide' => AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngHide']),
+          'ngShow' => Astroid\Helper::replaceRelationshipOperators($this->element['ngShow']),
+          'ngHide' => Astroid\Helper::replaceRelationshipOperators($this->element['ngHide']),
           'ngModel' => $this->element['ngModel'],
-          'ngRequired' => AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngRequired']),
+          'ngRequired' => Astroid\Helper::replaceRelationshipOperators($this->element['ngRequired']),
           'isSwitch' => $this->element['astroid-switch'] == true ? 1 : 0,
       );
 

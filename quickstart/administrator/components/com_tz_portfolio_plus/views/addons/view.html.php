@@ -41,6 +41,7 @@ class TZ_Portfolio_PlusViewAddons extends JViewLegacy
         $this->pagination       = $this->get('pagination');
         $this -> filterForm     = $this->get('FilterForm');
         $this -> activeFilters  = $this->get('ActiveFilters');
+        $input                  = JFactory::getApplication() -> input;
 
         TZ_Portfolio_PlusHelper::addSubmenu($this -> getName());
 
@@ -48,8 +49,13 @@ class TZ_Portfolio_PlusViewAddons extends JViewLegacy
         if ($this->getLayout() !== 'modal' && $this->getLayout() !== 'upload') {
             $this -> addToolbar();
         }
+//        elseif($input -> get('ismultiple')) {
+//            var_dump($this -> filterForm); die();
+//        }
 
-        $this -> sidebar    = JHtmlSidebar::render();
+        if ($this->getLayout() !== 'modal') {
+            $this -> sidebar = JHtmlSidebar::render();
+        }
 
         parent::display($tpl);
     }
@@ -66,7 +72,7 @@ class TZ_Portfolio_PlusViewAddons extends JViewLegacy
         JToolBarHelper::title(JText::_('COM_TZ_PORTFOLIO_PLUS_ADDONS_MANAGER'), 'puzzle');
 
         if ($canDo->get('core.create')) {
-            JToolbarHelper::addNew('addon.upload', 'JTOOLBAR_INSTALL');
+            JToolbarHelper::addNew('addon.upload', 'COM_TZ_PORTFOLIO_PLUS_INSTALL_UPDATE');
         }
 
         if ($canDo->get('core.edit' )) {
@@ -78,8 +84,8 @@ class TZ_Portfolio_PlusViewAddons extends JViewLegacy
         }
 
         if ($canDo->get('core.edit.state')) {
-            JToolBarHelper::publish('addons.publish','JENABLED', true);
-            JToolBarHelper::unpublish('addons.unpublish','JDISABLED', true);
+            JToolBarHelper::publish($this -> getName().'.publish','JENABLED', true);
+            JToolBarHelper::unpublish($this -> getName().'.unpublish','JDISABLED', true);
         }
 
         if($user->authorise('core.admin', 'com_tz_portfolio_plus')
@@ -92,5 +98,7 @@ class TZ_Portfolio_PlusViewAddons extends JViewLegacy
 
         TZ_Portfolio_PlusToolbarHelper::customHelp('https://www.youtube.com/channel/UCrLN8LMXTyTahwDKzQ-YOqg/videos'
             ,'COM_TZ_PORTFOLIO_PLUS_VIDEO_TUTORIALS', 'youtube', 'youtube');
+
+        JToolbarHelper::link('javascript:', JText::_('COM_TZ_PORTFOLIO_PLUS_INTRO_GUIDE'), 'support');
     }
 }

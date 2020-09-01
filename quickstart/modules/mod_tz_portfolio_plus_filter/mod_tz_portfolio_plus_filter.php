@@ -27,6 +27,7 @@ require_once dirname(__FILE__) . '/helper.php';
 
 JLoader::import('com_tz_portfolio_plus.libraries.helper.modulehelper', JPATH_ADMINISTRATOR.'/components');
 
+$lang               = JFactory::getApplication() -> getLanguage();
 $upper_limit        = $lang->getUpperLimitSearchWord();
 $button             = $params->get('button', 0);
 $imagebutton        = $params->get('imagebutton', 0);
@@ -42,5 +43,22 @@ $moduleclass_sfx    = htmlspecialchars($params->get('moduleclass_sfx'), ENT_COMP
 $mitemid            = $set_Itemid > 0 ? $set_Itemid : $app->input->get('Itemid');
 $advfilter          = modTZ_Portfolio_PlusFilterHelper::getAdvFilterFields($params);
 $categoryOptions    = modTZ_Portfolio_PlusFilterHelper::getCategoriesOptions($params);
+
+$doc    = JFactory::getDocument();
+
+if($params -> get('enable_bootstrap', 0) && $params -> get('enable_bootstrap_js', 1)) {
+    if( $params -> get('bootstrapversion', 3) == 4) {
+        $doc->addScript(TZ_Portfolio_PlusUri::base(true) . '/vendor/bootstrap/js/bootstrap.min.js',
+            array('version' => 'auto'));
+        $doc->addScript(TZ_Portfolio_PlusUri::base(true) . '/vendor/bootstrap/js/bootstrap.bundle.min.js',
+            array('version' => 'auto'));
+    }else{
+        $doc -> addScript(TZ_Portfolio_PlusUri::base(true).'/bootstrap/js/bootstrap.min.js',
+            array('version' => 'auto'));
+    }
+}
+if($params -> get('enable_bootstrap', 0) && $params -> get('bootstrapversion', 3) == 3) {
+    $doc -> addStyleSheet(TZ_Portfolio_PlusUri::base(true).'/bootstrap/css/bootstrap.min.css');
+}
 
 require TZ_Portfolio_PlusModuleHelper::getTZLayoutPath($module, $params->get('layout', 'default'));

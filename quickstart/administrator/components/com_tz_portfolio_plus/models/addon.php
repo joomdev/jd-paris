@@ -77,6 +77,21 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
             (isset($filters['type'])?$filters['type']:null), 'string');
         $this -> setState('filter.type',$type);
 
+        if ($list = $app->getUserStateFromRequest($this->option . '.'.$this -> getName() . '.list', 'list', array(), 'array'))
+        {
+            $ordering   = 'rdate';
+            if(isset($list['fullordering'])) {
+                $ordering = $list['fullordering'];
+            }
+            $this->setState('list.ordering', $ordering);
+        }
+
+        if($listSubmit  = $app -> input -> get('list', array(), 'array')){
+            if(isset($list['form_submited'])) {
+                $this->setState('list.form_submited', $list['form_submited']);
+            }
+        }
+
         // Support old ordering field
         $oldOrdering = $app->input->get('filter_order', 'rdate');
 
@@ -85,7 +100,7 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
             $this->setState('list.ordering', $oldOrdering);
         }
 
-        $this -> setState('cache.filename', 'addon_list');
+        $this -> setState('cache.filename', $this -> getName().'_list');
 
     }
 
@@ -94,7 +109,7 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
         return JTable::getInstance($type, $prefix, $config);
     }
 
-    function getForm($data = array(), $loadData = true){
+    public function getForm($data = array(), $loadData = true){
         $input  = JFactory::getApplication() -> input;
         // The folder and element vars are passed when saving the form.
         if (empty($data))
@@ -119,7 +134,7 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
             $control    = '';
         }
 
-        $form = $this->loadForm('com_tz_portfolio_plus.'.$input -> getCmd('view'), $input -> getCmd('view'),
+        $form = $this->loadForm('com_tz_portfolio_plus.'.$this -> getName(), $this -> getName(),
             array('control' => $control, 'load_data' => $loadData));
 
         if (empty($form)) {
@@ -136,6 +151,14 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
         if (empty($data))
         {
             $data = $this->getItem();
+        }
+
+        // Pre-fill the list options
+        if (!property_exists($data, 'list'))
+        {
+            $data->list = array(
+                'fullordering'  => $this->getState('list.ordering')
+            );
         }
 
         $this->preprocessData('com_tz_portfolio_plus.'.$input -> getCmd('view'), $data);
@@ -179,7 +202,7 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
             }
 
             // Load the core and/or local language file(s).
-            $lang->load('plg_' . $folder . '_' . $element, COM_TZ_PORTFOLIO_PLUS_ADDON_PATH . '/' . $folder . '/' . $element, null, false, true);
+            TZ_Portfolio_PlusPluginHelper::loadLanguage($element, $folder);
 
             if (file_exists($formFile))
             {
@@ -322,7 +345,6 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
             $name   = (string) $manifest -> name;
             $type   = (string) $attrib -> type;
 
-
             if(!in_array($type, $this -> accept_types) || (in_array($type, $this -> accept_types)
                     && $type != $this -> type)){
                 $this -> setError(JText::_('COM_TZ_PORTFOLIO_PLUS_UNABLE_TO_FIND_INSTALL_PACKAGE'));
@@ -345,14 +367,20 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
             $tzinstaller    = new $class($installer,$installer -> getDbo());
             $tzinstaller -> setRoute('install');
             $tzinstaller -> setManifest($installer -> getManifest());
+
             if(!COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE) {
                 $tzinstaller -> setProperties(array('type' => $type));
             }
+
             if(!$tzinstaller -> install()){
                 // There was an error installing the package.
                 $msg = JText::sprintf('COM_TZ_PORTFOLIO_PLUS_INSTALL_ERROR', $input -> getCmd('view'));
                 $result = false;
                 $this -> setError($msg);
+            }
+
+            if(method_exists($this, 'afterInstall')) {
+                $this -> afterInstall($manifest);
             }
 
             // This event allows a custom a post-flight:
@@ -363,6 +391,8 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
 
         return $result;
     }
+
+    protected function afterInstall($manifest){}
 
     public function uninstall($eid = array())
     {
@@ -744,6 +774,7 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
         $filters        = $this -> getState('filters');
         $cacheFileName  = $this -> getState('cache.filename');
         $ordering       = $this -> getState('list.ordering');
+        $formSubmited   = $this -> getState('list.form_submited');
 
         // Cache time is 1 day
         $cacheTime      = 24 * 60 * 60;
@@ -775,6 +806,10 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
                     break;
                 }
             }
+        }
+
+        if($formSubmited){
+            $hasCache   = false;
         }
 
         if($hasCache && $data && isset($data -> start) && $data -> start != $limitstart){
@@ -872,7 +907,7 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
         return $data -> items;
     }
 
-    protected function getManifest_Cache($element, $folder = null, $type = 'tz_portfolio_plus-plugin'){
+    protected function getManifest_Cache($element, $folder = null, $type = 'tz_portfolio_plus-plugin', $key = null){
 
         if(!$element){
             return false;
@@ -894,7 +929,13 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
             return false;
         }
 
-        if(!$table -> id){
+
+        if (empty($key))
+        {
+            $key = $table->getKeyName();
+        }
+
+        if(!$table -> $key){
             return false;
         }
 
@@ -907,7 +948,7 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
         return $manifestCache;
     }
 
-    protected function getUrlFromServer($xmlTag = 'addonurl'){
+    public function getUrlFromServer($xmlTag = 'addonurl'){
 
         if(!$xmlTag){
             return false;
@@ -1014,15 +1055,27 @@ class TZ_Portfolio_PlusModelAddon extends JModelAdmin
         $target     = null;
 
         // Parse the Content-Disposition header to get the file name
-        if (isset($response->headers['Content-Disposition']) && $content = $response -> headers['Content-Disposition']){
-            if(is_array($content)){
-                $content    = array_shift($content);
+        $contentDisposition = false;
+        if(isset($response->headers['Content-Disposition'])){
+            $contentDisposition = 'Content-Disposition';
+        }elseif(isset($response -> headers['CONTENT-DISPOSITION'])){
+            $contentDisposition = 'CONTENT-DISPOSITION';
+        }if(isset($response -> headers['content-disposition'])){
+            $contentDisposition = 'content-disposition';
+        }
+
+        if ($contentDisposition && ($content = $response->headers[$contentDisposition])) {
+            if (is_array($content)) {
+                $content = array_shift($content);
             }
-             if(preg_match("/\s*filename\s?=\s?(.*)/", $content, $parts))
-            {
+            if (preg_match("/\s*filename\s?=\s?(.*)/", $content, $parts)) {
                 $flds = explode(';', $parts[1]);
                 $target = trim($flds[0], '"');
             }
+        }
+
+        if(!$target){
+            return false;
         }
 
         $tmp_dest	= JPATH_ROOT . '/tmp/tz_portfolio_plus_install/' . $target;

@@ -38,22 +38,22 @@ if($params -> get('show_about_author', 1) && ($author = $this -> authorAbout)){
         }
     }
     ?>
-    <div class="tpp-author-about">
+    <div class="tpp-author-about border p-3 mb-3">
         <div class="media">
-            <div class="avatar media-left mr-3<?php echo (!$author -> avatar)? ' tpp-avatar__bg-'.rand(1,5):'';?>">
+            <div class="d-flex justify-content-center rounded-sm avatar media-left mr-3<?php echo (!$author -> avatar)? ' tpp-avatar__bg-'.rand(1,5):'';?>">
                 <?php if($author -> avatar){?>
                     <img src="<?php echo JUri::root().$author -> avatar;?>" alt="<?php echo $author -> name;?>"/>
                 <?php }else{?>
-                    <span class="symbol"><?php echo $avaName; ?></span>
+                    <span class="align-self-center symbol"><?php echo $avaName; ?></span>
                 <?php }?>
             </div>
             <div class="media-body">
-                <h2 class="h3 title"><?php echo $author -> name; ?></h2>
+                <h3 class="h3 title"><?php echo $author -> name; ?></h3>
 
                 <?php if(($params -> get('show_email_user', 1) && $author -> email) ||
                     ($params -> get('show_gender_user', 1) && $author -> gender) ||
                     ($params -> get('show_url_user',1) AND !empty($author -> url))){?>
-                    <ul class="list-inline muted text-muted small">
+                    <ul class="list-inline ml-0 muted text-muted small mb-0">
                         <?php if($params -> get('show_email_user', 1) && $author -> email){?>
                             <li class="list-inline-item email"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_EMAIL');?>
                                 <?php

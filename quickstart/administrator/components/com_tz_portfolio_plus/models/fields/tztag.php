@@ -34,7 +34,6 @@ FormHelper::loadFieldClass('list');
 class JFormFieldTZTag extends JFormFieldList{
 
     public $type        = 'TZTag';
-    protected $layout   = 'form.field.tag';
 
     protected function getInput()
     {
@@ -45,9 +44,6 @@ class JFormFieldTZTag extends JFormFieldList{
             $id    = isset($this->element['id']) ? $this->element['id'] : null;
             $cssId = '#' . $this->getId($id, $this->element['name']);
 
-            // Load the ajax-chosen customised field
-//            \JHtml::_('tag.ajaxfield', $cssId, $this->allowCustom());
-
             $minTermLength = 1;
 
             $displayData = array(
@@ -56,7 +52,8 @@ class JFormFieldTZTag extends JFormFieldList{
                 'allowCustom'   => TZ_Portfolio_PlusUser::getUser()->authorise('core.create',
                     'com_tz_portfolio_plus.tag') ? $this->allowCustom() : false,
             );
-            $this->getRenderer($this->layout)->render($displayData);
+
+            $this->getRenderer('form.field.tag')->render($displayData);
         }
 
         if (!is_array($this->value) && !empty($this->value))
@@ -174,7 +171,7 @@ class JFormFieldTZTag extends JFormFieldList{
 
     protected function getRenderer($layoutId = 'default')
     {
-        $renderer = new FileLayout($layoutId,COM_TZ_PORTFOLIO_PLUS_ADMIN_PATH.'/layouts');
+        $renderer   = new FileLayout($layoutId,COM_TZ_PORTFOLIO_PLUS_ADMIN_PATH.'/layouts');
 
         $renderer->setDebug($this->isDebugEnabled());
 
@@ -188,4 +185,8 @@ class JFormFieldTZTag extends JFormFieldList{
         return $renderer;
     }
 
+    protected function getLayoutPaths()
+    {
+        return array();
+    }
 }

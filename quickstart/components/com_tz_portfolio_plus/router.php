@@ -19,8 +19,9 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Application\ApplicationHelper;
+use Joomla\Registry\Registry;
 use Joomla\CMS\Component\Router\RouterBase;
+use Joomla\CMS\Application\ApplicationHelper;
 
 class TZ_Portfolio_PlusRouter extends RouterBase
 {
@@ -148,11 +149,14 @@ class TZ_Portfolio_PlusRouter extends RouterBase
 
         $segments = array();
 
+
         // get a menu item based on Itemid or currently active
-        $app = JFactory::getApplication();
-        $menu = $app->getMenu();
-        $params = JComponentHelper::getParams('com_tz_portfolio_plus');
-        $advanced = $params->get('sef_advanced_link', 0);
+        $app            = JFactory::getApplication();
+        $menu           = $app -> getMenu();
+        $params         = JComponentHelper::getParams('com_tz_portfolio_plus');
+        $advanced       = $params->get('sef_advanced_link', 0);
+        $queryIdGiven   = isset($query['id'])?true:false;
+        $removeCategory = $params -> get('sef_remove_category', 1);
 
         // we need a menu item.  Either the one specified in the query, or the current active one if none specified
         if (empty($query['Itemid'])) {
@@ -198,6 +202,11 @@ class TZ_Portfolio_PlusRouter extends RouterBase
             }
 
             unset($query['view']);
+
+            // Since v2.3.1
+            if($removeCategory && $queryIdGiven && $view == 'portfolio'){
+                $segments[] = $params -> get('sef_portfolio_prefix','category');
+            }
 
             if ($view == 'article') {
 
@@ -263,36 +272,28 @@ class TZ_Portfolio_PlusRouter extends RouterBase
                 $path = array_reverse($category->getPath());
 
                 foreach ($path as $id) {
-//                    if (isset($mCatid) && is_array($mCatid)) {
-//                        $chkCatidk = false;
-//                        for ($i = 0; $i < count($mCatid); $i++) {
-//                            if ((int)$id == (int)$mCatid[$i]) {
-//                                $chkCatidk = true;
-//                                break;
-//                            }
-//                        }
-//                        if ($chkCatidk) break;
-//                    }
-//                    elseif ((int)$id == (int)$mCatid) {
-//                        break;
-//                    }
 
                     list($tmp, $id) = explode(':', $id, 2);
 
 
-                    if($params -> get('sef_remove_category_id', 0)) {
-                        $array[] = $id;
-                    }else{
-                        $array[] = (int) $tmp.':'.$id;
+                    if(!$removeCategory || ($removeCategory && $view != 'article')){ /* Since v2.3.1 */
+                        if($params -> get('sef_remove_category_id', 0)) {
+                            $array[] = $id;
+                        }else{
+                            $array[] = (int) $tmp.':'.$id;
+                        }
                     }
                 }
 
                 $array = array_reverse($array);
             }else{
-                if($params -> get('sef_remove_category_id', 0)){
-                    $array[] = $category->alias;
-                }else {
-                    $array[]  = $category -> id.':'.$category -> alias;
+
+                if(!$removeCategory || ($removeCategory && $view != 'article')){ /* Since v2.3.1 */
+                    if($params -> get('sef_remove_category_id', 0)){
+                        $array[] = $category->alias;
+                    }else {
+                        $array[]  = $category -> id.':'.$category -> alias;
+                    }
                 }
             }
 
@@ -338,7 +339,7 @@ class TZ_Portfolio_PlusRouter extends RouterBase
         }
 
         if ($view == 'tags') {
-            $segments[] = $params -> get('sef_tags_prefix','tags');
+            $segments[] = $params -> get('sef_tags_prefix','tag');
 
             // Make sure we have the id and the alias
             if (strpos($query['id'], ':') == false) {
@@ -413,7 +414,7 @@ class TZ_Portfolio_PlusRouter extends RouterBase
 
             if (!$userMenuItemGiven) {
                 if (isset($query['view'])) {
-                    $segments[] = $params -> get('sef_users_prefix','users');
+                    $segments[] = $params -> get('sef_users_prefix','user');
                     unset($query['view']);
                 }
 
@@ -864,7 +865,7 @@ class TZ_Portfolio_PlusRouter extends RouterBase
     protected function _getTagSegment(&$query, &$segments){
         $params = JComponentHelper::getParams('com_tz_portfolio_plus');
         if(isset($query['tid'])){
-            $segments[] = $params -> get('sef_tags_prefix', 'tags');
+            $segments[] = $params -> get('sef_tags_prefix', 'tag');
             $db         = JFactory::getDbo();
             $aquery     = $db -> getQuery(true);
 
@@ -901,7 +902,7 @@ class TZ_Portfolio_PlusRouter extends RouterBase
         $params = JComponentHelper::getParams('com_tz_portfolio_plus');
         if(isset($query['uid'])){
             $uid        = $query['uid'];
-            $segments[] = $params -> get('sef_users_prefix', 'users');
+            $segments[] = $params -> get('sef_users_prefix', 'user');
 
             $user   = JFactory::getUser($uid);
 
@@ -956,8 +957,8 @@ class TZ_Portfolio_PlusRouter extends RouterBase
     }
 
     protected function sefParse(&$segments, $addOnVars = false){
-        $total = count($segments);
-        $vars = array();
+        $vars   = array();
+        $total  = count($segments);
 
         for ($i = 0; $i < $total; $i++)
         {
@@ -965,70 +966,38 @@ class TZ_Portfolio_PlusRouter extends RouterBase
         }
 
         //Get the active menu item.
-        $app = JFactory::getApplication();
-        $menu = $app->getMenu();
-        $item = $menu->getActive();
-        $params = JComponentHelper::getParams('com_tz_portfolio_plus');
-        $advanced = $params->get('sef_advanced_link', 0);
-        $db = JFactory::getDBO();
+        $db             = JFactory::getDBO();
+        $app            = JFactory::getApplication();
+        $menu           = $app->getMenu();
+        $item           = $menu->getActive();
+        $params         = JComponentHelper::getParams('com_tz_portfolio_plus');
+        $advanced       = $params->get('sef_advanced_link', 0);
+        $removeCategory = $params -> get('sef_remove_category',1);
 
-        // Count route segments
-        $count = count($segments);
 
         // Standard routing for articles.  If we don't pick up an Itemid then we get the view from the segments
         // the first segment is the view and the last segment is the id of the article or category.
         if (!isset($item)) {
             $vars['view'] = $segments[0];
 
-            if ($vars['view'] == $params -> get('sef_users_prefix','users')) {
-                $vars['view']   = 'users';
-                if (!is_numeric($segments[$count - 1])) {
-                    $vars['id'] = (int)$segments[$count - 1];
-                }
-            } else {
-
-                $sefArticleSep  = $params -> get('sef_article_separator','slash_revert_id');
-                $alias          = null;
-                if($sefArticleSep == 'slash') {
-                    if($params -> get('sef_use_article_id',1)){
-                        $vars['id'] = $segments[$count - 2];
-                    }else {
-                        if ($params->get('sef_use_article_alias', 1)
-                            || (!$params->get('sef_use_article_id', 1) && !$params->get('sef_use_article_alias', 1))
-                        ) {
-                            $alias = $segments[$count - 1];
-                        }
-                    }
-                }elseif($sefArticleSep == 'slash_revert_id'){
-                    if($params -> get('sef_use_article_id',1)) {
-                        $vars['id'] = $segments[$count - 1];
-                    }else{
-                        if($params -> get('sef_use_article_alias',1)
-                            || (!$params -> get('sef_use_article_id',1) && !$params -> get('sef_use_article_alias',1))) {
-                            $alias  = $segments[$count - 2];
-                        }
-                    }
-                }else{
-                    if($params -> get('sef_use_article_id',1)) {
-                        $vars['id'] = $segments[$count - 1];
-                    }
-                }
-            }
-
-            return $vars;
+            unset($segments[0]);
+            $segments   = array_values($segments);
         }
+
+        // Count route segments
+        $count = count($segments);
 
         // if there is only one segment, then it points to either an article or a category
         // we test it first to see if it is a category.  If the id and alias match a category
         // then we assume it is a category.  If they don't we assume it is an article
         if ($count == 1) {
-            if (strlen($segments[0]) == 1) {
-                $vars['view'] = $item->query["view"];
-                if (isset($item->query['id'])) {
-                    $vars['id'] = $item->query["id"];
-                }
-                return $vars;
-            }
+//            if (strlen($segments[0]) == 1) {
+//                $vars['view'] = $item->query["view"];
+//                if (isset($item->query['id'])) {
+//                    $vars['id'] = $item->query["id"];
+//                }
+//                return $vars;
+//            }
 
             if($segments[0] == 'search'){
                 $vars['view']   = 'search';
@@ -1055,7 +1024,10 @@ class TZ_Portfolio_PlusRouter extends RouterBase
 
         if (!$advanced && $count) {
 
-            if ($segments[0] == $params -> get('sef_tags_prefix','tags')) {
+            if ($removeCategory && $segments[0] == $params -> get('sef_portfolio_prefix','category')) {
+                $vars['view'] = 'portfolio';
+            }
+            if ($segments[0] == $params -> get('sef_tags_prefix','tag')) {
                 $vars['view'] = 'portfolio';
                 if($params -> get('sef_tag_separator','slash_revert_id') == 'slash_revert_id'
                     || $params -> get('sef_tag_separator','slash_revert_id') == 'dash'){
@@ -1067,10 +1039,10 @@ class TZ_Portfolio_PlusRouter extends RouterBase
                         $vars['tid'] = (int) $segments[count($segments) - 1];
                     }
                 }
-
                 return $vars;
             }
-            if ($segments[0] == $params -> get('sef_users_prefix','users')) {
+
+            if ($segments[0] == $params -> get('sef_users_prefix','user')) {
                 $vars['view'] = 'portfolio';
                 if($params -> get('sef_user_separator','slash_revert_id') == 'slash_revert_id'
                     || $params -> get('sef_user_separator','slash_revert_id') == 'dash'){
@@ -1100,7 +1072,7 @@ class TZ_Portfolio_PlusRouter extends RouterBase
                 return $vars;
             }
 
-            $temp = $item->params;
+            $temp = ($item && isset($item -> params))?$item->params:(new Registry());
             $menuParams = clone($params);
             $menuParams->merge($temp);
 
@@ -1138,7 +1110,9 @@ class TZ_Portfolio_PlusRouter extends RouterBase
                         if($params -> get('sef_remove_category_id', 0)) {
                             $catAlias  = preg_replace('/:/', '-', $segments[$count - 2], 1);
                         }else{
-                            list($catId, $catAlias) = explode(':', $segments[$count - 2]);
+                            if(strpos($segments[$count - 2], ':') != false) {
+                                list($catId, $catAlias) = explode(':', $segments[$count - 2]);
+                            }
                         }
                     }
                 }else{
@@ -1147,14 +1121,19 @@ class TZ_Portfolio_PlusRouter extends RouterBase
                         if($params -> get('sef_remove_category_id', 0)) {
                             $catAlias  = preg_replace('/:/', '-', $segments[$count - 1], 1);
                         }else {
-                            list($catId, $catAlias) = explode(':', $segments[$count - 1]);
+                            if(strpos($segments[$count - 1], ':') != false) {
+                                list($catId, $catAlias) = explode(':', $segments[$count - 1]);
+                            }
                         }
                     }
                 }
 
                 // Get category by last segment
-                if($lastCategory = $this -> getCategoryByAlias($lastAlias)){
-                    $vars['view']   = 'portfolio';
+                if((!$removeCategory || (isset($vars['view']) && $vars['view'] == 'portfolio'))
+                    && $lastCategory = $this -> getCategoryByAlias($lastAlias)){
+                    if(!$removeCategory) {
+                        $vars['view']   = 'portfolio';
+                    }
                     $vars['id']     = $lastCategory -> id.':'.$lastCategory -> alias;
 
                     return $vars;
@@ -1215,20 +1194,23 @@ class TZ_Portfolio_PlusRouter extends RouterBase
         }
 
         // we get the category id from the menu item and search from there
-        $id = $item->query['id'];
+        if($item) {
+            $id = $item->query['id'];
 
-        if($item -> query['view'] == 'portfolio') {
-            $category = JCategories::getInstance('TZ_Portfolio_Plus')->get($id);
+            if ($item->query['view'] == 'portfolio') {
+                $category = JCategories::getInstance('TZ_Portfolio_Plus')->get($id);
 
-            if (!$category) {
-                JError::raiseError(404, JText::_('COM_TZ_PORTFOLIO_PLUS_ERROR_PARENT_CATEGORY_NOT_FOUND'));
-                return $vars;
+                if (!$category) {
+                    JError::raiseError(404, JText::_('COM_TZ_PORTFOLIO_PLUS_ERROR_PARENT_CATEGORY_NOT_FOUND'));
+                    return $vars;
+                }
+
+                $categories = $category->getChildren();
+                $vars['catid'] = $id;
             }
-
-            $categories = $category->getChildren();
-            $vars['catid'] = $id;
+            $vars['id'] = $id;
         }
-        $vars['id'] = $id;
+
         $found = 0;
 
         foreach ($segments as $segment) {
@@ -1261,7 +1243,7 @@ class TZ_Portfolio_PlusRouter extends RouterBase
 
                 $vars['id'] = $cid;
 
-                if ($item->query['view'] == 'date' && $count != 1) {
+                if ($item && $item->query['view'] == 'date' && $count != 1) {
                     $vars['year'] = $count >= 2 ? $segments[$count - 2] : null;
                     $vars['month'] = $segments[$count - 1];
                     $vars['view'] = 'date';
@@ -1274,7 +1256,7 @@ class TZ_Portfolio_PlusRouter extends RouterBase
         }
 
         if(!isset($vars['view'])){
-            $vars['view']   = $item -> query['view'];
+            $vars['view']   = $item?$item -> query['view']:'';
         }
 
         return $vars;
@@ -1506,4 +1488,28 @@ class TZ_Portfolio_PlusRouter extends RouterBase
 
         return $vars;
     }
+}
+
+/**
+ * Proxy methods for building urls
+ *
+ * @since 2.3.4
+ */
+function TZ_Portfolio_PlusBuildRoute(&$query)
+{
+    $router = new TZ_Portfolio_PlusRouter();
+
+    return $router->build($query);
+}
+
+/**
+ * Proxy methods for parsing urls
+ *
+ * @since 2.3.4
+ */
+function TZ_Portfolio_PlusParseRoute($segments)
+{
+    $router = new TZ_Portfolio_PlusRouter();
+
+    return $router->parse($segments);
 }

@@ -1,9 +1,7 @@
 .blog {
-	.items-row {
-		.card {
-			border-radius: 0;
-			border-color: $light;
-		}
+	.items-row .card {
+		border-radius: 0;
+		border-color: $light;
 	}
 	.item-title {
 		h2[itemprop="name"] {

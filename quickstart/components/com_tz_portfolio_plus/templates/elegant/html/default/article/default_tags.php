@@ -30,7 +30,7 @@ if($params -> get('show_tags',1)){
     <span class="title"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_TAG_TITLE');?></span>
     <?php foreach($this -> listTags as $i => $item){ ?>
         <span  class="tag-list<?php echo $i ?>" itemprop="keywords">
-          <a class="label label-default" href="<?php echo $item -> link; ?>"<?php
+          <a class="badge badge-secondary" href="<?php echo $item -> link; ?>"<?php
           if(isset($tmpl) AND !empty($tmpl)): echo ' target="_blank"'; endif;?>><?php
               echo $item -> title;
               ?></a>

@@ -44,10 +44,8 @@ div.jd-testimonial {
 	}
 	.slick-dots {
 		bottom: -50px;
-		li button {
-			&:before {
-				font-size: 14px;
-			}
+		li button&:before {
+			font-size: 14px;
 		}
 	}
 }

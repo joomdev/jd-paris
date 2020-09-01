@@ -23,8 +23,8 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
 JHtml::_('behavior.formvalidator');
-JHtml::_('behavior.tabstate');
 if(!COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE) {
+    JHtml::_('behavior.tabstate');
     JHtml::_('formbehavior.chosen', 'select');
 }
 else{

@@ -28,10 +28,11 @@ tzportfolioplusimport('plugin.helpers.legacy');
 
 class TZ_Portfolio_PlusPluginHelper extends TZ_Portfolio_PlusPluginHelperLegacy {
 
-    protected static $plugins       = null;
     protected static $layout        = 'default';
-    protected static $plugin_types  = null;
+    protected static $plugins       = null;
     protected static $instances     = array();
+    protected static $plugin_types  = null;
+    protected static $languageLoaded    = array();
 
     public static function getInstance($type, $plugin = null, $enabled=true, $dispatcher = null){
         if (!isset(self::$instances[$type.$plugin])) {
@@ -147,10 +148,11 @@ class TZ_Portfolio_PlusPluginHelper extends TZ_Portfolio_PlusPluginHelperLegacy 
         else
         {
             if($plugins){
-                foreach ($plugins as $p)
+                foreach ($plugins as &$p)
                 {
+                    JFactory::getApplication() -> triggerEvent('onTPAddOnProcess', array(&$p));
                     // Is this plugin in the right group?
-                    if ($p->type == $type && $p->name == $plugin)
+                    if ($p && $p->type == $type && $p->name == $plugin)
                     {
                         $result = $p;
                         break;
@@ -281,6 +283,9 @@ class TZ_Portfolio_PlusPluginHelper extends TZ_Portfolio_PlusPluginHelperLegacy 
                 foreach($plugins as &$item){
                     $item -> manifest_cache = json_decode($item -> manifest_cache);
                 }
+
+                JFactory::getApplication() -> triggerEvent('onTPAddOnIsLoaded', array(&$plugins));
+
                 static::$plugins = $plugins;
             }else{
                 static::$plugins    = false;
@@ -330,6 +335,39 @@ class TZ_Portfolio_PlusPluginHelper extends TZ_Portfolio_PlusPluginHelperLegacy 
             }
         }
         return false;
+    }
+
+    public static function loadLanguage($element, $type){
+
+        $lang           = JFactory::getLanguage();
+        $tag            = $lang -> getTag();
+        $prefix         = 'tp_addon_';
+        $basePath       = COM_TZ_PORTFOLIO_PLUS_ADDON_PATH . '/' . $type . '/' . $element;
+        $_filename      = $type . '_' . $element;
+
+        $__files    = array();
+        if(is_dir($basePath.'/language/'.$tag)) {
+            $__files = \JFolder::files($basePath . '/language/'.$tag, 'plg_.*.ini$', false);
+        }elseif(is_dir($basePath.'/language/en-GB')) {
+            $__files = \JFolder::files($basePath . '/language/en-GB', 'plg_.*.ini$', false);
+        }
+
+        if($__files && count($__files)){
+            $prefix = 'plg_';
+        }
+        $extension = $prefix . $_filename;
+
+        if(isset(self::$languageLoaded[$extension])){
+            return self::$languageLoaded[$extension];
+        }
+
+        $load   = $lang->load(strtolower($extension), $basePath, null, false, true);
+
+        if($load) {
+            self::$languageLoaded[$extension] = $load;
+        }
+
+        return $load;
     }
 
 }

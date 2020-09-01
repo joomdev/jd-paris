@@ -20,29 +20,19 @@
 //no direct access
 defined('_JEXEC') or die('Restricted access');
 
-JHtml::_('behavior.formvalidation');
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.tabstate');
+JHtml::_('behavior.formvalidator');
+JHtml::_('bootstrap.tooltip');
 
 if(!COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE) {
+    JHtml::_('behavior.tabstate');
     JHtml::_('formbehavior.chosen', 'select');
 }else{
     JHtml::_('formbehavior.chosen', 'select[multiple]');
 }
 
 $form   = $this -> form;
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "group.cancel" || document.formvalidator.isValid(document.getElementById("group-form")))
-		{
-			' . $form->getField("description")->save() . '
-			Joomla.submitform(task, document.getElementById("group-form"));
-		}
-	};
-');
 ?>
-<form name="adminForm" method="post" class="form-validate tpArticle" id="group-form"
+<form name="adminForm" method="post" class="form-validate tpArticle" id="adminForm"
       action="index.php?option=com_tz_portfolio_plus&view=group&layout=edit&id=<?php echo (int) $this -> item -> id?>">
     <?php echo JHtml::_('tzbootstrap.addrow');?>
         <div class="span8 col-md-8 form-horizontal">

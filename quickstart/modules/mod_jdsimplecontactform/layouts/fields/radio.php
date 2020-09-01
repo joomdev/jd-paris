@@ -2,7 +2,7 @@
 /**
  * @package   JD Simple Contact Form
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 // no direct access
@@ -12,7 +12,11 @@ $options = ModJDSimpleContactFormHelper::getOptions($field->options);
 $attrs = [];
 if ($field->required) {
    $attrs[] = 'required';
-   $attrs[] = 'data-parsley-required-message="' . JText::sprintf('MOD_JDSCF_REQUIRED_ERROR', strip_tags($label)) . '"';
+   if (isset($field->custom_error) && !empty(trim($field->custom_error))) {
+      $attrs[] = 'data-parsley-required-message="' . JText::sprintf($field->custom_error) . '"';
+   } else {
+      $attrs[] = 'data-parsley-required-message="' . JText::sprintf('MOD_JDSCF_REQUIRED_ERROR', strip_tags($label)) . '"';
+   }
 }
 $optionslayout = isset($field->optionslayout) ? $field->optionslayout : 'vertical';
 ?>

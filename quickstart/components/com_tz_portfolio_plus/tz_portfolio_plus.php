@@ -20,6 +20,17 @@
 // no direct access
 defined('_JEXEC') or die;
 
+/* Setup */
+$file   = JPATH_COMPONENT_ADMINISTRATOR.'/setup/index.php';
+
+if(JFile::exists($file)){
+?>
+    <h2><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_INSTALL_OFFLINE') ?></h2>
+    <div><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_INSTALL_OFFLINE_DESC') ?></div>
+<?php
+    return;
+}
+
 // Include dependancies
 jimport('joomla.application.component.controller');
 

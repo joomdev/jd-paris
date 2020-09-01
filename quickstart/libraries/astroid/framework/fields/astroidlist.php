@@ -1,12 +1,10 @@
 <?php
 
-jimport('astroid.framework.helper');
-
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 defined('JPATH_PLATFORM') or die;
 
@@ -44,16 +42,14 @@ class JFormFieldAstroidList extends JFormField {
       $attr .= $this->multiple ? ' multiple' : '';
       $attr .= $this->required ? ' required aria-required="true"' : '';
       $attr .= $this->autofocus ? ' autofocus' : '';
-      //$attr .= $this->element['ngShow'] ? ' ng-show="' . AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngShow']) . '"' : '';
-      //$attr .= $this->element['ngHide'] ? ' ng-hide="' . AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngHide']) . '"' : '';
       $attr .= ' ng-model="' . $this->fieldname . '"';
       $attr .= ' data-fieldname="' . $this->fieldname . '"';
-      $attr .= $this->element['ngRequired'] ? ' ng-required="' . AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngRequired']) . '"' : '';
+      $attr .= $this->element['ngRequired'] ? ' ng-required="' . Astroid\Helper::replaceRelationshipOperators($this->element['ngRequired']) . '"' : '';
 
       if (isset($this->element['astroid-content-layout']) && !empty($this->element['astroid-content-layout'])) {
          $attr .= ' data-astroid-content-layout="' . $this->element['astroid-content-layout'] . '"';
       }
-      
+
       if (isset($this->element['astroid-content-layout-load']) && !empty($this->element['astroid-content-layout-load'])) {
          $attr .= ' data-astroid-content-layout-load="' . $this->element['astroid-content-layout-load'] . '"';
       }
@@ -107,6 +103,19 @@ class JFormFieldAstroidList extends JFormField {
     * @since   3.7.0
     */
    protected function getOptions() {
+
+      if (!empty($this->element['bootstrap-color'])) {
+         $options = array();
+         $variables = Astroid\Helper\Constants::$bootstrap_colors;
+         foreach ($variables as $value => $label) {
+            $object = new stdClass();
+            $object->value = $value;
+            $object->text = \JText::_($label);
+            $options[] = $object;
+         }
+         return $options;
+      }
+
       $fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
       $options = array();
 

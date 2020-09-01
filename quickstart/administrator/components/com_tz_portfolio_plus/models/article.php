@@ -413,7 +413,6 @@ class TZ_Portfolio_PlusModelArticle extends JModelAdmin
                 }
             }
         }
-
         return $item;
     }
 
@@ -503,7 +502,7 @@ class TZ_Portfolio_PlusModelArticle extends JModelAdmin
         $assoc = JLanguageAssociations::isEnabled();
 
         // Check if article is associated
-        if ($this->getState('article.id') && $app->isSite() && $assoc)
+        if ($this->getState('article.id') && $app->isClient('site') && $assoc)
         {
             $associations = TZ_Portfolio_PlusBackEndHelperAssociation::getArticleAssociations($id);
 

@@ -30,7 +30,7 @@ if (!$this->print) :
     if($lists):
         if($params -> get('show_related_article',1)):
 ?>
-<div class="tpRelated">
+<div class="tpRelated card">
     <?php if($params -> get('show_related_heading',1)):?>
         <?php
             $title    = JText::_('COM_TZ_PORTFOLIO_PLUS_RELATED_ARTICLE');
@@ -38,12 +38,12 @@ if (!$this->print) :
                 $title  = $params -> get('related_heading');
             }
         ?>
-        <div class="tpRelatedTitle">
+        <div class="card-header">
             <h4 class="reset-heading"><?php echo $title;?></h4>
         </div>
     <?php endif;?>
-    <ul class="list-striped list-unstyled related"><?php foreach($lists as $i => $itemR):?>
-    <li class="tpItem<?php if($i == 0) echo ' first'; if($i == count($lists) - 1) echo ' last';?>">
+    <ul class="list-group list-group-flush"><?php foreach($lists as $i => $itemR):?>
+    <li class="list-group-item<?php if($i == 0) echo ' first'; if($i == count($lists) - 1) echo ' last';?>">
         <?php
         if($params -> get('show_related_title',1)){
         ?><i class="tp tp-file-o"></i>
@@ -51,7 +51,7 @@ if (!$this->print) :
            class="tpTitle<?php if($params -> get('tz_use_lightbox',0) == 1){echo ' fancybox fancybox.iframe';}?>">
             <?php echo $itemR -> title;?>
         </a>
-            <time class="pull-right muted"><?php echo JHtml::_('date', $this->item->publish_up, JText::_('DATE_FORMAT_LC'));?></time>
+            <time class="float-right pull-right muted"><?php echo JHtml::_('date', $this->item->publish_up, JText::_('DATE_FORMAT_LC'));?></time>
         <?php
         }?>
     </li>

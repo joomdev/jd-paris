@@ -17,19 +17,35 @@
 // Sub Menu //
 .nav-submenu-container {
 	border-color: $light;
-	.nav-submenu li {
-		a {
-			padding: 12px 15px;
-		}
+	.nav-submenu li a {
+		padding: 12px 15px;
 	}
 }
 
 // Top Bar //
-.top-bar-menu {
-	li {
-		margin: 0 10px;
-	}
-	li a {
+.top-bar-menu li {
+	margin: 0 10px;
+	a {
 		font-size: 13px;
 	}
+}
+// Off Canvas & mobile menu 
+.burger-menu-button {
+	.inner,
+	.inner::before,
+	.inner::after {
+		height: 1px;
+	}
+}
+
+.astroid-header-sticky {
+	box-shadow: 1px 2px 10px rgba(0,0,0,.1);
+}
+
+.nav-stacked-logo {
+	flex-grow: 1;
+}
+
+.astroid-header-section .astroid-stacked-seperated-header .header-stacked-inner {
+	padding: 0;
 }

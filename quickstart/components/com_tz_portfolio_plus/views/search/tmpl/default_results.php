@@ -36,7 +36,7 @@ if($this -> items):
             $this->item = $item;
         ?>
             <div class="<?php echo ($cols && isset($cols[$colCounter]))?'col-md-'.$cols[$colCounter]:'col-md-12'; ?>">
-                <div class="TzItem" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+                <div class="TzItem mb-4 card rounded-0" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
                 <?php echo $this->loadTemplate('item'); ?>
                 </div>
             </div>
@@ -52,9 +52,9 @@ if($this -> items):
 
     <?php if (($params->def('show_pagination', 1) == 1
         || ($params->get('show_pagination', 1) == 2)) && ($this->pagination->pagesTotal > 1)) : ?>
-        <div class="tpp-pagination w-100">
+        <div class="tpp-pagination pagination align-items-center w-100">
             <?php  if ($params->def('show_pagination_results', 1)) : ?>
-            <p class="counter float-right pt-3 pr-2">
+                <p class="counter mr-2 mb-0">
                 <?php echo $this->pagination->getPagesCounter(); ?>
             </p>
             <?php endif; ?>

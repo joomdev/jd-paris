@@ -16,10 +16,17 @@ jimport('joomla.application.component.view');
  * @subpakage	TZ.Portfolio
  */
 class TZ_Portfolio_PlusViewDashboard extends JViewLegacy {
+//    protected $xml;
+
+    /* @since 2.2.7 */
+    protected $license;
+
     /**
      * Display the view.
      */
     public function display($tpl = null) {
+        $this -> license    = TZ_Portfolio_PlusHelper::getLicense();
+
         // We don't need toolbar in the modal window.
         if ($this->getLayout() !== 'modal') {
             $this->addToolbar();
@@ -53,6 +60,8 @@ class TZ_Portfolio_PlusViewDashboard extends JViewLegacy {
 
         TZ_Portfolio_PlusToolbarHelper::customHelp('https://www.youtube.com/channel/UCrLN8LMXTyTahwDKzQ-YOqg/videos'
             ,'COM_TZ_PORTFOLIO_PLUS_VIDEO_TUTORIALS', 'youtube', 'youtube');
+
+        JToolbarHelper::link('javascript:', JText::_('COM_TZ_PORTFOLIO_PLUS_INTRO_GUIDE'), 'support');
 
         JHtmlSidebar::setAction('index.php?option=com_tz_portfolio_plus&view=dashboard');
 

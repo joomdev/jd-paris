@@ -32,6 +32,11 @@ abstract class TZ_Portfolio_PlusPluginHelperBase{
     {
         static $paths = array();
 
+        $app    = JFactory::getApplication();
+
+        // Since v2.3.5
+        $app -> triggerEvent('onTPAddOnPrepareImport', array(&$plugin));
+
         // Get the dispatcher's hash to allow paths to be tracked against unique dispatchers
         $dispatcherHash = is_object($dispatcher)?spl_object_hash($dispatcher):__METHOD__;
 
@@ -61,6 +66,10 @@ abstract class TZ_Portfolio_PlusPluginHelperBase{
                 $paths[$dispatcherHash][$path] = false;
             }
         }
+
+        // Since v2.3.5
+        $app -> triggerEvent('onTPAddOnBeforeImport', array($plugin, &$paths[$dispatcherHash][$path]));
+
         return $paths[$dispatcherHash][$path];
     }
 

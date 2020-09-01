@@ -40,7 +40,12 @@ class TZ_Portfolio_PlusViewPortfolio extends JViewLegacy
     protected $pagination       = null;
     protected $authorAbout      = null;
     protected $availLetter      = null;
+    protected $categoryAbout    = null;
     protected $itemCategories   = null;
+
+    protected $categories       = array();
+    protected $parentCategory;
+    protected $filterSubCategory;
 
     function __construct($config = array()){
         $this -> item           = new stdClass();
@@ -48,6 +53,7 @@ class TZ_Portfolio_PlusViewPortfolio extends JViewLegacy
     }
 
     function display($tpl=null){
+
         $app        = JFactory::getApplication('site');
         $input      = $app -> input;
         $config     = JFactory::getConfig();
@@ -65,13 +71,42 @@ class TZ_Portfolio_PlusViewPortfolio extends JViewLegacy
         $params         = null;
         $state          = $this -> get('State');
 
+        $this -> state  = $state;
+        $params         = $state -> get('params');
+
         // Get filter tag information
         if($tagId = $state -> get('filter.tagId')) {
             $this -> tagAbout   = TZ_Portfolio_PlusFrontHelperTags::getTagById($tagId);
         }
 
-        $this -> state  = $state;
-        $params         = $state -> get('params');
+        // Get filter category information
+        $categoryId = $state -> get('filter.category_id');
+
+        if(!$categoryId && ($param_catIds = $params -> get('catid'))){
+            $param_catIds   = array_filter($param_catIds);
+            $countCat       = count($param_catIds);
+            if($countCat && $countCat == 1){
+                $categoryId = $param_catIds[0];
+            }
+        }
+
+        if($categoryId) {
+            $this -> categoryAbout   = TZ_Portfolio_PlusFrontHelperCategories::getCategoriesById($categoryId);
+        }
+
+        if($params -> get('tz_show_filter', 1) && $params -> get('show_all_filter', 1)
+            && $params -> get('tz_filter_type', 'categories') == 'categories'){
+            $categories	= JCategories::getInstance('TZ_Portfolio_Plus', array(
+                'countItems'    => true,
+                'filter.id'     => $params -> get('catid', array())));
+            $parent    = $categories->get('root');
+
+            if($parent) {
+                $this->categories = array($parent->id => $parent->getChildren());
+                $this->parentCategory = $parent;
+                $this->maxLevelcat = $parent;
+            }
+        }
 
         // Get filter user information
         if(($authorId = $state -> get('filter.userId')) &&
@@ -88,16 +123,17 @@ class TZ_Portfolio_PlusViewPortfolio extends JViewLegacy
         // Create ajax link
         $this -> ajaxLink   = JURI::root().'index.php?option=com_tz_portfolio_plus&amp;view=portfolio&amp;task=portfolio.ajax'
             .'&amp;layout=default:item'.(($state -> get('filter.char'))?'&amp;char='.$state -> get('filter.char'):'')
-            .($state -> get('filter.category_id')?'&amp;catid='.$state -> get('filter.category_id'):'')
+            .($state -> get('filter.category_id')?'&amp;id='.$state -> get('filter.category_id'):'')
             .(($uid = $state -> get('filter.userId'))?'&amp;uid='.$uid:'')
-            .(($tid = $state -> get('filter.tagId'))?'&amp;tid='.$tid:'');
+            .(($tid = $state -> get('filter.tagId'))?'&amp;tid='.$tid:'')
+            .(($searchword = $state -> get('filter.searchword'))?'&amp;searchword='.$searchword:'');
 
         if($active) {
             $this->ajaxLink .= '&amp;Itemid=' . $active->id;
         }
         $this -> ajaxLink   .=  '&amp;page=2';
 
-        $doc -> addStyleSheet('components/com_tz_portfolio_plus/css/isotope.min.css');
+        $doc -> addStyleSheet('components/com_tz_portfolio_plus/css/isotope.min.css', array('version' => 'auto'));
         $this -> document -> addScript('components/com_tz_portfolio_plus/js/jquery.isotope.min.js', array('version' => 'auto', 'relative' => true));
 
         if($params -> get('tz_portfolio_plus_layout', 'ajaxButton') == 'ajaxButton'
@@ -144,19 +180,24 @@ class TZ_Portfolio_PlusViewPortfolio extends JViewLegacy
         $availableItem  =   $this->get('AvailableItem');
         $availableItem  ?   $doc -> addScriptDeclaration('var tzItemAvailable = 1;') : $doc -> addScriptDeclaration('var tzItemAvailable = 0;');
 
+        $total  = $this -> get('Total');
+
 	    $doc -> addScriptDeclaration('
-			var tzDisplayNoMorePageLoad     =   '.$params->get('tz_show_no_more_page', 0).';
-			var tzNoMorePageLoadText        =   "'.$params->get('tz_no_more_page_text', 'No more items to load').'";
+	        (function($, window){
+                window.TZ_Portfolio_Plus.infiniteScroll    = $.extend({},TZ_Portfolio_Plus.infiniteScroll, {
+                    displayNoMorePageLoad: '.$params->get('tz_show_no_more_page', 0).',
+                    noMorePageLoadText: "'.$params->get('tz_no_more_page_text', 'No more items to load').'",
+                    countItems: '.($total?$total:0).'
+                });
+            })(jQuery, window);
 		');
 
-        $this -> document -> addStyleSheet('components/com_tz_portfolio_plus/css/tzportfolioplus.min.css',
-            array('version' => 'auto'));
         $this -> document -> addScript('components/com_tz_portfolio_plus/js/tz_portfolio_plus.min.js',
             array('version' => 'auto', 'relative' => true));
 
         $list   = $this -> get('Items');
         
-        if($params -> get('show_all_filter',0)){
+        if($params -> get('show_all_filter',0) && $params -> get('tz_portfolio_plus_layout', 'ajaxButton') != 'default'){
             if(!$this -> itemTags) {
                 $this->itemTags = $this->get('AllTags');
             }
@@ -184,17 +225,24 @@ class TZ_Portfolio_PlusViewPortfolio extends JViewLegacy
             $params->def('page_heading', JText::_('JGLOBAL_ARTICLES'));
         }
 
+        $lang   = JFactory::getLanguage();
+        if($lang -> isRtl()){
+            $doc -> addStyleDeclaration('
+            .isotope .isotope-item {
+                -webkit-transition-property: right, top, -webkit-transform, opacity;
+                -moz-transition-property: right, top, -moz-transform, opacity;
+                -ms-transition-property: right, top, -ms-transform, opacity;
+                -o-transition-property: right, top, -o-transform, opacity;
+                transition-property: right, top, transform, opacity;
+            }');
+        }
+
         $this -> items          = $list;
         $this -> params         = $params;
         $this -> pagination     = $this -> get('Pagination');
-        if($active) {
-            $this->Itemid = $active->id;
-        }
+        $this->Itemid           = $active?$active->id:$input -> getInt('Itemid');
         $this -> char           = $state -> get('filter.char');
         $this -> availLetter    = $this -> get('AvailableLetter');
-
-//        $doc -> addStyleSheet('components/com_tz_portfolio_plus/css/tzportfolioplus.min.css');
-//        $this -> document -> addScript('components/com_tz_portfolio_plus/js/tz_portfolio_plus.min.js', array('version' => 'auto', 'relative' => true));
 
         $this -> _prepareDocument();
 
@@ -240,6 +288,38 @@ class TZ_Portfolio_PlusViewPortfolio extends JViewLegacy
         if ($this->params->get('robots'))
         {
             $this->document->setMetadata('robots', $this->params->get('robots'));
+        }
+
+        $app        = \JFactory::getApplication();
+        $menus      = $app->getMenu();
+        $menu       = $menus->getActive();
+        $pathway    = $app->getPathway();
+
+        $id = $this -> state -> get('filter.category_id');
+
+        $catIds = $this -> params -> get('catid', array());
+        $catIds = array_filter($catIds);
+        $catIds = array_values($catIds);
+
+        if ($menu && ($menu->query['option'] !== 'com_tz_portfolio_plus' || $menu->query['view'] === 'article'
+                || ($id && count($catIds) && !in_array($id, $catIds)) ))
+        {
+            $mcategory  = JCategories::getInstance('TZ_Portfolio_Plus')->get($id);
+            $path       = array(array('title' => $mcategory -> title, 'link' => ''));
+            $category   = $mcategory -> getParent();
+
+            while (($menu->query['option'] !== 'com_tz_portfolio_plus' || $menu->query['view'] === 'article' || $id != $category->id) && $category->id > 1)
+            {
+                $path[] = array('title' => $category->title, 'link' => TZ_Portfolio_PlusHelperRoute::getCategoryRoute($category->id));
+                $category = $category->getParent();
+            }
+
+            $path = array_reverse($path);
+
+            foreach ($path as $item)
+            {
+                $pathway -> addItem($item['title'], $item['link']);
+            }
         }
     }
 }

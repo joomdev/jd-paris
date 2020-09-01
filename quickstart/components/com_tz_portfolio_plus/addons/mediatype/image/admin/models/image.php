@@ -21,6 +21,8 @@
 defined('_JEXEC') or die;
 
 use Joomla\Filesystem\File;
+use Joomla\Registry\Registry;
+use TZ_Portfolio_Plus\Image\TppImageWaterMark;
 
 jimport('joomla.filesytem.file');
 JLoader::register('TZ_Portfolio_PlusFrontHelper', JPATH_SITE
@@ -29,11 +31,21 @@ JLoader::register('TZ_Portfolio_PlusFrontHelper', JPATH_SITE
 class PlgTZ_Portfolio_PlusMediaTypeModelImage extends TZ_Portfolio_PlusPluginModelAdmin{
 
     public function save($data){
+
         $app    = JFactory::getApplication();
         $input  = $app -> input;
 
         $_data      = array('id' => ($data -> id), 'asset_id' => ($data -> asset_id),'media' => '{}');
+
         $params     = $this -> getState('params');
+
+        if($mainCategory = TZ_Portfolio_PlusHelperCategories::getMainCategoryByArticleId($data -> id)) {
+            $mainCategory = $mainCategory[0];
+            $categoryParams = new Registry();
+            $categoryParams -> loadString($mainCategory -> params);
+            $watermarkOptions   = new Registry($categoryParams -> get('mt_image_watermark_admin_options', array()));
+            $params -> merge($watermarkOptions);
+        }
 
         // Get some params
         $mime_types     = $params -> get('image_mime_type','image/jpeg,image/gif,image/png,image/bmp');
@@ -375,7 +387,7 @@ class PlgTZ_Portfolio_PlusMediaTypeModelImage extends TZ_Portfolio_PlusPluginMod
 
             if(is_array($image_size) && count($image_size)){
                 foreach($image_size as $_size){
-                    $size           = json_decode($_size);
+                    $size       = json_decode($_size);
 
                     // Upload image with resize
                     if($path) {
@@ -403,7 +415,16 @@ class PlgTZ_Portfolio_PlusMediaTypeModelImage extends TZ_Portfolio_PlusPluginMod
 
                         // Generate image to file
                         $newImage->toFile($newPath, $imgProperties->type);
+
+                        // Add watermark for each image size
+                        $this -> watermark($newPath, $size ->image_name_prefix);
                     }
+//                    elseif(isset($media -> url) && $media -> url){
+//                        // Add watermark for each image size
+//                        $this -> watermark(TZ_Portfolio_PlusFrontHelper::getImageURLBySize(JPATH_ROOT
+//                            .DIRECTORY_SEPARATOR.$media -> url,
+//                            $size ->image_name_prefix), $size ->image_name_prefix, $fontSize, $coordinates);
+//                    }
 
                     // Upload image hover with resize
                     if($path_hover) {
@@ -431,20 +452,45 @@ class PlgTZ_Portfolio_PlusMediaTypeModelImage extends TZ_Portfolio_PlusPluginMod
 
                         // Generate image to file
                         $newHImage->toFile($newHPath, $imgHoverProperties->type);
+
+                        // Add watermark for each image size
+                        if($params -> get('mt_image_watermark_img_detail', 0)) {
+                            $this->watermark($newHPath, $size->image_name_prefix);
+                        }
                     }
+//                    elseif(isset($media -> url_detail) && $media -> url_detail
+//                        && $params -> get('mt_image_watermark_img_detail', 0)){
+//                        // Add watermark for each image size
+//                        $this -> watermark(TZ_Portfolio_PlusFrontHelper::getImageURLBySize(JPATH_ROOT
+//                            .DIRECTORY_SEPARATOR.$media -> url_detail,
+//                            $size ->image_name_prefix), $size ->image_name_prefix, $fontSize, $coordinates);
+//                    }
                 }
             }
         }
 
         if($path && !empty($path)){
+            $this -> watermark($path, 'o');
             $image_data['url']   = COM_TZ_PORTFOLIO_PLUS_MEDIA_ARTICLE_BASE.'/'
                 .$data -> alias . '-' . $data -> id. '.' . \JFile::getExt($path);
         }
+//        elseif(isset($media -> url) && $media -> url){
+//            $this -> watermark(JPATH_ROOT.DIRECTORY_SEPARATOR
+//                .TZ_Portfolio_PlusFrontHelper::getImageURLBySize($media -> url, 'o'), 'o');
+//        }
 
         if($path_hover && !empty($path_hover)){
+            if($params -> get('mt_image_watermark_img_detail', 0)) {
+                $this->watermark($path_hover, 'o');
+            }
             $image_data['url_detail']   = COM_TZ_PORTFOLIO_PLUS_MEDIA_ARTICLE_BASE.'/'
                 .$data -> alias . '-' . $data -> id. '-h.' . \JFile::getExt($path_hover);
         }
+//        elseif(isset($media -> url_detail) && $media -> url_detail
+//            && $params -> get('mt_image_watermark_img_detail', 0)){
+//            $this -> watermark(JPATH_ROOT.DIRECTORY_SEPARATOR
+//                .TZ_Portfolio_PlusFrontHelper::getImageURLBySize($media -> url_detail, 'o'), 'o');
+//        }
 
         unset($image_data['url_server']);
         unset($image_data['url_detail_server']);
@@ -513,6 +559,106 @@ class PlgTZ_Portfolio_PlusMediaTypeModelImage extends TZ_Portfolio_PlusPluginMod
                 }
 
             }
+        }
+    }
+
+    protected function watermark($file, $imgType = '', $fontSize = 0, $cordinates = ''){
+
+        $params     = $this -> getState('params');
+
+        if(!$params -> get('mt_image_watermark', 0) || !$file){
+            return false;
+        }
+
+        if(!$params -> get('mt_image_wtm_original_image', 0) && $imgType == 'o'){
+            return false;
+        }
+
+        tzportfolioplusimport('image.watermark');
+
+//        if (is_resource($file) && (get_resource_type($file) != 'gd')) {
+//            $mainLayer = TppImageWaterMark::initFromResourceVar($file);
+//        }else{
+            $mainLayer = TppImageWaterMark::initFromPath($file);
+//        }
+
+
+        $stype      = $params -> get('mt_image_watermark_stype', 'text');
+        $text       = $params -> get('mt_image_watermark_text');
+        $fontPath   = JPATH_ROOT.'/'.$params -> get('mt_image_watermark_fontpath',
+                'administrator/components/com_tz_portfolio_plus/fonts/arial.ttf');
+        $_fontSize  = $fontSize?$fontSize:$params -> get('mt_image_watermark_fontsize', 14);
+        $textColor  = $params -> get('mt_image_watermark_color', '#fff');
+        $textColor  = str_replace('#', '', $textColor);
+        $image      = $params -> get('mt_image_watermark_image');
+        $bgColor    = $params -> get('mt_image_watermark_bgcolor');
+        $bgColor    = $bgColor?str_replace('#', '', $bgColor):null;
+        $rotate     = $params -> get('mt_image_watermark_rotate', 0);
+        $opacity    = $params -> get('mt_image_watermark_opacity');
+        $filter     = $params -> get('mt_image_watermark_filter', -1);
+        $flip       = $params -> get('mt_image_watermark_flip', 0);
+        $position   = $params -> get('mt_image_watermark_position', TppImageWaterMark::POSITION_TOP_LEFT);
+
+        $_coordinates= $cordinates?$cordinates:$params -> get('mt_image_watermark_coordinates', '10,10');
+
+        list($positionX, $positionY)    = explode(',', $_coordinates,2);
+
+        switch($stype){
+            default:
+            case 'text':
+                // This is the text layer
+                if($text){
+                    $layer  = TppImageWaterMark::initTextLayer($text, $fontPath, $_fontSize, $textColor, 0, $bgColor);
+                }
+                break;
+            case 'image':
+                if($image) {
+                    $layer = TppImageWaterMark::initFromPath(JPATH_ROOT . '/' . $image);
+//                    $layer -> rotate($rotate);
+                }
+                break;
+        }
+
+        if(isset($layer) && $layer){
+            if($rotate){
+                $layer -> rotate($rotate);
+            }
+            if($opacity != null){
+                $layer -> opacity($opacity);
+            }
+            if($filter > -1){
+                $layer -> applyFilter($filter);
+            }
+
+            if(is_string($flip)){
+                $layer -> flip($flip);
+            }elseif(is_array($flip)){
+                foreach($flip as $_flip){
+                    $layer -> flip($_flip);
+                }
+            }
+
+            if($params -> get('mt_image_watermark_resize', 1)) {
+                $rwPer   = $params -> get('mt_image_watermark_resize_wpercent', 30);
+                $rhPer   = $params -> get('mt_image_watermark_resize_hpercent', 0);
+                $nW     = null;
+                $nH     = null;
+                if($rwPer) {
+                    $mW = $mainLayer -> getWidth();
+                    $nW = $mW * $rwPer / 100;
+                }
+                if($rhPer) {
+                    $mH = $mainLayer -> getHeight();
+                    $nH = $mH * $rhPer / 100;
+                }
+                if($nW || $nH) {
+                    $layer->resizeInPixel($nW, $nH, true,0, 0, $position);
+                }
+            }
+
+            $mainLayer -> addLayerOnTop($layer,(int)$positionX, (int)$positionY, $position );
+
+            $mainLayer -> save(COM_TZ_PORTFOLIO_PLUS_MEDIA_ARTICLE_ROOT,JFile::getName($file), true, null, 100);
         }
     }
 }

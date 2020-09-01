@@ -23,8 +23,17 @@ defined('_JEXEC') or die();
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers');
 
 $params = &$this -> params;
+
+$bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
+
+$bootstrapClass = '';
+if($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4){
+    $bootstrapClass = 'tpp-bootstrap ';
+}elseif($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 3){
+    $bootstrapClass = 'tzpp_bootstrap3 ';
+}
 ?>
-<div class="tzpp_bootstrap3 tz-search<?php echo $this->pageclass_sfx;?>">
+<div class="<?php echo $bootstrapClass;?>tz-search<?php echo $this->pageclass_sfx;?>">
     <?php if ($params->get('show_page_heading', 1)){ ?>
     <h1 class="page-heading">
         <?php echo $this->escape($params->get('page_heading')); ?>
@@ -35,7 +44,7 @@ $params = &$this -> params;
     echo $this->loadTemplate('form');
     ?>
 
-    <div class="total">
+    <div class="total mb-4">
         <?php echo JText::plural('COM_TZ_PORTFOLIO_PLUS_SEARCH_KEYWORD_N_RESULTS', '<span class="badge badge-info">'
             . $this -> total . '</span>');?>
     </div>

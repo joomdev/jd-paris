@@ -22,7 +22,7 @@ defined('_JEXEC') or die;
 
 $app    = JFactory::getApplication();
 
-if ($app->isSite()) {
+if ($app->isClient('site')) {
     JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
 }
 
@@ -40,34 +40,37 @@ JHtml::_('formbehavior.chosen', '.multipleAccessLevels', null,
     array('placeholder_text_multiple' => JText::_('JOPTION_SELECT_ACCESS')));
 JHtml::_('formbehavior.chosen', '.multipleCategories', null,
     array('placeholder_text_multiple' => JText::_('JOPTION_SELECT_CATEGORY')));
+JHtml::_('formbehavior.chosen', '#filter_category_id_sec', null,
+    array('placeholder_text_multiple' => JText::_('COM_TZ_PORTFOLIO_PLUS_OPTION_SELECT_SECONDARY_CATEGORY')));
 JHtml::_('formbehavior.chosen', 'select');
 
 $function	= $app->input->getCmd('function', 'tppSelectArticle');
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $isMultiple = $app -> input -> get('ismultiple', false, 'boolean');
-?>
-<script type="text/javascript">
-    function tzGetDatas(){
-        if (window.parent){
-            var j= 0,titles  = new Array(),ids = new Array(),categories = new Array();
-            if(document.getElementsByName('cid[]').length){
-                var idElems  = document.getElementsByName('cid[]'),
-                    titleElems  = document.getElementsByName('tztitles[]'),
-                    categoryElems  = document.getElementsByName('tzcategories[]');
-                for(var i = 0; i<idElems.length; i++){
-                    if(idElems[i].checked){
-                        ids[j]  = idElems[i].value;
-                        titles[j]  = titleElems[i].value;
-                        categories[j]  = categoryElems[i].value;
-                        j++;
-                    }
+
+$doc    = JFactory::getDocument();
+$doc -> addScriptDeclaration('
+function tzGetDatas(){
+    if (window.parent){
+        var j= 0,titles  = new Array(),ids = new Array(),categories = new Array();
+        if(document.getElementsByName("cid[]").length){
+            var idElems  = document.getElementsByName("cid[]"),
+                titleElems  = document.getElementsByName("tztitles[]"),
+                categoryElems  = document.getElementsByName("tzcategories[]");
+            for(var i = 0; i<idElems.length; i++){
+                if(idElems[i].checked){
+                    ids[j]  = idElems[i].value;
+                    titles[j]  = titleElems[i].value;
+                    categories[j]  = categoryElems[i].value;
+                    j++;
                 }
             }
-            window.parent.<?php echo $this->escape($function);?>(ids,titles,categories);
         }
+        window.parent.'.$this->escape($function).'(ids,titles,categories);
     }
-</script>
+}');
+?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&view=articles&layout=modal&tmpl=component&function='.$function.'&'.JSession::getFormToken().'=1');?>"
       method="post" name="adminForm" id="adminForm" class="form-inline tpContainer">

@@ -24,15 +24,13 @@ if($item = $this -> item):
     if(isset($item -> extrafields) && !empty($item -> extrafields)):
 ?>
 <div class="tpArticleExtraField">
-    <ul class="list-striped list-unstyled tpExtraFields">
+    <ul class="list-group">
     <?php foreach($item -> extrafields as $field):?>
-        <li class="tp_extrafield-item">
+        <li class="list-group-item">
             <?php if($field -> hasTitle()):?>
-            <div class="tp_extrafield-label"><?php echo $field -> getTitle();?></div>
+            <h5><?php echo $field -> getTitle();?></h5>
             <?php endif;?>
-            <div class="tp_extrafield-value pull-right">
-                <?php echo $field -> getOutput();?>
-            </div>
+            <div><?php echo $field -> getOutput();?></div>
         </li>
     <?php endforeach;?>
     </ul>

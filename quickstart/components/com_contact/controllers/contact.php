@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  com_contact
  *
- * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -46,7 +46,6 @@ class ContactControllerContact extends JControllerForm
 
 		$app    = JFactory::getApplication();
 		$model  = $this->getModel('contact');
-		$params = JComponentHelper::getParams('com_contact');
 		$stub   = $this->input->getString('id');
 		$id     = (int) $stub;
 
@@ -78,13 +77,13 @@ class ContactControllerContact extends JControllerForm
 		// Check if the contact form is enabled
 		if (!$contact->params->get('show_email_form'))
 		{
-			$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub, false));
+			$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub . '&catid=' . $contact->catid, false));
 
 			return false;
 		}
 
 		// Check for a valid session cookie
-		if ($params->get('validate_session', 0))
+		if ($contact->params->get('validate_session', 0))
 		{
 			if (JFactory::getSession()->getState() !== 'active')
 			{
@@ -94,7 +93,7 @@ class ContactControllerContact extends JControllerForm
 				$app->setUserState('com_contact.contact.data', $data);
 
 				// Redirect back to the contact form.
-				$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub, false));
+				$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub . '&catid=' . $contact->catid, false));
 
 				return false;
 			}
@@ -132,7 +131,7 @@ class ContactControllerContact extends JControllerForm
 
 			$app->setUserState('com_contact.contact.data', $data);
 
-			$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub, false));
+			$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub . '&catid=' . $contact->catid, false));
 
 			return false;
 		}
@@ -154,9 +153,9 @@ class ContactControllerContact extends JControllerForm
 		// Send the email
 		$sent = false;
 
-		if (!$params->get('custom_reply'))
+		if (!$contact->params->get('custom_reply'))
 		{
-			$sent = $this->_sendEmail($data, $contact, $params->get('show_email_copy', 0));
+			$sent = $this->_sendEmail($data, $contact, $contact->params->get('show_email_copy', 0));
 		}
 
 		// Set the success message if it was a success
@@ -179,7 +178,7 @@ class ContactControllerContact extends JControllerForm
 		}
 		else
 		{
-			$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub, false), $msg);
+			$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub . '&catid=' . $contact->catid, false), $msg);
 		}
 
 		return true;

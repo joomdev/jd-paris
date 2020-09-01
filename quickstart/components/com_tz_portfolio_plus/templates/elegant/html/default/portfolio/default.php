@@ -22,30 +22,46 @@ defined('_JEXEC') or die();
 
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers');
 $doc    = JFactory::getDocument();
-$app        = JFactory::getApplication('site');
-$input      = $app -> input;
+$app    = JFactory::getApplication('site');
+$input  = $app -> input;
 $params = &$this -> params;
+
 $doc -> addScriptDeclaration('
-jQuery(document).ready(function(){
-    jQuery("#portfolio").tzPortfolioPlusIsotope({
-        "mainElementSelector": "#tpPortfolio",
-        "params": '.$this -> params .'
+(function($, window){
+    $(document).ready(function(){           
+        jQuery("#portfolio").tzPortfolioPlusIsotope({
+            "rtl": '.(JFactory::getLanguage() -> isRtl()?'true':'false').',
+            "mainElementSelector": "#tpPortfolio",
+            "params": '.$this -> params .'
+        });
     });
-});
+})(jQuery, window);
 ');
 ?>
-
 <?php if($this -> items):?>
 
     <?php
-    $params = &$this -> params;
+    $params     = &$this -> params;
+    $bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
+
+    $bootstrapClass = '';
+    if($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4){
+        $bootstrapClass = 'tpp-bootstrap ';
+    }elseif($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 3){
+        $bootstrapClass = 'tzpp_bootstrap3 ';
+    }
 ?>
-<div id="tpPortfolio" class="tzpp_bootstrap3 tplElegant <?php echo $this->pageclass_sfx;?>">
+<div id="tpPortfolio" class="<?php echo $bootstrapClass;?>tplElegant<?php echo $this->pageclass_sfx;?>">
     <?php if ($params->get('show_page_heading', 1)) : ?>
         <h1 class="page-heading">
             <?php echo $this->escape($params->get('page_heading')); ?>
         </h1>
     <?php endif; ?>
+
+    <?php
+    // Display category about when the portfolio has filter category by category id
+    echo $this -> loadTemplate('category_about');
+    ?>
 
     <?php
     // Display tag about when the portfolio has filter tag by tag id
@@ -58,24 +74,33 @@ jQuery(document).ready(function(){
     ?>
 
     <?php if($params -> get('use_filter_first_letter',0)):?>
-        <div class="TzLetters">
+        <div class="TzLetters text-center mb-3">
             <?php echo $this -> loadTemplate('letters');?>
         </div>
     <?php endif;?>
 
     <div id="tz_options" class="clearfix">
-        <?php if($params -> get('tz_show_filter',1)):?>
-            <div class="option-combo">
-                <div class="filter-title TzFilter"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_FILTER');?></div>
+        <?php
+        $tpstyleParams  = TZ_Portfolio_PlusTemplate::getTemplate(true) -> params;
+        $dropdownStyle  = $tpstyleParams -> get('filter_style') == 'dropdown';
+        if($params -> get('tz_show_filter',1)):
+            ?>
+            <div class="option-combo<?php echo $dropdownStyle?' dropdown':''; ?>">
 
-                <div id="filter" class="option-set clearfix" data-option-key="filter">
-                    <a href="#show-all" data-option-value="*" class="btn btn-default btn-secondary btn-sm selected"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_SHOW_ALL');?></a>
+                <?php if($dropdownStyle){ ?>
+                <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="btn btn-primary btn-sm dropdown-toggle"><?php
+                    echo JText::_('TP_STYLE_ELEGANT_FILTER'); ?><?php if(!$bootstrap4){ ?> <span class="tp tp-angle-down option-icon"></span><?php } ?></button>
+                <?php } ?>
+                <div id="filter" class="option-set text-center clearfix<?php echo $dropdownStyle?' dropdown-menu':''; ?>" data-option-key="filter">
+                    <a href="#show-all" data-option-value="*" class="btn btn-primary active"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_SHOW_ALL');?></a>
                     <?php if($params -> get('tz_filter_type','tags') == 'tags'):?>
                         <?php echo $this -> loadTemplate('filter_tags');?>
                     <?php endif;?>
                     <?php if($params -> get('tz_filter_type','tags') == 'categories'):?>
                         <?php echo $this -> loadTemplate('filter_categories');?>
                     <?php endif;?>
+
+                    <?php echo (!$dropdownStyle && $this -> filterSubCategory)?implode("\n", $this -> filterSubCategory):''; ?>
                 </div>
             </div>
         <?php endif;?>
@@ -83,28 +108,36 @@ jQuery(document).ready(function(){
         <?php if($params -> get('show_sort',0) AND $sortfields = $params -> get('sort_fields',array('date','hits','title'))):
             $sort   = $params -> get('orderby_sec','rdate');
             ?>
-            <div class="option-combo">
+            <div class="option-combo<?php echo $dropdownStyle?' dropdown':''; ?>">
+                <?php if($dropdownStyle){ ?>
+                    <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="btn btn-primary btn-sm dropdown-toggle"><?php
+                        echo JText::_('TP_STYLE_ELEGANT_SORT'); ?><?php if(!$bootstrap4){ ?> <span class="tp tp-angle-down option-icon"></span><?php } ?></button>
+                <?php }else{ ?>
                 <div class="filter-title"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_SORT')?></div>
+                <?php } ?>
 
-                <div id="sort" class="option-set clearfix" data-option-key="sortBy">
+                <div id="sort" class="option-set clearfix<?php echo $dropdownStyle?' dropdown-menu':''; ?>" data-option-key="sortBy">
                     <?php
                     foreach($sortfields as $sortfield):
                         switch($sortfield):
                             case 'title':
                                 ?>
-                                <a class="btn btn-default btn-secondary btn-sm<?php echo ($sort == 'alpha' || $sort == 'ralpha')?' selected':''?>"
+                                <a class="btn btn-primary btn-sm<?php
+                                echo ($sort == 'alpha' || $sort == 'ralpha')?' active':''?>"
                                    href="#title" data-option-value="name"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_TITLE');?></a>
                                 <?php
                                 break;
                             case 'date':
                                 ?>
-                                <a class="btn btn-default btn-secondary btn-sm<?php echo ($sort == 'date' || $sort == 'rdate')?' selected':''?>"
+                                <a class="btn btn-primary btn-sm<?php
+                                echo ($sort == 'date' || $sort == 'rdate')?' active':''?>"
                                    href="#date" data-option-value="date"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_DATE');?></a>
                                 <?php
                                 break;
                             case 'hits':
                                 ?>
-                                <a class="btn btn-default btn-secondary btn-sm<?php echo ($sort == 'hits' || $sort == 'rhits')?' selected':''?>"
+                                <a class="btn btn-primary btn-sm<?php
+                                echo ($sort == 'hits' || $sort == 'rhits')?' active':''?>"
                                    href="#hits" data-option-value="hits"><?php echo JText::_('JGLOBAL_HITS');?></a>
                                 <?php
                                 break;
@@ -116,14 +149,20 @@ jQuery(document).ready(function(){
         <?php endif;?>
 
         <?php if($params -> get('show_layout',0)):?>
-            <div class="option-combo">
-                <div class="filter-title"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_LAYOUT');?></div>
-                <div id="layouts" class="option-set clearfix" data-option-key="layoutMode">
+            <div class="option-combo<?php echo $dropdownStyle?' dropdown':''; ?>">
+                <?php if($dropdownStyle){ ?>
+                    <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="btn btn-primary btn-sm dropdown-toggle"><?php
+                        echo JText::_('TP_STYLE_ELEGANT_LAYOUT'); ?><?php if(!$bootstrap4){ ?> <span class="tp tp-angle-down option-icon"></span><?php } ?></button>
+                <?php }else{ ?>
+                        <div class="filter-title"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_LAYOUT');?></div>
+                <?php }?>
+                <div id="layouts" class="option-set clearfix<?php echo $dropdownStyle?' dropdown-menu':''; ?>" data-option-key="layoutMode">
                     <?php
                     if(count($params -> get('layout_type',array('masonry','fitRows','straightDown')))>0):
                         foreach($params -> get('layout_type',array('masonry','fitRows','straightDown')) as $i => $param):
                             ?>
-                            <a class="btn btn-default btn-secondary btn-sm<?php if($i == 0) echo ' selected';?>" href="#<?php echo $param?>" data-option-value="<?php echo $param?>">
+                            <a class="btn btn-primary btn-sm<?php
+                            echo ($i == 0)?' active':'';?>" href="#<?php echo $param?>" data-option-value="<?php echo $param?>">
                                 <?php echo $param?>
                             </a>
                         <?php endforeach;?>
@@ -152,9 +191,9 @@ jQuery(document).ready(function(){
 
     <?php if($params -> get('tz_portfolio_plus_layout', 'ajaxButton') == 'default'):?>
         <?php if (($params->def('show_pagination', 1) == 1  || ($params->get('show_pagination', 1) == 2)) && ($this->pagination->pagesTotal > 1)) : ?>
-            <div class="pagination">
+            <div class="pagination align-items-center">
                 <?php  if ($params->def('show_pagination_results', 1)) : ?>
-                    <p class="counter">
+                    <p class="counter mr-2 mb-0">
                         <?php echo $this->pagination->getPagesCounter(); ?>
                     </p>
                 <?php endif; ?>

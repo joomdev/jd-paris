@@ -87,7 +87,7 @@ class TZ_Portfolio_PlusModelTemplates extends JModelList
             return false;
         }
 
-        if($folders    = Folder::folders($tpl_path)){
+        if($folders    = \JFolder::folders($tpl_path)){
             if(count($folders)){
                 foreach($folders as $i => $folder){
                     $xmlFile    = $tpl_path.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR.'template.xml';
@@ -95,9 +95,7 @@ class TZ_Portfolio_PlusModelTemplates extends JModelList
                         $installer  = JInstaller::getInstance($tpl_path.DIRECTORY_SEPARATOR.$folder);
                         if($manifest = $installer ->isManifest($xmlFile)){
 
-
-                            $lang   = JFactory::getLanguage();
-                            $lang -> load('tpl_'.((string) $manifest -> name),$tpl_path.DIRECTORY_SEPARATOR.$folder);
+                            TZ_Portfolio_PlusTemplate::loadLanguage((string) $manifest -> name);
 
                             $item                   = new stdClass();
                             $item -> id             = $i;
@@ -187,6 +185,101 @@ class TZ_Portfolio_PlusModelTemplates extends JModelList
             return $items;
         }
         return false;
+    }
+
+    public function getItemsUpdate(){
+
+        $storeId    = __METHOD__;
+        $storeId    = md5($storeId);
+
+        if(isset($this -> cache[$storeId])){
+            return $this -> cache[$storeId];
+        }
+
+        JLoader::import('com_tz_portfolio_plus.helpers.templates', JPATH_ADMINISTRATOR.'/components');
+        $styles = TZ_Portfolio_PlusHelperTemplates::getStyles();
+
+        if(!$styles){
+            return false;
+        }
+
+        $data   = false;
+
+        foreach($styles as $item){
+
+            $adoFinded = $this -> findAddOnFromServer($item);
+
+            $item -> new_version    = null;
+            $manifest   = json_decode($item -> manifest_cache);
+            if($adoFinded && $adoFinded -> pProduces){
+                if($pProduces = $adoFinded -> pProduces) {
+                    if(isset($pProduces -> pProduce) && $pProduces -> pProduce
+                        && version_compare($manifest -> version, $pProduces -> pProduce -> pVersion, '<')) {
+                        $item -> new_version    = $pProduces -> pProduce -> pVersion;
+                        $data[] = $item;
+                    }
+                }
+            }
+        }
+
+        if($data){
+            $this -> cache[$storeId]    = $data;
+        }
+
+        return $data;
+    }
+
+    protected function findAddOnFromServer($addon){
+
+        $finded     = false;
+        $adoFinded  = false;
+
+        $options = array(
+            'defaultgroup'	=> $this -> option,
+            'storage' 		=> 'file',
+            'caching'		=> true,
+            'lifetime'      => 30 * 60,
+            'cachebase'		=> JPATH_ADMINISTRATOR.'/cache'
+        );
+        $cache = JCache::getInstance('', $options);
+
+        $model  = JModelLegacy::getInstance('Template', 'TZ_Portfolio_PlusModel');
+
+        $page   = 1;
+        while(!$finded){
+            $styles = $cache -> get('styles_server:'.$page);
+            if(!$styles){
+                $url    = $model -> getUrlFromServer();
+                if($page > 1) {
+                    $prevAddon  = $cache -> get('styles_server:'.($page - 1));
+                    $url .= '&start=' . (($page - 1) * $prevAddon -> limit );
+                }
+
+                $response = TZ_Portfolio_PlusHelper::getDataFromServer($url);
+
+                if($response){
+                    $styles   = json_decode($response -> body);
+                    $cache -> store($styles, 'styles_server:'.$page);
+                }
+            }
+
+            if($styles){
+                if($page > ceil($styles -> total / $styles -> limit) - 1){
+                    $finded = true;
+                }
+                foreach($styles -> items as $item){
+                    if($item -> pElement == $addon -> element){
+                        $finded     = true;
+                        $adoFinded  = $item;
+
+                        break;
+                    }
+                }
+            }
+
+            $page++;
+        }
+        return $adoFinded;
     }
 
 }

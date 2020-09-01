@@ -177,7 +177,7 @@ class TZ_Portfolio_PlusControllerAddon extends JControllerForm
             $this -> setMessage($model -> getError(), 'error');
         }else{
             $this -> setMessage(JText::sprintf('COM_TZ_PORTFOLIO_PLUS_INSTALL_SUCCESS',
-                JText::_('COM_TZ_PORTFOLIO_PLUS_ADDON')));
+                JText::_('COM_TZ_PORTFOLIO_PLUS_'.strtoupper($this -> view_item))));
         }
 
         $this -> setRedirect('index.php?option=com_tz_portfolio_plus&view='.$this -> view_item.'&layout=upload');
@@ -272,7 +272,7 @@ class TZ_Portfolio_PlusControllerAddon extends JControllerForm
     protected function allowAdd($data = array())
     {
         $user = TZ_Portfolio_PlusUser::getUser();
-        return ($user->authorise('core.create','com_tz_portfolio_plus.addon'));
+        return ($user->authorise('core.create','com_tz_portfolio_plus.'.$this -> getName()));
     }
 
     protected function allowEdit($data = array(), $key = 'id')
@@ -357,7 +357,10 @@ class TZ_Portfolio_PlusControllerAddon extends JControllerForm
             $model  = $this -> getModel();
             if($result = $model -> install()){
                 $app -> enqueueMessage(JText::sprintf('COM_TZ_PORTFOLIO_PLUS_INSTALL_SUCCESS'
-                    , JText::_('COM_TZ_PORTFOLIO_PLUS_ADDON')));
+                    , JText::_('COM_TZ_PORTFOLIO_PLUS_'.strtoupper($this -> view_item))));
+            }else{
+                $this -> setMessage($model -> getError());
+                $app -> enqueueMessage($model -> getError(), 'error');
             }
         }
 

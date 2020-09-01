@@ -31,9 +31,6 @@ if(!DIRECTORY_SEPARATOR){
 if(!defined('COM_TZ_PORTFOLIO_PLUS')) {
     define('COM_TZ_PORTFOLIO_PLUS', 'com_tz_portfolio_plus');
 }
-if(!defined('COM_TZ_PORTFOLIO_PLUS_EDITION')) {
-    define('COM_TZ_PORTFOLIO_PLUS_EDITION', 'free');
-}
 if(!defined('COM_TZ_PORTFOLIO_PLUS_PATH_SITE')) {
     define('COM_TZ_PORTFOLIO_PLUS_PATH_SITE', JPATH_SITE . '/components/com_tz_portfolio_plus');
 }
@@ -72,7 +69,17 @@ if(!defined('COM_TZ_PORTFOLIO_PLUS_ADDON_PATH')) {
     define('COM_TZ_PORTFOLIO_PLUS_ADDON_PATH', COM_TZ_PORTFOLIO_PLUS_PATH_SITE.DIRECTORY_SEPARATOR.'addons');
 }
 if(!defined('COM_TZ_PORTFOLIO_PLUS_ACL_SECTIONS')) {
-    define('COM_TZ_PORTFOLIO_PLUS_ACL_SECTIONS', json_encode(array('category', 'group', 'tag', 'addon', 'template', 'style')));
+    define('COM_TZ_PORTFOLIO_PLUS_ACL_SECTIONS', json_encode(array('category', 'group', 'tag', 'addon', 'template', 'style', 'extension')));
+}
+if(!defined('COM_TZ_PORTFOLIO_PLUS_EDITION')) {
+    JLoader::register('TZ_Portfolio_PlusHelper', COM_TZ_PORTFOLIO_PLUS_ADMIN_HELPERS_PATH . '/tz_portfolio_plus.php');
+    $license    = TZ_Portfolio_PlusHelper::getLicense();
+    if(JFile::exists(COM_TZ_PORTFOLIO_PLUS_ADMIN_PATH.'/includes/license.php')
+        && $license && isset($license -> reference) && $license -> reference) {
+        define('COM_TZ_PORTFOLIO_PLUS_EDITION', 'commercial');
+    }else{
+        define('COM_TZ_PORTFOLIO_PLUS_EDITION', 'free');
+    }
 }
 if(!defined('COM_TZ_PORTFOLIO_PLUS_VERSION')) {
     if(file_exists(JPATH_ADMINISTRATOR.'/components/com_tz_portfolio_plus/tz_portfolio_plus.xml')){
@@ -80,4 +87,11 @@ if(!defined('COM_TZ_PORTFOLIO_PLUS_VERSION')) {
     }elseif(file_exists(JPATH_ADMINISTRATOR.'/components/com_tz_portfolio_plus/manifest.xml')){
         define('COM_TZ_PORTFOLIO_PLUS_VERSION',simplexml_load_file(JPATH_ADMINISTRATOR.'/components/com_tz_portfolio_plus/manifest.xml')->version);
     }
+}
+/* since v2.2.7 */
+if(!defined('COM_TZ_PORTFOLIO_PLUS_VERIFY_LICENSE')) {
+    define('COM_TZ_PORTFOLIO_PLUS_VERIFY_LICENSE', 'https://www.tzportfolio.com/download.html?task=license.verify');
+}
+if(!defined('COM_TZ_PORTFOLIO_PLUS_ACTIVE_LICENSE')) {
+    define('COM_TZ_PORTFOLIO_PLUS_ACTIVE_LICENSE', 'https://www.tzportfolio.com/download.html?task=license.active');
 }

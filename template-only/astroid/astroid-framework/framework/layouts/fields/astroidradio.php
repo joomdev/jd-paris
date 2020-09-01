@@ -2,8 +2,8 @@
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 defined('JPATH_BASE') or die;
 
@@ -37,10 +37,8 @@ extract($displayData);
  * @var   string   $value           Value attribute of the field.
  * @var   array    $options         Options available for this field.
  */
-// Including fallback code for HTML5 non supported browsers.
-JHtml::_('jquery.framework');
-JHtml::_('script', 'system/html5fallback.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 
+$template = Astroid\Framework::getTemplate();
 $imageRadio = false;
 if (isset($images) && $images == 'true') {
    $imageRadio = true;
@@ -59,7 +57,7 @@ $alt = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $name);
 <div id="<?php echo $id; ?>" class="<?php echo $imageRadio ? '' : 'btn-group astroid-radio-btn'; ?> btn-group-toggle"
      <?php echo $disabled ? 'disabled' : ''; ?>
      <?php echo $required ? 'required aria-required="true"' : ''; ?>
-     <?php echo $autofocus ? 'autofocus' : ''; ?>>
+     <?php echo $autofocus ? 'autofocus' : ''; ?> ng-radio-init="<?php echo $fieldname; ?>='<?php echo $value; ?>'">
 
    <?php if (!empty($options)) : ?>
       <?php foreach ($options as $i => $option) : ?>
@@ -88,7 +86,7 @@ $alt = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $name);
          $optionclass = empty($optionclass) ? 'btn-success' : $optionclass;
          if ($imageRadio) {
             $optionclass = 'btn-light';
-            $optiontext = '<img ' . (!empty($imageWidth) ? 'width="' . $imageWidth . '"' : '') . ' src="' . JURI::root() . $optiontext . '" />' . (!empty($option->label) ? '<span>' . $option->label . '</span>' : '');
+            $optiontext = '<img ' . (!empty($imageWidth) ? 'width="' . $imageWidth . '"' : '') . ' src="' . JURI::root() . str_replace('TEMPLATE_NAME', $template->template, $optiontext) . '" />' . (!empty($option->label) ? '<span>' . $option->label . '</span>' : '');
          }
          ?>
          <?php echo sprintf($format, $oid, $name, $ovalue, implode(' ', $attributes), $optiontext, $ngClass, $optionclass); ?>

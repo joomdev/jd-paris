@@ -2,8 +2,8 @@
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 
 defined('JPATH_BASE') or die;
@@ -46,8 +46,8 @@ extract($displayData);
 $class    = !empty($class) ? ' class="' . $class . '"' : '';
 $disabled = $disabled ? ' disabled' : '';
 $onchange = $onchange ? ' onchange="' . $onchange . '"' : '';
+$id = (empty($id) ? '' : ' id="' . $id . '"');
 ?>
 <input type="hidden" name="<?php
-echo $name; ?>" id="<?php
-echo $id; ?>" value="<?php
-echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>"<?php echo $class, $disabled, $onchange; ?> />
+echo $name; ?>" value="<?php
+echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>"<?php echo $id; ?><?php echo $class, $disabled, $onchange; ?> />

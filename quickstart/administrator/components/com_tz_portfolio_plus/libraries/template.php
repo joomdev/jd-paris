@@ -5,9 +5,7 @@
 
 # ------------------------------------------------------------------------
 
-# author    DuongTVTemPlaza
-
-# copyright Copyright (C) 2015 templaza.com. All Rights Reserved.
+# Author    DuongTVTemPlaza
 
 # @license - http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
 
@@ -15,19 +13,25 @@
 
 # Technical Support:  Forum - http://templaza.com/Forum
 
+# Copyright Copyright (C) 2011-2019 TZ Portfolio (http://tzport.com). All Rights Reserved.
+
 -------------------------------------------------------------------------*/
 
 // No direct access
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
+use Joomla\CMS\Filesystem\Folder;
 use TZ_Portfolio_Plus\Database\TZ_Portfolio_PlusDatabase;
 
 JLoader::register('TZ_Portfolio_PlusHelperCategories', JPATH_ADMINISTRATOR.'/components/com_tz_portfolio_plus/helpers/categories.php');
 
 class TZ_Portfolio_PlusTemplate {
 
-    protected static $cache    = array();
+    protected static $cache             = array();
+    protected static $loaded            = array();
+    protected static $imported          = array();
+    protected static $languageLoaded    = array();
 
     public static function getTemplate($params = false)
     {
@@ -221,6 +225,10 @@ class TZ_Portfolio_PlusTemplate {
                 }
             }
 
+            if(isset($template -> layout) && is_string($template -> layout)){
+                $template -> layout = json_decode($template -> layout);
+            }
+
             if ($params)
             {
                 self::$cache[$storeId]  = $template;
@@ -273,7 +281,7 @@ class TZ_Portfolio_PlusTemplate {
         $_catId     = null;
         $_artId     = null;
 
-        if($app -> isSite()) {
+        if($app -> isClient('site')) {
             $params = $app->getParams();
             $templateId = $params->get('tz_template_style_id');
         }
@@ -323,5 +331,301 @@ class TZ_Portfolio_PlusTemplate {
             }
         }
         return (int) $templateId;
+    }
+
+    public static function loadLanguage($template){
+
+        $lang           = JFactory::getLanguage();
+        $tag            = $lang -> getTag();
+        $basePath       = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH . '/' .$template;
+
+        $prefix      = 'tp_style_';
+
+        $__files    = array();
+        if(is_dir($basePath.'/language/'.$tag)) {
+            $__files = \JFolder::files($basePath . '/language/'.$tag, 'tpl_.*.ini$', false);
+        }elseif(is_dir($basePath.'/language/en-GB')) {
+            $__files = \JFolder::files($basePath . '/language/en-GB', 'tpl_.*.ini$', false);
+        }
+
+        if($__files && count($__files)){
+            $prefix = 'tpl_';
+        }
+
+        $extension = $prefix . $template;
+
+        if(isset(self::$languageLoaded[$extension])){
+            return self::$languageLoaded[$extension];
+        }
+
+        $load   = $lang->load(strtolower($extension), $basePath, null, false, true);
+
+        if($load) {
+            self::$languageLoaded[$extension] = $load;
+        }
+
+        return $load;
+    }
+
+    public static function getCssStyleName($styleName, $params = null, $variables = array(), &$document = null){
+
+        if(!$styleName){
+            return false;
+        }
+
+        if(!$params){
+            $params = new Registry();
+        }
+
+        $variables  = (array) $variables;
+
+        $storeId    = __METHOD__;
+//        $storeId   .= '::'.$styleName;
+//        $storeId   .= '::'.$params -> get('enable_bootstrap', 1);
+//        $storeId   .= '::'.$params -> get('bootstrapversion', 4);
+//        $storeId   .= '::'.serialize($variables);
+        $storeId    = md5($storeId);
+
+//        if(!isset(self::$cache[$storeId])) {
+//            self::$cache[$storeId] = array();
+//        }
+
+        $cssname    = '';
+        $scss_files = array();
+
+        if($scss_sfiles = self::getSassDirByStyle($styleName)){
+            $scss_files = $scss_sfiles;
+        }elseif($scss_cfiles = self::getSassDirCore()){
+            $scss_files = $scss_cfiles;
+            $styleName  = '';
+        }
+        if(count($scss_files)){
+            $name           = '';
+
+            foreach ($scss_files as $scss_file) {
+                $fname  = basename($scss_file);
+
+                $scss_file  = \JPath::clean($scss_file);
+
+                if($params -> get('enable_bootstrap', 1)){
+                    // Ignore all scss files of bootstrap3 folder if the bootstrap is version 4
+                    if($params -> get('bootstrapversion', 4) == 4
+                        && preg_match('#vendor(/|\\\)bootstrap3(/|\\\)'.$fname.'$#', $scss_file)){
+                        continue;
+                    }elseif($params -> get('bootstrapversion', 4) == 3
+                        && preg_match('#vendor(/|\\\)bootstrap(/|\\\)'.$fname.'$#', $scss_file)){
+
+                        // Ignore all scss files of bootstrap folder if the bootstrap is version 3
+                        continue;
+                    }
+                }else{
+                    if(preg_match('#vendor(/|\\\)bootstrap3(/|\\\)'.$fname.'$#', $scss_file)||
+                        preg_match('#vendor(/|\\\)bootstrap(/|\\\)'.$fname.'$#', $scss_file)){
+                        continue;
+                    }
+                }
+                $name .= md5_file($scss_file);
+            }
+
+            $bootverPrefix  = $params -> get('enable_bootstrap', 1);
+            $bootverPrefix .= $bootverPrefix?'-'.$params -> get('bootstrapversion', 4):'';
+            $bootverPrefix .= ':'.serialize($variables);
+
+            if($params -> get('enable_bootstrap', 1) && $params -> get('bootstrapversion', 4)
+                && !isset(self::$loaded[$styleName]['import_bootstrap'])) {
+                unset(self::$imported['import_fontawesome']);
+            }elseif(isset(self::$loaded[$styleName]['loaded'])){
+                unset(self::$imported['import_fontawesome']);
+            }
+            if(!isset(self::$imported['import_fontawesome'])){
+                $bootverPrefix  .= ':fontawesome';
+            }
+
+            $bootverPrefix  = md5($bootverPrefix);
+            $bootverPrefix  = substr($bootverPrefix, 0, 4);
+            $cssname        = 'style-'.$bootverPrefix.'-'. md5($name);
+        }
+
+        if($cssname){
+            $css_path   = COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/css/style'.($styleName?'/'.$styleName:'');
+
+            if (!file_exists($css_path.'/'. $cssname . '.css')) {
+                self::clearCache($styleName, $bootverPrefix);
+
+                require_once COM_TZ_PORTFOLIO_PLUS_ADMIN_PATH.'/libraries/phpclass/scssphp/scss.inc.php';
+
+                $scss       = new ScssPhp\ScssPhp\Compiler();
+                $coreSassPath  = COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/scss';
+                $sass_path  = $styleName?COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH:COM_TZ_PORTFOLIO_PLUS_PATH_SITE;
+
+                $sass_prefix_path   = $styleName?$styleName.'/scss':'scss';
+
+                $importPaths    = array( $coreSassPath, $sass_path);
+
+                if(file_exists(COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/scss/vendor/bootstrap/bootstrap-functions.scss')) {
+                    $compileCode = '@import "vendor/bootstrap/bootstrap-functions.scss";';
+                }
+
+                if($params -> get('enable_bootstrap',1)) {
+                    if($styleName && file_exists($sass_path.'/'.$styleName.'/scss/variables_override.scss')) {
+                        $compileCode .= '@import "variables_override.scss";';
+                    }
+                    if($params -> get('bootstrapversion', 4) == 4
+                        && !isset(self::$imported['import_bootstrap'])){
+                        if(file_exists(COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/scss/vendor/bootstrap/bootstrap.scss')) {
+                            $compileCode .= '@import "vendor/bootstrap/bootstrap.scss";';
+                            self::$imported['import_bootstrap'] = true;
+                        }
+                        if(file_exists(COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/scss/_basic.scss')) {
+                            $compileCode .= '@import "basic.scss";';
+                        }
+                    }
+//                    else{
+//                        $compileCode    .= '@import "vendor/bootstrap3/bootstrap.scss";';
+//                        $compileCode    .= '@import "'.$coreSassPath.'/legacy.scss";';
+//                    }
+                }
+
+                // Import basic
+                if(file_exists(COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/scss/_basic.scss')
+                    && !isset(self::$imported['import_basic'])) {
+                    $compileCode .= '@import "basic.scss";';
+                    self::$imported['import_basic'] = true;
+                }
+
+                $compileCode .= '@import "' . $sass_prefix_path . '/style.scss";';
+
+                // Import Font Awesome
+                if(file_exists(COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/scss/vendor/fontawesome/all.scss')
+                    && !isset(self::$imported['import_fontawesome'])) {
+                    $compileCode .= '@import "vendor/fontawesome/all.scss";';
+                    self::$imported['import_fontawesome'] = true;
+                }
+
+                if(count($variables)) {
+                    $scss->setVariables($variables);
+                }
+                $scss -> setImportPaths($importPaths);
+                $scss -> setFormatter('ScssPhp\ScssPhp\Formatter\Compressed');
+
+                $content    = $scss -> compile($compileCode);
+
+                if(!\JFolder::exists($css_path)){
+                    \JFolder::create($css_path);
+                }
+
+                if($content) {
+                    file_put_contents($css_path . '/' . $cssname . '.css', $content);
+                }
+            }
+
+            if(file_exists($css_path . '/' . $cssname . '.css')) {
+                $result = 'style/'.($styleName ? $styleName . '/' . $cssname . '.css' : $cssname . '.css');
+
+                if($params -> get('enable_bootstrap', 1) && $params -> get('bootstrapversion', 4)
+                    && !isset(self::$loaded[$styleName]['import_bootstrap'])) {
+                    $styleSheets    = $document -> _styleSheets;
+                    $styleKeys      = array_keys($styleSheets);
+
+                    $grepKeys   = preg_grep('#components/com_tz_portfolio_plus/css/style/'.$styleName.'/style-#', $styleKeys);
+                    if(count($grepKeys)) {
+                        $grepKey    = array_shift($grepKeys);
+                        if(isset($styleSheets[$grepKey])) {
+                            unset($document -> _styleSheets[$grepKey]);
+                        }
+                    }
+                    self::$loaded[$styleName]['import_bootstrap']   = true;
+                }elseif(isset(self::$loaded[$styleName]['loaded'])){
+                    return false;
+                }
+
+                self::$loaded[$styleName]['loaded']     = true;
+                self::$imported['import_fontawesome']   = true;
+
+                return $result;
+            }
+        }
+
+        return false;
+    }
+
+    protected static function clearCache($styleName = '', $bootverPrefix = '', $prefix = 'style') {
+        $template_dir   = COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/css/style';
+        $template_dir  .= $styleName?'/'.$styleName:'';
+        $version = new \JVersion;
+        $version->refreshMediaVersion();
+        if (!file_exists($template_dir)) {
+            return false;
+//            throw new \Exception("Template not found.", 404);
+        }
+
+        if (is_array($prefix)) {
+            foreach ($prefix as $pre) {
+                $styles = preg_grep('~^' . $pre . '-.*\.(css)$~', scandir($template_dir));
+                foreach ($styles as $style) {
+                    unlink($template_dir . '/' . $style);
+                }
+            }
+        } else {
+//            $styles = preg_grep('~^' . $prefix . '-.*\.(css)$~', scandir($template_dir));
+            $styles = preg_grep('~^' . $prefix . '-'.$bootverPrefix.'-.*\.(css)$~', scandir($template_dir));
+
+            foreach ($styles as $style) {
+                unlink($template_dir . '/' . $style);
+            }
+        }
+        return true;
+    }
+
+    public static function getSassDirByStyle($styleName){
+
+        if(!$styleName){
+            return false;
+        }
+
+        $storeId    = __METHOD__;
+        $storeId   .= ':'.$styleName;
+        $storeId    = md5($storeId);
+
+        if(isset(self::$cache[$storeId])){
+            return self::$cache[$storeId];
+        }
+
+        $files      = array();
+        $sassPath   = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH.'/'.$styleName.'/scss';
+
+        if(\JFolder::exists($sassPath) && $sFiles = \JFolder::files($sassPath, '.scss', true, true)){
+            if($cfiles = self::getSassDirCore()){
+                $files  = array_merge($files, $cfiles);
+            }
+            $files  = array_merge($files, $sFiles);
+        }
+
+        if(!count($files)){
+            return false;
+        }
+
+        self::$cache[$storeId]  = $files;
+
+        return $files;
+    }
+
+    public static function getSassDirCore(){
+
+        $storeId    = __METHOD__;
+        $storeId    = md5($storeId);
+
+        if(isset(self::$cache[$storeId])){
+            return self::$cache[$storeId];
+        }
+
+        $sassPath  = COM_TZ_PORTFOLIO_PLUS_PATH_SITE.'/scss';
+
+        if(\JFolder::exists($sassPath) && $files = \JFolder::files($sassPath, '.scss', true, true)){
+            self::$cache[$storeId]  = $files;
+            return $files;
+        }
+
+        return false;
     }
 }

@@ -1,9 +1,10 @@
 <?php
+
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die('Restricted access');
@@ -29,18 +30,22 @@ class JFormFieldAstroidMenuOptions extends JFormField {
              'showtitle' => FALSE,
              'icon' => '',
              'customclass' => '',
-             'width' => '280px',
-             'megamenu_width' => '1200px',
+             'width' => '250px',
+             'megamenu_width' => '980px',
              'alignment' => 'right',
              'megamenu_direction' => 'right',
              'subtitle' => '',
+             'badge' => FALSE,
+             'badge_text' => '',
+             'badge_color' => '#FFF',
+             'badge_bgcolor' => '#000'
          ];
       } else {
          $value = (array) $this->value;
       }
 
       $menu_item = $this->form->getData()->toObject();
-     
+
       $extraData = array(
           'value' => $value,
           'fieldname' => $this->fieldname,

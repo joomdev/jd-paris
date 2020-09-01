@@ -39,8 +39,9 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy
         $app->input->set('limit', $app->get('feed_limit'));
         $rows		= $this->get('Items');
 
-        $doc->setLink( JURI::current());
-        $dispatcher	= JDispatcher::getInstance();
+        $uri    = JUri::getInstance();
+        $doc->setLink( $uri -> getPath());
+
         JPluginHelper::importPlugin('tz_portfolio_plus_mediatype');
 
         foreach ($rows as $row)
@@ -50,7 +51,7 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy
             $row->slug 			= $row->alias ? ($row->id . ':' . $row->alias) : $row->id;
             $row -> description	= ($params->get('feed_summary', 0) ? $row->introtext.$row->fulltext : $row->introtext);
 
-            $results    = $dispatcher -> trigger('onContentDisplayMediaType',array('com_tz_portfolio_plus.date',
+            $results    = $app -> triggerEvent('onContentDisplayMediaType',array('com_tz_portfolio_plus.date',
                 &$row, &$params, 0));
 
             $media	= implode("\n",$results);
@@ -59,7 +60,7 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy
             $title = $this->escape($row->title);
             $title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
 
-            $link 	= $row -> fullLink;
+            $link 	= $row -> link;
 
             // strip html from feed item description text
             // TODO: Only pull fulltext if necessary (actually, just get the necessary fields).
@@ -68,25 +69,25 @@ class TZ_Portfolio_PlusViewDate extends JViewLegacy
             @$date			= ($row->created ? date('r', strtotime($row->created)) : '');
 
             // load individual item creator class
-            $item = new JFeedItem();
+            $feedItem = new JFeedItem();
 
-            $item->title		= $title;
-            $item->link			= $link;
+            $feedItem->title		= $title;
+            $feedItem->link			= $link;
 
-            $item->description	= $media.$description;
-            $item->date			= $date;
-            $item->category		= $item->category;
+            $feedItem->description	= $media.$description;
+            $feedItem->date			= $date;
+            $feedItem->category		= $row->category_title;
 
-            $item->author		= $author;
+            $feedItem->author		= $author;
             if ($feedEmail == 'site') {
-                $item->authorEmail = $siteEmail;
+                $feedItem->authorEmail = $siteEmail;
             }
             else {
-                $item->authorEmail = $item->author_email;
+                $feedItem->authorEmail = $row->author_email;
             }
 
             // loads item info into rss array
-            $doc->addItem($item);
+            $doc->addItem($feedItem);
         }
     }
 }

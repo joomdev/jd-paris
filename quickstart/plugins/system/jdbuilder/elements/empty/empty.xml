@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<element type="empty">
+   <title>Empty</title>
+   <icon>media/jdbuilder/images/icons/elements/empty.svg</icon>
+   <creationDate>March 2019</creationDate>
+   <author>JoomDev</author>
+   <authorEmail>info@joomdev.com</authorEmail>
+   <authorUrl>https://www.joomdev.com</authorUrl>
+   <copyright>Copyright (C) 2020 Joomdev, Inc. All rights reserved.</copyright>
+   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+   <version>1.0</version>
+   <description>Element Description Here</description>
+   <documentation>https://docs.joomdev.com/article/empty-element/</documentation>
+   <form>
+      <fields>
+         <fieldset name="general" label="JDB_GENERAL_TITLE">
+            <!--  Element Options -->
+            <field
+               name="space"
+               type="slider"
+               label="JDB_EMPTY_SPACE"
+               default="50"
+               min="0"
+               group="basic"
+               max="900"
+               unit="px"
+               responsive="true"
+            >
+            </field>
+         </fieldset>
+      </fields>
+   </form>
+</element>

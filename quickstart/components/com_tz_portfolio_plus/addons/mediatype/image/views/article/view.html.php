@@ -43,6 +43,19 @@ class PlgTZ_Portfolio_PlusMediaTypeImageViewArticle extends JViewLegacy{
         if($item){
             if($media = $item -> media){
                 if(isset($media -> image)){
+                    $doc    = JFactory::getDocument();
+                    $doc -> addStyleSheet(TZ_Portfolio_PlusUri::root(true).'/css/jquery.fancybox.min.css', array('version' => 'auto'));
+                    $doc -> addScript(TZ_Portfolio_PlusUri::root(true).'/js/jquery.fancybox.min.js', array('version' => 'auto'));
+                    $doc -> addScript(TZ_Portfolio_PlusUri::root(true).'/addons/mediatype/image/js/lightbox.min.js');
+
+                    $lightboxopt    =   $params->get('image_lightbox_option',['zoom', 'slideShow', 'fullScreen', 'thumbs', 'close']);
+                    $lightboxopts   = array(
+                        'buttons'   => $lightboxopt
+                    );
+                    $doc -> addScriptDeclaration('jQuery(function($){
+                        $.image_addon_lightbox('.json_encode($lightboxopts).');
+                      });');
+
                     $image  = clone($media -> image);
 
                     if(isset($image -> url) && $image -> url) {
@@ -87,6 +100,7 @@ class PlgTZ_Portfolio_PlusMediaTypeImageViewArticle extends JViewLegacy{
 
                         $this -> image  = $image;
                     }
+
                 }
             }
             $this -> item   = $item;

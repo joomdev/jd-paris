@@ -5,7 +5,8 @@ div.jd-register-login-wrapper {
 				color: $secondary;
 				background-color: $light;
 				border: 1px solid $light;
-				&:hover, &.active {
+				&:hover,
+				&.active {
 					background-color: $primary;
 					border-color: $primary;
 					color: $white;
@@ -34,7 +35,8 @@ div.jd-register-login-wrapper {
 				color: $white;
 				background-color: $primary;
 				border-color: $primary;
-				&:hover, &:focus {
+				&:hover,
+				&:focus {
 					color: $white;
 					background-color: $primary;
 					border-color: $primary;
@@ -47,7 +49,8 @@ div.jd-register-login-wrapper {
 				.jd-list-block {
 					color: $secondary;
 					background-color: $light;
-					&:hover, &:focus {
+					&:hover,
+					&:focus {
 						color: $secondary; 
 						background-color: darken($light, 20%);
 					}

@@ -43,6 +43,12 @@
             <field type="text" name="article_columns"
                    label="COM_TZ_PORTFOLIO_PLUS_LISTING_ARTICLE_COLUMNS_LABEL"
                    description="COM_TZ_PORTFOLIO_PLUS_LISTING_ARTICLE_COLUMNS_DESC"/>
+            <field name="enable_lazyload" type="list"
+                   label="COM_TZ_PORTFOLIO_PLUS_ENABLE_LAZYLOAD">
+                <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
 
             <!-- Start order options -->
             <field type="spacer" name="spacer_ordering_name"

@@ -13,6 +13,8 @@
  * other free or open source software licenses.
  */
 // No direct access
+JHtml::_('jquery.framework');
+
 defined('_JEXEC') or die;
 // Include the syndicate functions only once
 require_once dirname(__FILE__) . '/helper.php';

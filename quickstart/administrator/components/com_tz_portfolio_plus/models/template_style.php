@@ -112,8 +112,7 @@ class TZ_Portfolio_PlusModelTemplate_Style extends JModelAdmin
         $formFile = JPath::clean($template_path.DIRECTORY_SEPARATOR.'template.xml');
 
         // Load the core and/or local language file(s).
-        $lang->load('tpl_' . $template, $template_path, null, false, true)
-        ||	$lang->load('tpl_' . $template, $template_path . '/templates/' . $template, null, false, true);
+        TZ_Portfolio_PlusTemplate::loadLanguage($template);
 
         $default_directory  = 'components'.DIRECTORY_SEPARATOR.'com_tz_portfolio_plus'.DIRECTORY_SEPARATOR.'templates';
         $directory          = $default_directory.DIRECTORY_SEPARATOR.$template.DIRECTORY_SEPARATOR.'html';
@@ -198,7 +197,7 @@ class TZ_Portfolio_PlusModelTemplate_Style extends JModelAdmin
         return null;
     }
 
-    function getItem($pk = null){
+    public function getItem($pk = null){
         // Initialise variables.
         $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
         $table  = $this -> getTable();
@@ -227,6 +226,28 @@ class TZ_Portfolio_PlusModelTemplate_Style extends JModelAdmin
         if (property_exists($item, 'params'))
         {
             $item->params = json_decode($item -> params);
+        }
+
+        // Set default for preset if the style has layout default
+        if(!isset($item -> layout) || (isset($item -> layout) && !$item -> layout)){
+            $defaultLayout  = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH.'/'.$item -> template.'/config/default.json';
+            if(JFile::exists($defaultLayout)){
+                $config = file_get_contents($defaultLayout);
+                $config = json_decode($config);
+                if($config){
+                    if(isset($config -> params) && $config -> params){
+                        $defParams  = json_decode($config -> params);
+                        $defParams  = array_intersect_key((array) $defParams, (array) $item -> params);
+                        $itemParams = array_merge((array) $item -> params, $defParams);
+                        $item -> params = (object) $itemParams;
+                    }
+                    if(isset($config -> layout) && $config -> layout) {
+                        $item->layout = json_decode($config->layout);
+                    }
+                }
+//                $item -> preset = 'default';
+
+            }
         }
 
         return $item;
@@ -343,7 +364,7 @@ class TZ_Portfolio_PlusModelTemplate_Style extends JModelAdmin
             }
 
             // Trigger the onContentBeforeSave event.
-            $result = \JFactory::getApplication() -> triggerEvent($this->event_before_save, array($this->option . '.' . $this->name, $table, $isNew));
+            $result = \JFactory::getApplication() -> triggerEvent($this->event_before_save, array($this->option . '.' . $this->name, $table, $isNew, $data));
 
             if (in_array(false, $result, true))
             {
@@ -555,10 +576,13 @@ class TZ_Portfolio_PlusModelTemplate_Style extends JModelAdmin
                                 $image_path = JPATH_ROOT.DIRECTORY_SEPARATOR.$presets['image'];
                                 if(\JFile::exists($image_path)){
                                     $image_name = $preset_name.'.'.\JFile::getExt($image_path);
-                                    if(File::copy($image_path, COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH
+                                    $folder     = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH
                                         .DIRECTORY_SEPARATOR. $table -> template.DIRECTORY_SEPARATOR
-                                        .'images'.DIRECTORY_SEPARATOR.'presets'
-                                        .DIRECTORY_SEPARATOR.$image_name)){
+                                        .'images'.DIRECTORY_SEPARATOR.'presets';
+                                    if(!\JFolder::exists($folder)){
+                                        \JFolder::create($folder);
+                                    }
+                                    if(File::copy($image_path, $folder.DIRECTORY_SEPARATOR.$image_name)){
                                         $presets['image']   = 'templates/'.$table -> template
                                             .'/images/presets/'.$image_name;
                                     }
@@ -613,15 +637,32 @@ class TZ_Portfolio_PlusModelTemplate_Style extends JModelAdmin
 
     public function getTZLayout(){
         $item   = $this -> getItem();
-        $params = $item -> layout;
-        if(empty($params)){
+        $layout = $item -> layout;
+        if(empty($layout)){
             $pathfile   = JPATH_ADMINISTRATOR.'/components/com_tz_portfolio_plus/views/template_style/tmpl/default.json';
+
+            // If the default.json config file exists in style
+            $defaultLayout  = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH.'/'.$item -> template.'/config/default.json';
+            if(JFile::exists($defaultLayout)){
+//                $pathfile   = $defaultLayout;
+            }
+
             if(\JFile::exists($pathfile)){
-                $string     = file_get_contents($pathfile);
-                return json_decode($string);
+                $configLayout   = file_get_contents($pathfile);
+                $configLayout   = json_decode($configLayout);
+
+                // With the default.json of style has layout option key
+                if(is_object($configLayout) && isset($configLayout -> layout) && $configLayout -> layout){
+                    if(is_string($configLayout -> layout)){
+                        return json_decode($configLayout -> layout);
+                    }
+                    return (array) $configLayout -> layout;
+                }
+
+                return $configLayout;
             }
         }
-        return $params;
+        return $layout;
     }
 
     public function setHome($id = 0)
@@ -856,15 +897,10 @@ class TZ_Portfolio_PlusModelTemplate_Style extends JModelAdmin
 
     public function getPresets(){
         if($item   = $this -> getItem()){
-            $test   = new stdClass();
-            $test -> demo_link      = 'http://tzportfolio.com/download/addons/tz_membership/downloadinfo/5-image-gallery-addon.html';
-            $test -> name     = "test";
-            $test -> image   = "powered_by.png";
-
             $path   = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH.DIRECTORY_SEPARATOR.$item -> template
                 .DIRECTORY_SEPARATOR.'config';
             if(\JFolder::exists($path)){
-                $files  = Folder::files($path,'.json',true,false,array('.json'));
+                $files  = \JFolder::files($path,'.json',true,false,array('.json'));
                 if(count($files)){
                     $items  = array();
                     foreach($files as $i => $file){

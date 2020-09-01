@@ -21,7 +21,7 @@
 defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-JHtml::_('behavior.tooltip');
+JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
 
 $j4Compare  = COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE;
@@ -61,19 +61,6 @@ if ($saveOrder)
 
 $assoc		= JLanguageAssociations::isEnabled();
 ?>
-<script type="text/javascript">
-    //Joomla.orderTable = function() {
-    //	table = document.getElementById("sortTable");
-    //	direction = document.getElementById("directionTable");
-    //	order = table.options[table.selectedIndex].value;
-    //	if (order != '<?php //echo $listOrder; ?>//') {
-    //		dirn = 'asc';
-    //	} else {
-    //		dirn = direction.options[direction.selectedIndex].value;
-    //	}
-    //	Joomla.tableOrdering(order, dirn, '');
-    //}
-</script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&view=articles');?>" method="post" name="adminForm" id="adminForm">
 
@@ -212,7 +199,7 @@ $assoc		= JLanguageAssociations::isEnabled();
                                     <?php
                                     $editIcon   = '';
                                     if($j4Compare) {
-                                        $editIcon = $item->checked_out ? '' : '<span class="fa fa-pencil-square mr-2" aria-hidden="true"></span>';
+                                        $editIcon = $item->checked_out ? '' : '<span class="tps tp-pencil-square mr-2" aria-hidden="true"></span>';
                                     }
                                     ?>
                                     <a href="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&task=article.edit&id='.$item->id);?>">

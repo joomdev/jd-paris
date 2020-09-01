@@ -19,9 +19,11 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
+$bootstrap4 = ($params -> get('enable_bootstrap',0) && $params -> get('bootstrapversion', 3) == 4);
 ?>
 <?php if (!empty($list)) :?>
-	<ul class="archive-module<?php echo $moduleclass_sfx; ?>">
+	<ul class="archive-module<?php echo $moduleclass_sfx; ?> tpp-bootstrap">
 	<?php foreach ($list as $item) : ?>
 	<li>
 		<a href="<?php echo $item->link; ?>">

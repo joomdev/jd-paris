@@ -49,19 +49,6 @@ if ($saveOrder)
     }
 }
 ?>
-<script type="text/javascript">
-    //Joomla.orderTable = function() {
-    //    table = document.getElementById("sortTable");
-    //    direction = document.getElementById("directionTable");
-    //    order = table.options[table.selectedIndex].value;
-    //    if (order != '<?php //echo $listOrder; ?>//') {
-    //        dirn = 'asc';
-    //    } else {
-    //        dirn = direction.options[direction.selectedIndex].value;
-    //    }
-    //    Joomla.tableOrdering(order, dirn, '');
-    //}
-</script>
 
 <form id="adminForm" name="adminForm" method="post" action="index.php?option=com_tz_portfolio_plus&view=fields">
 

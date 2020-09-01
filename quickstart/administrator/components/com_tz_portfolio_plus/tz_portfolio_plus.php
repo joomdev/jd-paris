@@ -30,18 +30,30 @@ $option         = $input -> getCmd('option','com_tz_portfolio_plus');
 $view           = $input -> getCmd('view','dashboard');
 $task           = $input -> getCmd('task',null);
 
-JLoader::import('com_tz_portfolio_plus.includes.framework',JPATH_ADMINISTRATOR.'/components');
+/* Setup */
+$file   = dirname(__FILE__).'/setup/index.php';
 
-// Register helper class
-JLoader::register('TZ_Portfolio_PlusHelper', dirname(__FILE__) . '/helpers/tz_portfolio_plus.php');
+if(JFile::exists($file)){
+    require_once($file);
+}else {
 
-// Register helper class
-JLoader::register('TZ_Portfolio_PlusHelperACL', dirname(__FILE__) . '/helpers/acl.php');
+    JLoader::import('com_tz_portfolio_plus.includes.framework', JPATH_ADMINISTRATOR . '/components');
 
-// Includes my html object
-JHtml::addIncludePath(COM_TZ_PORTFOLIO_PLUS_ADMIN_HELPERS_PATH.'/html');
+    // Register helper class
+    JLoader::register('TZ_Portfolio_PlusHelper', dirname(__FILE__) . '/helpers/tz_portfolio_plus.php');
 
-$controller	= JControllerLegacy::getInstance('TZ_Portfolio_Plus');
+    // Register helper class
+    JLoader::register('TZ_Portfolio_PlusHelperACL', dirname(__FILE__) . '/helpers/acl.php');
 
-$controller->execute($input->get('task'));
-$controller->redirect();
+    // Register helper class
+    JLoader::register('TZ_Portfolio_PlusHelperAddons', COM_TZ_PORTFOLIO_PLUS_ADMIN_PATH . '/helpers/addons.php');
+    JLoader::register('TZ_Portfolio_PlusHelperTemplates', COM_TZ_PORTFOLIO_PLUS_ADMIN_PATH . '/helpers/templates.php');
+
+    // Includes my html object
+    JHtml::addIncludePath(COM_TZ_PORTFOLIO_PLUS_ADMIN_HELPERS_PATH . '/html');
+
+    $controller = JControllerLegacy::getInstance('TZ_Portfolio_Plus');
+
+    $controller->execute($input->get('task'));
+    $controller->redirect();
+}

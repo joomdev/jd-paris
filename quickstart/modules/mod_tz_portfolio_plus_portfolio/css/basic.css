@@ -9,11 +9,11 @@
 .tz_portfolio_plus_portfolio .element{
     color: #616161;
 }
-.tz_portfolio_plus_portfolio .TzInner {
+.tz_portfolio_plus_portfolio:not(.tpp-bootstrap) .TzInner {
      padding: 5px;
      border-color: #ddd;
 }
-.tz_portfolio_plus_portfolio .information {
+.tz_portfolio_plus_portfolio:not(.tpp-bootstrap) .information {
     padding: 0 10px 10px;
 }
 .tz_portfolio_plus_portfolio .tzpp_media{

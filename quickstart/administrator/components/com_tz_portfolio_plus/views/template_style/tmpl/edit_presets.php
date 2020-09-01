@@ -26,7 +26,7 @@ $doc    = JFactory::getDocument();
 $doc -> addScriptDeclaration('
     (function($){
         $(document).ready(function(){
-            $(".load-preset").click(function(e){
+            $(".load-preset").on("click", function(e){
                 e.stopPropagation();
                 e.preventDefault();
                 $("#loadPreset").modal("toggle");
@@ -36,7 +36,7 @@ $doc -> addScriptDeclaration('
                     Joomla.submitbutton("template_style.loadpreset");
                 });
             });
-            $(".removepreset").click(function(e){
+            $(".removepreset").on("click", function(e){
                 e.stopPropagation();
                 e.preventDefault();
                 $("#removePreset").modal("toggle");
@@ -45,6 +45,20 @@ $doc -> addScriptDeclaration('
                     $("#jform_preset").val($thisPreset.attr("data-preset"));
                     Joomla.submitbutton("template_style.removepreset");
                 });
+            });
+            $("#upload-preset-submit").on("click", function(e){
+                e.stopPropagation();
+                e.preventDefault();
+                var $thisPreset = $(this);                
+                $("#jform_preset").val($thisPreset.attr("data-preset"));
+                Joomla.submitbutton("template_style.uploadpreset");
+            });
+            $(".downloadpreset").on("click", function(e){
+                e.stopPropagation();
+                e.preventDefault();
+                var $thisPreset = $(this);                
+                $("#jform_preset").val($thisPreset.attr("data-preset"));
+                Joomla.submitbutton("template_style.downloadpreset");
             });
         });
     })(jQuery);
@@ -69,6 +83,23 @@ $doc -> addScriptDeclaration('
         <div class="control-group">
             <div class="control-label"><?php echo $this -> form -> getLabel('doc_link',$group);?></div>
             <div class="controls"><?php echo $this -> form -> getInput('doc_link',$group);?></div>
+        </div>
+    </div>
+</div>
+<div class="">
+    <button type="button" data-toggle="collapse" data-target="#collapseUpload" class="btn btn-success">
+        <span class="tps tp-upload"></span> <?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_UPLOAD_PRESET');?></button>
+    <div id="collapseUpload" class="collapse">
+
+        <div class="control-group mt-px-18">
+            <label for="upload-preset-file" class="list-inline"><?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_UPLOAD_FILE'); ?></label>
+            <input type="file" id="upload-preset-file" name="Filepreset[]" multiple />
+            <button type="button" class="btn btn-primary" id="upload-preset-submit"><i class="tpr tp-caret-square-right"></i>  <?php
+                echo JText::_('COM_TZ_PORTFOLIO_PLUS_START_UPLOAD'); ?></button>
+            <p class="help-block">
+                <?php $maxSize = JUtility::getMaxUploadSize(); ?>
+                <?php echo JText::sprintf('JGLOBAL_MAXIMUM_UPLOAD_SIZE_LIMIT', JHtml::_('number.bytes', $maxSize)); ?>
+            </p>
         </div>
     </div>
 </div>
@@ -106,10 +137,17 @@ if($presets = $this -> presets):
                     </div>
                 </div>
             </div>
-            <h3 class="preset-name hasTooltip" data-placement="bottom" title="<?php echo $preset -> name;?>"><?php echo $preset -> name;?></h3>
-            <i data-preset="<?php echo $preset -> name;?>" data-target="#removePreset" data-toggle="modal"
-               title="<?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_REMOVE_PRESET_DESCRIPTION');?>"
-               class="fa fa-times removepreset hasTooltip"></i>
+            <div class="preset-bottom">
+                <h3 class="preset-name hasTooltip" data-placement="bottom" title="<?php echo $preset -> name;?>"><?php echo $preset -> name;?></h3>
+                <div class="action">
+                    <span data-preset="<?php echo $preset -> name;?>"
+                       title="<?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_DOWNLOAD_PRESET_DESCRIPTION');?>"
+                       class="tps tp-download downloadpreset hasTooltip"></span>
+                    <i data-preset="<?php echo $preset -> name;?>" data-target="#removePreset" data-toggle="modal"
+                       title="<?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_REMOVE_PRESET_DESCRIPTION');?>"
+                       class="tps tp-times removepreset hasTooltip"></i>
+                </div>
+            </div>
         </div>
     <?php }?>
 </div>
@@ -119,8 +157,4 @@ echo $this -> form -> getInput('preset');
 
 echo $this -> loadTemplate('presets_load_modal');
 echo $this -> loadTemplate('presets_remove_modal');
-?>
-<input type="hidden" name="return" value="<?php echo base64_encode(JUri::current());?>"/>
-
-<?php
 endif;

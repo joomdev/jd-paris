@@ -23,8 +23,17 @@ defined('_JEXEC') or die();
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers');
 
 $params = &$this -> params;
+
+$bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
+
+$bootstrapClass = '';
+if($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4){
+    $bootstrapClass = 'tpp-bootstrap ';
+}elseif($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 3){
+    $bootstrapClass = 'tzpp_bootstrap3 ';
+}
 ?>
-<div class="tpSearch<?php echo $this->pageclass_sfx;?>">
+<div class="<?php echo $bootstrapClass;?>tpSearch<?php echo $this->pageclass_sfx;?>">
     <?php if ($params->get('show_page_heading', 1)){ ?>
     <h1 class="page-heading">
         <?php echo $this->escape($params->get('page_heading')); ?>

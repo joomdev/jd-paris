@@ -20,13 +20,15 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+
 jimport('joomla.application.component.model');
 JLoader::import('category',COM_TZ_PORTFOLIO_PLUS_PATH_SITE.DIRECTORY_SEPARATOR.'helpers');
 
 /**
  * This models supports retrieving lists of article categories.
  */
-class TZ_Portfolio_PlusModelCategories extends JModelLegacy
+class TZ_Portfolio_PlusModelCategories extends JModelList
 {
 	/**
 	 * Model context string.
@@ -53,7 +55,7 @@ class TZ_Portfolio_PlusModelCategories extends JModelLegacy
 	 *
 	 * @since	1.6
 	 */
-	protected function populateState()
+	protected function populateState($ordering = null, $direction = null)
 	{
 		$app = JFactory::getApplication();
 		$this->setState('filter.extension', $this->_extension);
@@ -63,7 +65,6 @@ class TZ_Portfolio_PlusModelCategories extends JModelLegacy
 		$this->setState('filter.parentId', $parentId);
 
         $params     = $app -> getParams();
-//        $params = JComponentHelper::getParams('com_content');
 		$this->setState('params', $params);
 
 		$this->setState('filter.published',	1);
@@ -102,30 +103,36 @@ class TZ_Portfolio_PlusModelCategories extends JModelLegacy
 	 */
 	public function getItems($recursive = false)
 	{
-		if (!count($this->_items)) {
-			$app = JFactory::getApplication();
-			$menu = $app->getMenu();
-			$active = $menu->getActive();
-			$params = new JRegistry();
+        $store = $this->getStoreId();
 
-			if ($active) {
-				$params->loadString($active->params);
-			}
+        if (!isset($this->cache[$store]))
+        {
+            $app = JFactory::getApplication();
+            $menu = $app->getMenu();
+            $active = $menu->getActive();
+            $params = new Registry;
 
-			$options = array();
-			$options['countItems'] = $params->get('show_cat_num_articles_cat', 1) || !$params->get('show_empty_categories_cat', 0);
-			$categories	= JCategories::getInstance('TZ_Portfolio_Plus',$options);
-			$this->_parent = $categories->get($this->getState('filter.parentId', 'root'));
+            if ($active)
+            {
+                $params->loadString($active->params);
+            }
 
-			if (is_object($this->_parent)) {
-				$this->_items = $this->_parent->getChildren($recursive);
-			}
-			else {
-				$this->_items = false;
-			}
-		}
+            $options = array();
+            $options['countItems'] = $params->get('show_cat_num_articles_cat', 1) || !$params->get('show_empty_categories_cat', 0);
+            $categories = JCategories::getInstance('TZ_Portfolio_Plus', $options);
+            $this->_parent = $categories->get($this->getState('filter.parentId', 'root'));
 
-		return $this->_items;
+            if (is_object($this->_parent))
+            {
+                $this->cache[$store] = $this->_parent->getChildren($recursive);
+            }
+            else
+            {
+                $this->cache[$store] = false;
+            }
+        }
+
+        return $this->cache[$store];
 	}
 
 	public function getParent()

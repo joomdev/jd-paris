@@ -33,11 +33,21 @@ $canEdit	= $item->params->get('access-edit');
 $user		= JFactory::getUser();
 $doc        = JFactory::getDocument();
 
+$bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
+
+$bootstrapClass = '';
+if($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4){
+    $bootstrapClass = 'tpp-bootstrap ';
+}elseif($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 3){
+    $bootstrapClass = 'tzpp_bootstrap3 ';
+}
 ?>
 
-<div class="tzpp_bootstrap3 tpp-item-page item-page<?php echo $this->pageclass_sfx?>"  itemscope itemtype="http://schema.org/Article">
-    <div class="tpp-item-page__inner row">
-        <meta itemprop="inLanguage" content="<?php echo ($item->language === '*') ? JFactory::getConfig()->get('language') : $item->language; ?>" />
+<div class="<?php echo $bootstrapClass;?>TzItemPage tpp-item-page item-page<?php
+echo $this->pageclass_sfx?>"  itemscope itemtype="http://schema.org/Article">
+    <div class="tpp-item-page__inner">
+        <meta itemprop="inLanguage" content="<?php
+        echo ($item->language === '*') ? JFactory::getConfig()->get('language') : $item->language; ?>" />
         <?php if ($this->params->get('show_page_heading', 1)) : ?>
             <h1 class="TzHeadingTitle">
             <?php echo $this->escape($this->params->get('page_heading')); ?>

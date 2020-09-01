@@ -9,7 +9,7 @@
         <field name="home" type="radio"
                 label="COM_TEMPLATES_FIELD_HOME_LABEL"
                 description="COM_TEMPLATES_FIELD_HOME_ADMINISTRATOR_DESC"
-                class="btn-group btn-group-yesno switcher"
+                class="switcher btn-group btn-group-yesno"
                 default="0">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
@@ -37,12 +37,17 @@
                    label="COM_TZ_PORTFOLIO_PLUS_LAYOUT_LABEL"
                     description="COM_TZ_PORTFOLIO_PLUS_LAYOUT_DESC"/>
             <field type="radio" name="use_single_layout_builder"
-                   class="btn-group switcher" default="1"
+                   class="switcher btn-group" default="1"
                    label="COM_TZ_PORTFOLIO_PLUS_USE_SINGLE_LAYOUT_BUILDER_LABEL"
                     description="COM_TZ_PORTFOLIO_PLUS_USE_SINGLE_LAYOUT_BUILDER_DESC">
                 <option value="1">JYES</option>
                 <option value="0">JNO</option>
             </field>
+            <field name="date_format" type="text"
+                   default="l, d F Y H:i"
+                   label="COM_TZ_PORTFOLIO_PLUS_DATE_FORMAT"
+                   description="COM_TZ_PORTFOLIO_PLUS_DATE_FORMAT_DESC"/>
+
         </fieldset>
         <fieldset name="advanced" label="JGLOBAL_FIELDSET_ADVANCED">
         </fieldset>
@@ -57,5 +62,7 @@
                label="COM_TZ_PORTFOLIO_PLUS_DEMO_LINK_LABEL"/>
         <field type="text" name="doc_link"
                label="COM_TZ_PORTFOLIO_PLUS_DOCUMENT_LINK_LABEL"/>
+        <field type="file" name="upload_preset"
+               label="Upload Preset File"/>
     </fields>
 </form>

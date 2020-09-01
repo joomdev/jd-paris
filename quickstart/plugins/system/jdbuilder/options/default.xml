@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<element>
+   <form>
+      <fields>
+         <!-- Design Options -->
+         <!--  Advanced Options -->
+         <fieldset name="advanced" ordering="10" label="JDB_ADVANCED_TITLE">
+            <!--  Advanced Options Groups -->
+            <field type="group" name="responsive" ordering="5" label="JDB_RESPONSIVE"></field>
+            <field type="group" name="animation" ordering="9" label="JDB_ANIMATION_TITLE"></field>
+            <field type="group" name="acl" ordering="12" label="JDB_ACL_CTRL_LABEL"></field>
+            <field type="group" name="info" ordering="14" label="JDB_INFO_LABEL"></field>
+
+            <!--  Responsive Options -->
+            <field type="alert" label="warning" description="JDB_RESPONSIVE_MESSAGE" group="responsive"></field>
+            <field type="switch" name="hideDesktop" label="JDB_HIDEON_DESKTOP_LABEL" default="false" group="responsive">
+            </field>
+            <field type="switch" name="hideTablet" label="JDB_HIDEON_TABLET_LABEL" default="false" group="responsive">
+            </field>
+            <field type="switch" name="hideMobile" label="JDB_HIDEON_MOBILE_LABEL" default="false" group="responsive">
+            </field>
+
+            <!-- Animations Options -->
+            <field type="animations" name="animation" label="JDB_ANIMATION_LABEL" default="" group="animation">
+            </field>
+            <field type="list" name="animationSpeed" label="JDB_ANIMATION_SPEED_LABEL" default="" group="animation" showon="params.animation!=''">
+               <option value="slower">JDB_SLOWER</option>
+               <option value="slow">JDB_SLOW</option>
+               <option value="">JDB_NORMAL</option>
+               <option value="fast">JDB_FAST</option>
+               <option value="faster">JDB_FASTER</option>
+            </field>
+            <field type="list" name="animationDelay" label="JDB_ANIMATION_DELAY_LABEL" default="" group="animation" showon="params.animation!=''">
+               <option value="">JDB_NONE</option>
+               <option value="delay-1s">JDB_1S</option>
+               <option value="delay-2s">JDB_2S</option>
+               <option value="delay-3s">JDB_3S</option>
+               <option value="delay-4s">JDB_4S</option>
+               <option value="delay-5s">JDB_5S</option>
+            </field>
+            <field type="switch" name="animationInfinite" label="JDB_ANIMATION_INFINITE_LABEL" default="false" group="animation" showon="params.animation!=''">
+            </field>
+
+            <!--  ACL Options -->
+            <field type="accesslevel" name="access" label="JDB_ACCESS_LABEL" group="acl" default="1"></field>
+
+            <field type="elementinfo" label="JDB_BLANK_LABEL" group="info"></field>
+         </fieldset>
+      </fields>
+   </form>
+</element>

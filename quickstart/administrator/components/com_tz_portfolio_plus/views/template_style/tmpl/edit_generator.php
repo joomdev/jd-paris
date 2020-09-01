@@ -39,6 +39,7 @@ $defLayout = $this -> getLayout();
             $this -> rowItem  = $items;
             $this -> setLayout('new-row');
             echo $this -> loadTemplate();
+//            die('edit_generator');
         }
     }
     ?>

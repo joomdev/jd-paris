@@ -4,6 +4,9 @@
     margin-bottom: 15px;
     border: 1px solid #ebebeb;
 }
+.tpp-author-about .media{
+    display: flex;
+}
 .tpp-author-about .media:after{
     content: "";
     clear: both;
@@ -16,6 +19,7 @@
     width: 60px;
     height: 60px;
     display: flex;
+    vertical-align: middle;
     margin-right: 10px;
     align-items: center;
     justify-content: center;

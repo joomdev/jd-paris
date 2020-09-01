@@ -2,7 +2,7 @@
 /**
  * @package   JD Simple Contact Form
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 // no direct access
@@ -19,6 +19,9 @@ switch ($field->type) {
    case 'url':
       $attrs[] = 'data-parsley-type="url"';
       break;
+}
+if (isset($field->placeholder) && !empty($field->placeholder)) {
+   $attrs[] = 'placeholder="' . $field->placeholder . '"';
 }
 if ($field->type == 'text' || $field->type == 'number') {
    if (!empty($field->min_length)) {
@@ -43,7 +46,11 @@ if ($field->type == 'text' || $field->type == 'number') {
 
 if ($field->required) {
    $attrs[] = 'required';
-   $attrs[] = 'data-parsley-required-message="' . JText::sprintf('MOD_JDSCF_REQUIRED_ERROR', strip_tags($label)) . '"';
+   if (isset($field->custom_error) && !empty(trim($field->custom_error))) {
+      $attrs[] = 'data-parsley-required-message="' . JText::sprintf($field->custom_error) . '"';
+   } else {
+      $attrs[] = 'data-parsley-required-message="' . JText::sprintf('MOD_JDSCF_REQUIRED_ERROR', strip_tags($label)) . '"';
+   }
 }
 ?>
-<input type="text" name="jdscf[<?php echo $field->name; ?>]" class="form-control" <?php echo implode(' ', $attrs); ?> />
+<input type="text" name="jdscf[<?php echo $field->name; ?>][<?php echo $field->type; ?>]" class="form-control" <?php echo implode(' ', $attrs); ?> />

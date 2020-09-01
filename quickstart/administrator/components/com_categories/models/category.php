@@ -3,12 +3,13 @@
  * @package     Joomla.Administrator
  * @subpackage  com_categories
  *
- * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 use Joomla\Utilities\ArrayHelper;
@@ -687,6 +688,11 @@ class CategoriesModelCategory extends JModelAdmin
 
 		$this->setState($this->getName() . '.id', $table->id);
 
+		if (Factory::getApplication()->input->get('task') == 'editAssociations')
+		{
+			return $this->redirectToAssociations($data);
+		}
+
 		// Clear the cache
 		$this->cleanCache();
 
@@ -1018,9 +1024,10 @@ class CategoriesModelCategory extends JModelAdmin
 				}
 			}
 
-			// Make a copy of the old ID and Parent ID
-			$oldId = $this->table->id;
+			// Make a copy of the old ID, Parent ID and Asset ID
+			$oldId       = $this->table->id;
 			$oldParentId = $this->table->parent_id;
+			$oldAssetId  = $this->table->asset_id;
 
 			// Reset the id because we are making a copy.
 			$this->table->id = 0;
@@ -1062,6 +1069,16 @@ class CategoriesModelCategory extends JModelAdmin
 
 			// Add the new ID to the array
 			$newIds[$pk] = $newId;
+
+			// Copy rules
+			$query->clear()
+				->update($db->quoteName('#__assets', 't'))
+				->join('INNER', $db->quoteName('#__assets', 's') .
+					' ON ' . $db->quoteName('s.id') . ' = ' . $oldAssetId
+				)
+				->set($db->quoteName('t.rules') . ' = ' . $db->quoteName('s.rules'))
+				->where($db->quoteName('t.id') . ' = ' . $this->table->asset_id);
+			$db->setQuery($query)->execute();
 
 			// Now we log the old 'parent' to the new 'parent'
 			$parents[$oldId] = $this->table->id;

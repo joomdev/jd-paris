@@ -39,7 +39,7 @@ abstract class JHtmlFields
         $data       = array();
         $core_path  = COM_TZ_PORTFOLIO_PLUS_ADDON_PATH.DIRECTORY_SEPARATOR.'extrafields';
         if(\JFolder::exists($core_path)){
-            if($core_folders = Folder::folders($core_path)){
+            if($core_folders = \JFolder::folders($core_path)){
                 $lang   = JFactory::getLanguage();
 
                 foreach($core_folders as $i => $folder){

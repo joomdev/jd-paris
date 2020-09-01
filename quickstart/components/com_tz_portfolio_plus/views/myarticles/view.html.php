@@ -73,9 +73,6 @@ class TZ_Portfolio_PlusViewMyArticles extends JViewLegacy
 
         $this -> params = $params;
 
-        $this -> document -> addStyleSheet('components/com_tz_portfolio_plus/css/tzportfolioplus.min.css',
-            array('version' => 'auto'));
-
         //Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
 

@@ -117,10 +117,11 @@ class TZ_Portfolio_PlusModelArticles extends JModelList
 
         $formSubmited = $app->input->post->get('form_submited');
 
-        $access     = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
-        $authorId   = $this->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
-        $categoryId = $this->getUserStateFromRequest($this->context . '.filter.category_id', 'filter_category_id');
-        $mediatype	= $this -> getUserStateFromRequest($this -> context.'.type','filter_type');
+        $access         = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
+        $authorId       = $this->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
+        $categoryId     = $this->getUserStateFromRequest($this->context . '.filter.category_id', 'filter_category_id');
+        $categoryIdSec  = $this->getUserStateFromRequest($this->context . '.filter.category_id_sec', 'filter_category_id_sec');
+        $mediatype	    = $this -> getUserStateFromRequest($this -> context.'.type','filter_type');
 
         if ($formSubmited)
         {
@@ -135,6 +136,9 @@ class TZ_Portfolio_PlusModelArticles extends JModelList
 
             $categoryId = $app->input->post->get('category_id');
             $this->setState('filter.category_id', $categoryId);
+
+            $categoryIdSec = $app->input->post->get('category_id_sec');
+            $this->setState('filter.category_id_sec', $categoryIdSec);
         }
 
         // Force a language
@@ -293,9 +297,10 @@ class TZ_Portfolio_PlusModelArticles extends JModelList
 			$query->where('(a.state = 0 OR a.state = 1)');
 		}
 
-		// Filter by a single or group of categories.
-		$baselevel = 1;
+		// Filter by a single or group of main categories.
+		$baselevel  = 1;
 		$categoryId = $this->getState('filter.category_id');
+		$catWhere   = array();
 		if (is_numeric($categoryId)) {
 			$cat_tbl = JTable::getInstance('Category', 'TZ_Portfolio_PlusTable');
 			$cat_tbl->load($categoryId);
@@ -307,9 +312,25 @@ class TZ_Portfolio_PlusModelArticles extends JModelList
 		}
 		elseif (is_array($categoryId)) {
 			ArrayHelper::toInteger($categoryId);
+
 			$categoryId = implode(',', $categoryId);
-			$query->where('m.catid IN ('.$categoryId.')');
+            $catWhere[] = 'm.catid IN('.$categoryId.')';
 		}
+
+        // Filter by a single or group of secondary categories.
+        $categoryIdSec = $this->getState('filter.category_id_sec');
+		if (is_array($categoryIdSec)) {
+			ArrayHelper::toInteger($categoryIdSec);
+            $categoryIdSec = implode(',', $categoryIdSec);
+            $catWhere[]   = 'sm.catid IN('.$categoryIdSec.')';
+
+            $query -> join('LEFT', '#__tz_portfolio_plus_content_category_map AS sm ON sm.contentid = a.id AND sm.main = 0');
+            $query->join('LEFT', '#__tz_portfolio_plus_categories AS sc ON sc.id = sm.catid');
+		}
+
+		if(count($catWhere)){
+		    $query -> where('('.implode(' OR ', $catWhere).')');
+        }
 
 		// Filter on the level.
 		if ($level = $this->getState('filter.level')) {
@@ -447,7 +468,7 @@ class TZ_Portfolio_PlusModelArticles extends JModelList
         // Get fields group
         $data   = array();
 
-		if ($app->isSite()) {
+		if ($app->isClient('site')) {
 			$user	= JFactory::getUser();
 			$groups	= $user->getAuthorisedViewLevels();
 

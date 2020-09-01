@@ -19,28 +19,19 @@
 
 //no direct access
 defined('_JEXEC') or die('Restricted access');
-//$fields = $this -> item -> defvalue;
 
 $form   = $this -> form;
-JHtml::_('behavior.formvalidation');
-JHtml::_('behavior.tooltip');
+$doc    = JFactory::getDocument();
+
+JHtml::_('behavior.formvalidator');
+JHtml::_('bootstrap.tooltip');
 if(!COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE) {
     JHtml::_('formbehavior.chosen', 'select');
 }else{
     JHtml::_('formbehavior.chosen', 'select[multiple]');
 }
-
 ?>
-
-<script type="text/javascript ">
-Joomla.submitbutton = function(task) {
-    if (task == 'field.cancel' || document.formvalidator.isValid(document.getElementById('field-form'))) {
-        <?php echo $this->form->getField('description')->save(); ?>
-        Joomla.submitform(task, document.getElementById('field-form'));
-    }
-};
-</script>
-<form name="adminForm" method="post" id="field-form" class="tpArticle"
+<form name="adminForm" method="post" id="adminForm" class="tpArticle"
       action="index.php?option=com_tz_portfolio_plus&view=field&layout=edit&id=<?php echo $this -> item -> id?>">
 
     <?php echo JHtml::_('tzbootstrap.addrow');?>

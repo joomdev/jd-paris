@@ -30,6 +30,8 @@ jimport('joomla.filesystem.file');
 
 class TZ_Portfolio_PlusFrontHelper{
 
+    protected static $cache = array();
+
     public static function getImageURLBySize($url, $size = 'o'){
         if(!$url){
             return false;
@@ -42,5 +44,22 @@ class TZ_Portfolio_PlusFrontHelper{
 
         return $newUrl;
 
+    }
+
+    public static function scriptExists($funcRegex, $flags = 0){
+        $storeId    = __METHOD__;
+        $storeId   .= ':'.$funcRegex;
+        $storeId   .= ':'.$flags;
+        $storeId    = md5($storeId);
+
+        if(isset(self::$cache[$storeId])){
+            return self::$cache[$storeId];
+        }
+
+        $doc    = JFactory::getDocument();
+        if(preg_match($funcRegex, $doc -> _script["text/javascript"], $match, $flags)){
+            return true;
+        }
+        return false;
     }
 }

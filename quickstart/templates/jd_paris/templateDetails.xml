@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE install PUBLIC "-//Joomla! 2.5//DTD template 1.0//EN" "https://www.joomla.org/xml/dtd/1.6/template-install.dtd">
 <extension version="3.1" type="template" client="site" method="upgrade">
    <name>jd_paris</name>
-   <creationDate>Feb 2019</creationDate>
+   <creationDate>Sept 2020</creationDate>
    <author>JoomDev</author>
    <authorEmail>info@joomdev.com</authorEmail>
    <authorUrl>https://www.joomdev.com</authorUrl>
-   <copyright>Copyright (C) 2019 Joomdev, Inc. All rights reserved.</copyright>
+   <copyright>Copyright (C) 2020 Joomdev, Inc. All rights reserved.</copyright>
    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-   <version>1.0</version>
+   <version>1.2</version>
    <description>JD Paris - Free School Joomla Template</description>
+   <updateservers>
+      <server type="extension" name="jd_paris" priority="1">https://cdn.joomdev.com/updates/jd_paris.xml</server>
+   </updateservers>
 
    <files>
       <folder>css</folder>
@@ -19,13 +21,14 @@
       <folder>images</folder>
       <folder>js</folder>
       <folder>language</folder>
-      <folder>frontend</folder>
       <filename>index.php</filename>
+      <filename>helper.php</filename>
       <filename>templateDetails.xml</filename>
       <filename>template_preview.png</filename>
       <filename>template_thumbnail.png</filename>
       <filename>component.php</filename>
       <filename>error.php</filename>
+      <filename>offline.php</filename>
    </files>
    <positions>
       <position>topbar-1</position>

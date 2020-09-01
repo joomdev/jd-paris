@@ -65,7 +65,7 @@ class TZ_Portfolio_PlusViewTemplates extends JViewLegacy
         JToolBarHelper::title(JText::_('COM_TZ_PORTFOLIO_PLUS_TEMPLATES_MANAGER'),'eye');
 
         if($canDo -> get('core.create')) {
-            JToolbarHelper::addNew('template.upload', 'JTOOLBAR_INSTALL');
+            JToolbarHelper::addNew('template.upload', 'COM_TZ_PORTFOLIO_PLUS_INSTALL_UPDATE');
         }
 
         if ($canDo->get('core.delete')){
@@ -73,8 +73,8 @@ class TZ_Portfolio_PlusViewTemplates extends JViewLegacy
         }
 
         if ($canDo->get('core.edit.state')) {
-            JToolBarHelper::publish('templates.publish','JENABLED', true);
-            JToolBarHelper::unpublish('templates.unpublish','JDISABLED', true);
+            JToolBarHelper::publish($this -> getName().'.publish','JENABLED', true);
+            JToolBarHelper::unpublish($this -> getName().'.unpublish','JDISABLED', true);
         }
 
         if($user->authorise('core.admin', 'com_tz_portfolio_plus')
@@ -87,5 +87,7 @@ class TZ_Portfolio_PlusViewTemplates extends JViewLegacy
 
         TZ_Portfolio_PlusToolbarHelper::customHelp('https://www.youtube.com/channel/UCrLN8LMXTyTahwDKzQ-YOqg/videos'
             ,'COM_TZ_PORTFOLIO_PLUS_VIDEO_TUTORIALS', 'youtube', 'youtube');
+
+        JToolbarHelper::link('javascript:', JText::_('COM_TZ_PORTFOLIO_PLUS_INTRO_GUIDE'), 'support');
     }
 }

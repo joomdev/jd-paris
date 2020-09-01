@@ -191,6 +191,7 @@ ul.pager.pagenav {
 		.card-header {
 			background-color: transparent;
 			border-radius: 0;
+			margin-bottom: 0;
 			.btn-link {
 				color: $secondary;
 				text-decoration: none;
@@ -201,18 +202,22 @@ ul.pager.pagenav {
 			text-align: left;
 		}
 		button:after {
-			content: "-";
+			content: "\f068";
 			display: block;
 			position: absolute;
-			font-size: 38px;
-			top: -7px;
+			font-size: 20px;
+			top: 0;
 			right: 0;
-			width: auto;
-			height: auto;
+			width: 20px;
+			height: 20px;
+			transform: translate(50%,50%);
+			line-height: 20px;
+			text-align: center;
+			font-family: 'Font Awesome 5 Free';
+			font-weight: 900;
 		}
 		button.btn.collapsed:after {
-			content: "+";
-			font-size: 30px;
+			content: "\f067";
 		}
 	}
 	.card:not(:last-child) {
@@ -221,7 +226,7 @@ ul.pager.pagenav {
 }
 
 // Box-s1
-.moduletable.box-s1 {
+.box-s1 {
 	padding: 48px;
 	box-shadow: $box-shadow-sm;
 	border-top: 4px solid $primary;

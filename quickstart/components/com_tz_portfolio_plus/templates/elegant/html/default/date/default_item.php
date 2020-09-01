@@ -45,13 +45,15 @@ if ($item->type == 'link' || $item->type == 'quote') {
 <?php
 // Start Description and some info
 if(!isset($item -> mediatypes) || (isset($item -> mediatypes) && !in_array($item -> type,$item -> mediatypes))):
+    $tpParams   = TZ_Portfolio_PlusTemplate::getTemplate(true) -> params;
+    $bootstrap4 = ($params -> get('enable_bootstrap',1) && $params -> get('bootstrapversion', 4) == 4);
 ?>
     <div class="tpHead">
         <?php if ($params->get('show_date_print_icon', 0) || $params->get('show_date_email_icon', 0) || $canEdit) : ?>
             <div class="tp-item-tools row-table">
-                <div class="btn-group pull-right">
-                    <a class="btn btn-default btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown"<?php echo $params->get('enable_bootstrap',1) ? ' href="#"' :''; ?>>
-                        <i class="icon-cog"></i> <span class="caret"></span>
+                <div class="dropdown pull-right">
+                    <a class="btn btn-default btn-outline-secondary btn-sm" data-toggle="dropdown"<?php echo $params->get('enable_bootstrap',1) ? ' href="#"' :''; ?>>
+                        <i class="tps tp-cog"></i> <span class="tps tp-angle-down"></span>
                     </a>
                     <ul class="dropdown-menu">
                         <?php if ($params->get('show_date_print_icon', 0)) : ?>
@@ -106,7 +108,7 @@ if(!isset($item -> mediatypes) || (isset($item -> mediatypes) && !in_array($item
                 <?php if ($params->get('show_date_create_date', 1)) : ?>
 
                     <div class="date"><i class="tp tp-clock-o"></i>
-                        <time itemprop="datePublished" datetime="<?php echo JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_LC')); ?>"><?php echo JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_LC')); ?></time>
+                        <time itemprop="datePublished" datetime="<?php echo JHtml::_('date', $this->item->created, $tpParams -> get('date_format', 'l, d F Y')); ?>"><?php echo JHtml::_('date', $this->item->created, $tpParams -> get('date_format', 'l, d F Y')); ?></time>
                     </div>
 
                 <?php endif; ?>
@@ -185,13 +187,13 @@ if(!isset($item -> mediatypes) || (isset($item -> mediatypes) && !in_array($item
                 <?php if ($params->get('show_date_publish_date', 0)) : ?>
                     <div class="TzBlogPublished">
                         <i class="tp tp-calendar"></i>
-                        <time itemprop="datePublished" datetime="<?php echo JHtml::_('date', $this->item->publish_up, JText::_('DATE_FORMAT_LC')); ?>"><?php echo JHtml::_('date', $this->item->publish_up, JText::_('DATE_FORMAT_LC')); ?></time>
+                        <time itemprop="datePublished" datetime="<?php echo JHtml::_('date', $this->item->publish_up, $tpParams -> get('date_format', 'l, d F Y')); ?>"><?php echo JHtml::_('date', $this->item->publish_up, $tpParams -> get('date_format', 'l, d F Y')); ?></time>
                     </div>
                 <?php endif; ?>
                 <?php if ($params->get('show_date_modify_date', 0)) : ?>
                     <div class="TzBlogModified">
                         <i class="tp tp-pencil-square-o"></i>
-                        <time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $this->item->modified, JText::_('DATE_FORMAT_LC')); ?>"><?php echo JHtml::_('date', $this->item->modified, JText::_('DATE_FORMAT_LC')); ?></time>
+                        <time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $this->item->modified, $tpParams -> get('date_format', 'l, d F Y')); ?>"><?php echo JHtml::_('date', $this->item->modified, $tpParams -> get('date_format', 'l, d F Y')); ?></time>
                     </div>
                 <?php endif; ?>
                 <?php echo $item->event->afterDisplayAdditionInfo; ?>
@@ -211,40 +213,37 @@ if(!isset($item -> mediatypes) || (isset($item -> mediatypes) && !in_array($item
         //Show vote
         echo $item -> event -> contentDisplayVote;
         ?>
-        <?php if($this -> item -> introtext):?>
+        <?php if($params -> get('show_date_intro', 1) && $this -> item -> introtext):?>
             <div class="tpDescription" itemprop="description">
                 <?php echo $this->item->introtext; ?>
             </div>
         <?php endif;?>
 
-        <?php if ($params->get('show_date_readmore',1) && $this->item->readmore) {
-            if ($params->get('access-view')) :
-                $link = $blogLink;
-            else :
-                $menu = JFactory::getApplication()->getMenu();
-                $active = $menu->getActive();
-                $itemId = $active->id;
-                $link1 = JRoute::_('index.php?option=com_users&amp;view=login&amp;Itemid=' . $itemId);
-
-                $returnURL = $blogLink;
-
-                $link = new JURI($link1);
-                $link->setVar('return', base64_encode($returnURL));
-            endif;
-            ?>
-
             <?php echo $item -> event -> contentDisplayListView; ?>
 
             <?php echo $this -> loadTemplate('extrafields');?>
 
-            <?php if($params -> get('show_date_readmore',1)):?>
+            <?php if ($params->get('show_date_readmore',1) && $this->item->readmore) {
+                if ($params->get('access-view')) {
+                    $link = $blogLink;
+                }else {
+                    $menu = JFactory::getApplication()->getMenu();
+                    $active = $menu->getActive();
+                    $itemId = $active->id;
+                    $link1 = JRoute::_('index.php?option=com_users&amp;view=login&amp;Itemid=' . $itemId);
+
+                    $returnURL = $blogLink;
+
+                    $link = new JURI($link1);
+                    $link->setVar('return', base64_encode($returnURL));
+                }
+                ?>
                 <a href="<?php echo $link; ?>"
-                   class="btn btn-default btn-secondary TzReadmore<?php echo $params -> get('tz_use_lightbox', 1)?' fancybox fancybox.iframe':'';?>"
+                   class="btn btn-default btn-outline-secondary TzReadmore<?php echo $params -> get('tz_use_lightbox', 1)?' fancybox fancybox.iframe':'';?>"
                     >
                     <?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_READ_MORE');?>
                 </a>
-            <?php endif;?>
-        <?php } ?>
+            <?php } ?>
 
         <?php
         //Call event onContentAfterDisplay on plugin

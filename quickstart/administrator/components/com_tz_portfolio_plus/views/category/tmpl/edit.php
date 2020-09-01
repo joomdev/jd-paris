@@ -24,12 +24,12 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 
 // Load the tooltip behavior.
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
+JHtml::_('bootstrap.tooltip');
+JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
-JHtml::_('behavior.tabstate');
 
 if(!COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE) {
+    JHtml::_('behavior.tabstate');
     JHtml::_('formbehavior.chosen', 'select');
 }else{
     JHtml::_('formbehavior.chosen', 'select[multiple]');
@@ -39,19 +39,9 @@ $assoc      = JLanguageAssociations::isEnabled();
 // Are associations implemented for this extension?
 $extensionassoc = array_key_exists('item_associations', $this->form->getFieldsets());
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "category.cancel" || document.formvalidator.isValid(document.getElementById("item-form")))
-		{
-			' . $this->form->getField("description")->save() . '
-			Joomla.submitform(task, document.getElementById("item-form"));
-		}
-	};
-');
 ?>
 
-<form method="post" name="adminForm" id="item-form" class="form-validate form-horizontal tpArticle" enctype="multipart/form-data"
+<form method="post" name="adminForm" id="adminForm" class="form-validate form-horizontal tpArticle" enctype="multipart/form-data"
 	action="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&extension='
         .JFactory::getApplication()->input->getCmd('extension', 'com_tz_portfolio_plus').'&layout=edit&id='
         .(int) $this->item->id); ?>">

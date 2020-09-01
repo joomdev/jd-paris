@@ -22,7 +22,8 @@ namespace TZ_Portfolio_Plus\Installer\Adapter;
 // No direct access
 defined('_JEXEC') or die;
 
-use Joomla\Filesystem\Folder;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Installer\Adapter\PluginAdapter;
 
 \JLoader::import('com_tz_portfolio_plus.includes.framework',JPATH_ADMINISTRATOR.'/components');
@@ -56,6 +57,35 @@ class TZ_Portfolio_PlusInstallerPluginAdapter extends PluginAdapter{
         parent::setupInstallPaths();
 
         $this->parent->setPath('extension_root', COM_TZ_PORTFOLIO_PLUS_ADDON_PATH . '/' . $this->group . '/' . $this->element);
+    }
+
+    protected function copyBaseFiles()
+    {
+        $uniqid = md5($this->element);
+        $uniqid = substr($uniqid, 0, 10);
+        $path   = $this -> parent -> getPath('extension_root');
+        $nPath  = $path.'__'.$uniqid;
+        @rename($path, $nPath);
+
+        parent::copyBaseFiles();
+
+        // Remove old folder path
+        if(is_dir($path)){
+            // Copy language files
+            if(\JFolder::exists($nPath.'/language')){
+                $cFolders   = \JFolder::folders($nPath.'/language');
+                if(count($cFolders)){
+                    foreach($cFolders as $cFolder){
+                        if(!\JFolder::exists($path.'/language/'.$cFolder)){
+                            \JFolder::copy($nPath.'/language/'.$cFolder, $path.'/language/'.$cFolder);
+                        }
+                    }
+                }
+            }
+            \JFolder::delete($nPath);
+        }else{
+            @rename($nPath, $path);
+        }
     }
 
     protected function checkExistingExtension()
@@ -399,7 +429,7 @@ class TZ_Portfolio_PlusInstallerPluginAdapter extends PluginAdapter{
         unset($row);
 
         // Remove the plugin's folder
-        Folder::delete($this->parent->getPath('extension_root'));
+        \JFolder::delete($this->parent->getPath('extension_root'));
 
         if ($msg != '')
         {

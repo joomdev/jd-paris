@@ -45,7 +45,10 @@ class TZ_Portfolio_PlusModelAddons extends JModelList
         parent::__construct($config);
     }
 
-    function populateState($ordering = 'folder', $direction = 'asc'){
+    protected function populateState($ordering = 'folder', $direction = 'asc'){
+
+        $app    = JFactory::getApplication();
+        $input  = $app -> input;
 
         $search  = $this -> getUserStateFromRequest($this -> context.'.filter.search','filter_search',null,'string');
         $this -> setState('filter.search',$search);
@@ -55,6 +58,9 @@ class TZ_Portfolio_PlusModelAddons extends JModelList
 
         $folder = $this->getUserStateFromRequest($this->context . '.filter.folder', 'filter_folder', null, 'cmd');
         $this->setState('filter.folder', $folder);
+
+        $ids = $input ->get->get('filter_exclude_ids', array(), 'array');
+        $this->setState('filter.exclude_ids', $ids);
 
         // List state information.
         parent::populateState($ordering, $direction);
@@ -136,6 +142,14 @@ class TZ_Portfolio_PlusModelAddons extends JModelList
             $query->where('e.folder = ' . $db->quote($folder));
         }
 
+        // Filter by ids if exists.
+        if ($excludeIds = $this->getState('filter.exclude_ids'))
+        {
+            if(count($excludeIds)) {
+                $query->where('e.id NOT IN('.implode(',', $excludeIds).')');
+            }
+        }
+
         // Add the list ordering clause.
         $orderCol   = $this->getState('list.ordering','e.folder');
         $orderDirn  = $this->getState('list.direction','asc');
@@ -182,11 +196,8 @@ class TZ_Portfolio_PlusModelAddons extends JModelList
                     $item -> data_manager    = $plugin -> getDataManager();
                 }
 
-                $langPath   = COM_TZ_PORTFOLIO_PLUS_ADDON_PATH.DIRECTORY_SEPARATOR.$item -> folder
-                    .DIRECTORY_SEPARATOR.$item -> element;
                 $langKey    = 'plg_'.$item -> folder.'_'.$item -> element;
-
-                if($loaded = $language -> load($langKey, $langPath)) {
+                if($loaded = TZ_Portfolio_PlusPluginHelper::loadLanguage($item -> element, $item -> folder)) {
                     $langKey = strtoupper($langKey);
                     if ($language->hasKey($langKey)) {
                         $item->name = JText::_($langKey);
@@ -194,6 +205,8 @@ class TZ_Portfolio_PlusModelAddons extends JModelList
                 }
 
                 $item -> author_info = @$item -> authorEmail . '<br />' . @$item -> authorUrl;
+
+
             }
 
             return $items;
@@ -201,4 +214,98 @@ class TZ_Portfolio_PlusModelAddons extends JModelList
         return false;
     }
 
+    public function getItemsUpdate(){
+
+        $storeId    = __METHOD__;
+        $storeId    = md5($storeId);
+
+        if(isset($this -> cache[$storeId])){
+            return $this -> cache[$storeId];
+        }
+
+        JLoader::import('com_tz_portfolio_plus.helpers.addons', JPATH_ADMINISTRATOR.'/components');
+        $addons = TZ_Portfolio_PlusHelperAddons::getAddons();
+
+        if(!$addons){
+            return false;
+        }
+
+        $data   = false;
+
+        foreach($addons as $item){
+
+            $adoFinded = $this -> findAddOnFromServer($item);
+
+            $item -> new_version    = null;
+            $manifest   = json_decode($item -> manifest_cache);
+            if($adoFinded && $adoFinded -> pProduces){
+                if($pProduces = $adoFinded -> pProduces) {
+                    if(isset($pProduces -> pProduce) && $pProduces -> pProduce
+                        && version_compare($manifest -> version, $pProduces -> pProduce -> pVersion, '<')) {
+                        $item -> new_version    = $pProduces -> pProduce -> pVersion;
+                        $data[] = $item;
+                    }
+                }
+            }
+        }
+
+        if($data){
+            $this -> cache[$storeId]    = $data;
+        }
+
+        return $data;
+    }
+
+    protected function findAddOnFromServer($addon){
+
+        $finded     = false;
+        $adoFinded  = false;
+
+        $options = array(
+            'defaultgroup'	=> $this -> option,
+            'storage' 		=> 'file',
+            'caching'		=> true,
+            'lifetime'      => 30 * 60,
+            'cachebase'		=> JPATH_ADMINISTRATOR.'/cache'
+        );
+        $cache = JCache::getInstance('', $options);
+
+        $model  = JModelLegacy::getInstance('AddOn', 'TZ_Portfolio_PlusModel');
+
+        $page   = 1;
+        while(!$finded){
+            $addons = $cache -> get('addons_server:'.$page);
+            if(!$addons){
+                $url    = $model -> getUrlFromServer();
+                if($page > 1) {
+                    $prevAddon  = $cache -> get('addons_server:'.($page - 1));
+                    $url .= '&start=' . (($page - 1) * $prevAddon -> limit );
+                }
+
+                $response = TZ_Portfolio_PlusHelper::getDataFromServer($url);
+
+                if($response){
+                    $addons   = json_decode($response -> body);
+                    $cache -> store($addons, 'addons_server:'.$page);
+                }
+            }
+
+            if($addons){
+                if($page > ceil($addons -> total / $addons -> limit) - 1){
+                    $finded = true;
+                }
+                foreach($addons -> items as $item){
+                    if($item -> pElement == $addon -> element){
+                        $finded     = true;
+                        $adoFinded  = $item;
+
+                        break;
+                    }
+                }
+            }
+
+            $page++;
+        }
+        return $adoFinded;
+    }
 }

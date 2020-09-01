@@ -2,8 +2,8 @@
 /**
  * @package   Astroid Framework
  * @author    JoomDev https://www.joomdev.com
- * @copyright Copyright (C) 2009 - 2018 JoomDev.
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
+ * @copyright Copyright (C) 2009 - 2020 JoomDev.
+ * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or Later
  */
 defined('JPATH_PLATFORM') or die;
 
@@ -11,7 +11,7 @@ defined('JPATH_PLATFORM') or die;
  * Color Form Field class for the Joomla Platform.
  * This implementation is designed to be compatible with HTML5's `<input type="color">`
  *
- * @link   http://www.w3.org/TR/html-markup/input.color.html
+ * @link   https://www.w3.org/TR/html-markup/input.color.html
  * @since  11.3
  */
 class JFormFieldAstroidColor extends JFormField {
@@ -211,11 +211,11 @@ class JFormFieldAstroidColor extends JFormField {
           'keywords' => $this->keywords,
           'position' => $position,
           'validate' => $this->validate,
-          'ngShow' => AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngShow']),
-          'ngHide' => AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngHide']),
+          'ngShow' => Astroid\Helper::replaceRelationshipOperators($this->element['ngShow']),
+          'ngHide' => Astroid\Helper::replaceRelationshipOperators($this->element['ngHide']),
           'colorpicker' => true,
           'sassVariable' => $this->element['astroid-scss-variable'],
-          'ngRequired' => AstroidFrameworkHelper::replaceRelationshipOperators($this->element['ngRequired']),
+          'ngRequired' => Astroid\Helper::replaceRelationshipOperators($this->element['ngRequired']),
           'isLarge' => $large,
           'fieldname' => $this->fieldname,
       );

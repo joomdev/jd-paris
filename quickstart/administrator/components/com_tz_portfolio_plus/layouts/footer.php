@@ -35,10 +35,10 @@ ob_start();
             <div class="span5 col-md-5"><?php echo $xml->copyright; ?></div>
             <div class="span7 col-md-7">
                 <ul class="tpLinks inline unstyled list-unstyled">
-                    <li class="list-inline-item"><a href="<?php echo $xml -> guideUrl; ?>" target="_blank">Guide</a></li>
-                    <li class="list-inline-item"><a href="<?php echo $xml -> forumUrl; ?>" target="_blank">Forum</a></li>
-                    <li class="list-inline-item"><a href="<?php echo $xml -> transifexUrl; ?>" target="_blank">Find & Help Translate</a></li>
-                    <li class="list-inline-item"><a href="<?php echo $xml -> jedUrl; ?>" target="_blank"><span class="icon-joomla"></span> Rate on JED</a></li>
+                    <li class="list-inline-item"><a href="<?php echo $xml -> guideUrl; ?>" target="_blank"><i class="tps tp-book"></i> <?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_GUIDE'); ?></a></li>
+                    <li class="list-inline-item"><a href="<?php echo $xml -> forumUrl; ?>" target="_blank"><i class="tps tp-comment"></i> <?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_FORUM'); ?></a></li>
+                    <li class="list-inline-item"><a href="<?php echo $xml -> transifexUrl; ?>" target="_blank"><span class="tps tp-language"></span> <?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_FIND_HELP_TRANSLATE'); ?></a></li>
+                    <li class="list-inline-item"><a href="<?php echo $xml -> jedUrl; ?>" target="_blank"><span class="tpb tp-joomla"></span> <?php echo JText::_('COM_TZ_PORTFOLIO_PLUS_RATE_ON_JED'); ?></a></li>
                 </ul>
             </div>
         <?php echo JHtml::_('tzbootstrap.endrow');?>

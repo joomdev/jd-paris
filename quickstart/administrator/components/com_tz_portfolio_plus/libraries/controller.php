@@ -53,7 +53,7 @@ class TZ_Portfolio_PlusControllerLegacy  extends JControllerLegacy{
             $view -> document   = JFactory::getDocument();
             if($template   = TZ_Portfolio_PlusTemplate::getTemplate(true)){
                 if($template -> id){
-                    $tplparams  = $template -> params;
+//                    $tplparams  = $template -> params;
                     $path       = $view -> get('_path');
 
                     $bool_tpl   = false;
@@ -63,15 +63,11 @@ class TZ_Portfolio_PlusControllerLegacy  extends JControllerLegacy{
                     if($bool_tpl) {
                         $name   = strtolower($name);
                         // Load template language
-                        $lang   = JFactory::getLanguage();
-                        $lang -> load('tpl_'.$template -> template, COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH.DIRECTORY_SEPARATOR.$template -> template);
+                        TZ_Portfolio_PlusTemplate::loadLanguage($template -> template);
 
                         $componentPath  = array_pop($path['template']);
                         if(isset($template -> base_path) && $template -> base_path) {
                             $path['template'][] = $template->base_path . DIRECTORY_SEPARATOR . $name;
-                        }
-                        if(isset($template -> home_path) && $template -> home_path) {
-                            $path['template'][] = $template->home_path . DIRECTORY_SEPARATOR . $name;
                         }
                         $path['template'][] = $componentPath;
                         $view -> set('_path',$path);
@@ -91,19 +87,35 @@ class TZ_Portfolio_PlusControllerLegacy  extends JControllerLegacy{
     public function parseDocument(&$view = null){
         if($view){
             if(isset($view -> document)){
-                if($template   = TZ_Portfolio_PlusTemplate::getTemplate(true)) {
+                if($template = TZ_Portfolio_PlusTemplate::getTemplate(true)) {
                     if(\JFolder::exists(COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH.DIRECTORY_SEPARATOR.$template -> template)) {
+
+                        $app		= JFactory::getApplication('site');
+                        $params     = $app -> getParams();
+
                         $docOptions['template']     = $template->template;
                         $docOptions['file']         = 'template.php';
                         $docOptions['params']       = $template->params;
                         $docOptions['directory']    = COM_TZ_PORTFOLIO_PLUS_PATH_SITE . DIRECTORY_SEPARATOR . 'templates';
 
                         // Add template.css file if it has have in template
-                        if (\JFile::exists(COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH . DIRECTORY_SEPARATOR . $template -> template
-                            . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'template.css')
-                        ) {
+                        if(!$params -> get('enable_bootstrap',1) || ($params -> get('enable_bootstrap',1)
+                                && $params -> get('bootstrapversion', 4) == 3)){
+                            $view->document -> addStyleSheet(TZ_Portfolio_PlusUri::base(true).'/css/tzportfolioplus.min.css',
+                                array('version' => 'auto'));
+                        }
+                        $legacyPath = COM_TZ_PORTFOLIO_PLUS_TEMPLATE_PATH . DIRECTORY_SEPARATOR . $template -> template
+                            . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'template.css';
+                        if((TZ_Portfolio_PlusTemplate::getSassDirByStyle($template -> template)
+                                || (!TZ_Portfolio_PlusTemplate::getSassDirByStyle($template -> template) && TZ_Portfolio_PlusTemplate::getSassDirCore()))
+                            && !JFile::exists($legacyPath)
+                            && $cssRelativePath = TZ_Portfolio_PlusTemplate::getCssStyleName($template -> template,
+                                $params, $docOptions['params'] -> get('colors', array()), $view -> document)){
+                            $view->document->addStyleSheet(TZ_Portfolio_PlusUri::base(true)
+                                . '/css/'.$cssRelativePath, array('version' => 'auto'));
+                        }elseif (\JFile::exists($legacyPath)) {
                             $view->document->addStyleSheet(TZ_Portfolio_PlusUri::base(true) . '/templates/'
-                                . $template -> template . '/css/template.css');
+                                . $template -> template . '/css/template.css', array('version' => 'auto'));
                         }
 
                         // Parse document of view to require template.php(in tz portfolio template) file.

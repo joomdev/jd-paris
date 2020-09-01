@@ -25,8 +25,11 @@ $active = TRUE;
 .testimonial-<?php echo $module->id; ?> .slick-next:before{
 	color:<?php echo $NormalColor; ?>
 }
+.testimonial-<?php echo $module->id; ?> .slick-dots li button:before{
+	border: 1px solid transparent;
+}
 .testimonial-<?php echo $module->id; ?> .slick-dots li.slick-active button:before{
-	border: 1px solid <?php echo $activeColor; ?>;
+	border-color: <?php echo $activeColor; ?>;
 }
 .testimonial-<?php echo $module->id; ?> .slick-prev{
 	left: -41px;

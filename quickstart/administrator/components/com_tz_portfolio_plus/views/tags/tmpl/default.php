@@ -21,7 +21,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 JHtml::_('dropdown.init');
-JHtml::_('behavior.tooltip');
+JHtml::_('bootstrap.tooltip');
 
 if(!COM_TZ_PORTFOLIO_PLUS_JVERSION_4_COMPARE) {
     JHtml::_('formbehavior.chosen', 'select');
@@ -97,7 +97,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
                         </div>
                     </td>
                     <td class="nowrap has-context">
-                        <div class="pull-left">
+                        <div class="pull-left float-left">
                             <?php if($canEdit){ ?>
                             <a href="index.php?option=com_tz_portfolio_plus&task=tag.edit&id=<?php echo $item -> id;?>">
                                 <?php echo $this -> escape($item -> title);?>

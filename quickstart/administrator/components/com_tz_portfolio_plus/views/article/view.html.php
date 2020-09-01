@@ -62,7 +62,6 @@ class TZ_Portfolio_PlusViewArticle extends JViewLegacy
             $canDo	= TZ_Portfolio_PlusHelper::getActions(COM_TZ_PORTFOLIO_PLUS, 'article', $this -> item -> id);
 			$this -> canDo	= $canDo;
 
-
             // Check for errors.
             if (count($errors = $this->get('Errors'))) {
                 JError::raiseError(500, implode("\n", $errors));

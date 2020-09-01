@@ -32,12 +32,14 @@ $mnuActive  = $menu -> getActive()
 
 <form id="searchForm" action="<?php echo JRoute::_('index.php?option=com_tz_portfolio_plus&Itemid='.$mnuActive -> id);?>" method="post">
 
-    <div class="form-inline form-group">
+    <div class="input-group form-group">
         <input type="text" name="searchword" placeholder="<?php echo JText::_('COM_TZ_PORTFOLIO_SEARCH_KEYWORD'); ?>"
-               id="search-searchword" size="30" maxlength="<?php echo $upper_limit; ?>"
+               id="search-searchword" size="30" class="form-control h-auto" maxlength="<?php echo $upper_limit; ?>"
                value="<?php echo $this->escape($this->state -> get('filter.searchword')); ?>" class="form-control" />
-        <button name="search" onclick="this.form.submit()" class="btn btn-primary hasTooltip"
-                title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_SUBMIT');?>"><span class="icon-search"></span><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
+        <div class="input-group-append">
+            <button name="search" onclick="this.form.submit()" class="btn btn-primary hasTooltip"
+                    title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_SUBMIT');?>"><i class="tps tp-search"></i> <?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
+        </div>
     </div>
 
     <?php if($params -> get('show_search_category',0)) { ?>
