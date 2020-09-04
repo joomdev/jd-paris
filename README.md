@@ -16,6 +16,7 @@
 | :------------ |:-----------| :-----|
 | Joomla        | 3.9.2      |  3.9.21    |
 | Astroid       | 2.0.2      |  2.4.1    |
+| JD Builder       | 1.8.0      |  1.8.0    |
 
 ## JoomDev Extensions List
 | Name            | Initial Version        | Current version  |
