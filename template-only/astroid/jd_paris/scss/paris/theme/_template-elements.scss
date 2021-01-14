@@ -226,7 +226,7 @@ ul.pager.pagenav {
 }
 
 // Box-s1
-.box-s1 {
+.box-s1:not(.moduletable) {
 	padding: 48px;
 	box-shadow: $box-shadow-sm;
 	border-top: 4px solid $primary;
